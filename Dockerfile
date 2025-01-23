@@ -1,6 +1,6 @@
 # syntax=docker/dockerfile:1
 
-FROM oven/bun:1.1-alpine
+FROM oven/bun:1-alpine
 WORKDIR /foodie-master-ui
 COPY . /foodie-master-ui
 RUN ["bun", "install"]
