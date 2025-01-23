@@ -5,4 +5,4 @@ WORKDIR /foodie-master-ui
 COPY . /foodie-master-ui
 RUN ["bun", "install"]
 EXPOSE 3000
-ENTRYPOINT ["bun", "dev"]
+ENTRYPOINT ["bun", "run", "dev"]
