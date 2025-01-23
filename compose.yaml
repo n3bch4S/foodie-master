@@ -6,3 +6,10 @@ services:
     build: .
     ports:
       - 3000:3000
+    develop:
+      watch:
+        - action: sync
+          path: ./src
+          target: /foodie-master-ui/src
+        - action: rebuild
+          path: package.json
