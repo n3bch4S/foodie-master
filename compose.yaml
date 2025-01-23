@@ -1,0 +1,8 @@
+name: foodie-master
+services:
+  ui:
+    container_name: foodie-master-ui
+    image: foodie-master-ui
+    build: .
+    ports:
+      - 3000:3000
