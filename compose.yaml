@@ -1,0 +1,17 @@
+name: foodie-master
+
+services:
+  ui:
+    container_name: foodie-master-ui
+    image: foodie-master:ui
+    build: .
+    env_file: .env.local
+    ports:
+      - 3000:3000
+    develop:
+      watch:
+        - path: ./src
+          action: sync
+          target: /foodie-master/src
+        - path: package.json
+          action: rebuild
