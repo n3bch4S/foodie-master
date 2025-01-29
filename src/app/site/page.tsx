@@ -1,7 +1,4 @@
-import clsx from "clsx";
-import { Check } from "lucide-react";
 import Image from "next/image";
-import Link from "next/link";
 
 export default async function Home() {
   return (
