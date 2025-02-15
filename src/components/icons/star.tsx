@@ -1,4 +1,4 @@
-import React from 'react';
+import React from "react";
 
 const Star = () => {
   return (
@@ -17,11 +17,7 @@ const Star = () => {
       </g>
       <defs>
         <clipPath id="clip0_56_9997">
-          <rect
-            width="24"
-            height="24"
-            fill="white"
-          />
+          <rect width="24" height="24" fill="white" />
         </clipPath>
       </defs>
     </svg>
