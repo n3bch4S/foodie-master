@@ -1,100 +1,57 @@
 "use client";
 
-import { Button } from "@/components/ui/button";
-import { Checkbox } from "@/components/ui/checkbox";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
 import { ColumnDef } from "@tanstack/react-table";
-import { MoreHorizontal } from "lucide-react";
-import { DataTableColumnHeader } from "./column-header";
+import { Food } from "@/lib/food";
+import Image from "next/image";
+import React from "react";
+import { AspectRatio } from "@/components/ui/aspect-ratio";
+import { ActionDropdown } from "./action-dropdown";
 
-// This type is used to define the shape of our data.
-// You can use a Zod schema here if you want.
-export type Payment = {
-  id: string;
-  amount: number;
-  status: "pending" | "processing" | "success" | "failed";
-  email: string;
-};
+function HeaderCell({ children }: { children: React.ReactNode }) {
+  return <div>{children}</div>;
+}
 
-export const columns: ColumnDef<Payment>[] = [
+function TextCell({ children }: { children: React.ReactNode }) {
+  return <div>{children}</div>;
+}
+
+function ImageCell({ url }: { url?: string }) {
+  return url ? (
+    <AspectRatio ratio={16 / 9}>
+      <Image src={url} alt="รูปอาหาร" fill sizes="10vw" priority />
+    </AspectRatio>
+  ) : (
+    <div>ไม่พบรูปภาพ</div>
+  );
+}
+
+export const foodColumns: ColumnDef<Food>[] = [
   {
-    id: "select",
-    header: ({ table }) => (
-      <Checkbox
-        checked={
-          table.getIsAllPageRowsSelected() ||
-          (table.getIsSomePageRowsSelected() && "indeterminate")
-        }
-        onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
-        aria-label="Select all"
-      />
-    ),
-    cell: ({ row }) => (
-      <Checkbox
-        checked={row.getIsSelected()}
-        onCheckedChange={(value) => row.toggleSelected(!!value)}
-        aria-label="Select row"
-      />
-    ),
-    enableSorting: false,
-    enableHiding: false,
+    id: "action",
+    cell: ({ row }) => <ActionDropdown row={row} />,
   },
   {
-    accessorKey: "status",
-    header: "Status",
+    id: "url",
+    accessorFn: (row) => row.url,
+    header: () => <HeaderCell>รูป</HeaderCell>,
+    cell: ({ row }) => <ImageCell url={row.original.url} />,
   },
   {
-    accessorKey: "email",
-    header: ({ column }) => {
-      <DataTableColumnHeader column={column} title="Email" />;
-    },
+    id: "name",
+    accessorFn: (row) => row.name,
+    header: () => <HeaderCell>ชื่อ</HeaderCell>,
+    cell: ({ row }) => <TextCell>{row.original.name}</TextCell>,
   },
   {
-    accessorKey: "amount",
-    header: () => <div className="text-right">Amount</div>,
-    cell: ({ row }) => {
-      const amount = parseFloat(row.getValue("amount"));
-      const formatted = new Intl.NumberFormat("th", {
-        style: "currency",
-        currency: "THB",
-      }).format(amount);
-
-      return <div className="text-right font-medium">{formatted}</div>;
-    },
+    id: "category",
+    accessorFn: (row) => row.category,
+    header: () => <HeaderCell>ประเภท</HeaderCell>,
+    cell: ({ row }) => <TextCell>{row.original.category}</TextCell>,
   },
   {
-    id: "actions",
-    cell: ({ row }) => {
-      const payment = row.original;
-
-      return (
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="ghost" className="h-8 w-8 p-0">
-              <span className="sr-only">Open menu</span>
-              <MoreHorizontal className="h-4 w-4" />
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end">
-            <DropdownMenuLabel>Actions</DropdownMenuLabel>
-            <DropdownMenuItem
-              onClick={() => navigator.clipboard.writeText(payment.id)}
-            >
-              Copy payment ID
-            </DropdownMenuItem>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem>View customer</DropdownMenuItem>
-            <DropdownMenuItem>View payment details</DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
-      );
-    },
+    id: "price",
+    accessorFn: (row) => row.price,
+    header: () => <HeaderCell>ราคา</HeaderCell>,
+    cell: ({ row }) => <TextCell>{row.original.price}</TextCell>,
   },
 ];

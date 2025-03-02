@@ -1,8 +1,20 @@
-import { Food } from "./types";
+export type Food = {
+  id: string;
+  name: string;
+  category: string;
+  price: number;
+  url?: string;
+};
 
 export async function fetchFood(): Promise<Food[]> {
   return [
-    { id: "1", name: "โจ๊ก", category: "จานหลัก", price: 50 },
+    {
+      id: "1",
+      name: "โจ๊ก",
+      category: "จานหลัก",
+      price: 50,
+      url: "https://www.centralworld.co.th/storage/stores/K/kfc.jpg",
+    },
     { id: "2", name: "กะเพรา", category: "จานหลัก", price: 59 },
     { id: "3", name: "ก๋วยเตี๋ยว", category: "จานหลัก", price: 55 },
     { id: "4", name: "บะหมี่", category: "จานหลัก", price: 55 },
@@ -14,4 +26,8 @@ export async function fetchFood(): Promise<Food[]> {
     { id: "10", name: "ข้าวเหนียว", category: "อื่นๆ", price: 10 },
     { id: "11", name: "น้ำเปล่า", category: "เครื่องดื่ม", price: 15 },
   ];
+}
+
+export async function deleteFood(id: string): Promise<void> {
+  console.log(`Delete food '${id}' succussfully`);
 }
