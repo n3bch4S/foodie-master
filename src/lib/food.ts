@@ -6,7 +6,36 @@ export type Food = {
   url?: string;
 };
 
-export async function fetchFood(): Promise<Food[]> {
+type FoodNoId = Omit<Food, "id">;
+
+export async function createFood(food: FoodNoId): Promise<void> {
+  console.log(`Creating food...`);
+  const newFood: Food = { ...food, id: "-1" };
+  console.log(`Food created with id '${newFood.id}'`);
+}
+
+export async function fetchFood(id: string): Promise<Food> {
+  function getFood(foods: Food[]): Food | undefined {
+    return foods.find((food) => food.id === id);
+  }
+
+  return new Promise(async (resolve, reject) => {
+    console.log(`Fetching food '${id}'...`);
+    const foundFood = await fetchAllFood().then(getFood);
+    if (foundFood) {
+      console.log(`Food '${id}' found`);
+      resolve(foundFood);
+    } else {
+      const errorText = `Food '${id}' not found`;
+      console.error(errorText);
+      reject(errorText);
+    }
+  });
+}
+
+export async function fetchAllFood(): Promise<Food[]> {
+  console.log("Fetching all foods...");
+  console.log("Done fetching all foods");
   return [
     {
       id: "1",
@@ -28,6 +57,35 @@ export async function fetchFood(): Promise<Food[]> {
   ];
 }
 
+export async function editFood(id: string, newFood: FoodNoId): Promise<void> {
+  console.log(`Editing food '${id}'...`);
+
+  function updateFood(foods: Food[]): void {
+    foods.map((food) => {
+      if (food.id === id) {
+        console.log(`Found food '${id}', updating...`);
+        const editedFood: Food = { ...newFood, id };
+        console.log(`Updated food '${id}'`);
+        return editedFood;
+      }
+      return food;
+    });
+  }
+  await fetchAllFood().then(updateFood);
+}
+
 export async function deleteFood(id: string): Promise<void> {
-  console.log(`Delete food '${id}' succussfully`);
+  return new Promise(async (resolve, reject) => {
+    console.log(`Deleting food '${id}'...`);
+    const foods = await fetchAllFood();
+    const foundFood = foods.find((food) => food.id === id);
+    if (foundFood) {
+      console.log(`Delete food '${id}' succussfully`);
+      resolve();
+    } else {
+      const errorText = `Food '${id} not found, cannot delete'`;
+      console.error(errorText);
+      reject(errorText);
+    }
+  });
 }
