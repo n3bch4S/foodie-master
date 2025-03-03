@@ -20,6 +20,7 @@ import {
 } from "@/components/ui/table";
 import { PaginationBar } from "./paginationBar";
 import React from "react";
+import { CreateForm } from "./create-form";
 
 type TableModel<TData> = {
   columns: ColumnDef<TData>[];
@@ -38,6 +39,7 @@ export function DataTable({ columns, data }: TableModel<Food>) {
 
   return (
     <div>
+      <CreateForm />
       <Table>
         <TableHeader>
           {table.getHeaderGroups().map((headerGroup) => (
