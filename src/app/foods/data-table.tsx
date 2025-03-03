@@ -5,6 +5,7 @@ import {
   flexRender,
   getCoreRowModel,
   getPaginationRowModel,
+  getSortedRowModel,
   useReactTable,
 } from "@tanstack/react-table";
 import { Food } from "@/lib/food";
@@ -30,6 +31,7 @@ export function DataTable({ columns, data }: TableModel<Food>) {
     columns,
     getCoreRowModel: getCoreRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
+    getSortedRowModel: getSortedRowModel(),
   });
 
   return (

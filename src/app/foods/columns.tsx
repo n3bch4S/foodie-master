@@ -1,14 +1,25 @@
 "use client";
 
-import { ColumnDef } from "@tanstack/react-table";
+import { Column, ColumnDef } from "@tanstack/react-table";
 import { Food } from "@/lib/food";
 import Image from "next/image";
 import React from "react";
 import { AspectRatio } from "@/components/ui/aspect-ratio";
 import { ActionDropdown } from "./action-dropdown";
+import { Button } from "@/components/ui/button";
 
-function HeaderCell({ children }: { children: React.ReactNode }) {
-  return <div>{children}</div>;
+type HeaderCellProps = {
+  column: Column<Food>;
+  children: React.ReactNode;
+};
+
+function HeaderCell({ column, children }: HeaderCellProps) {
+  return (
+    <div>
+      {children}
+      <Button onClick={() => column.toggleSorting()}>เรียง</Button>
+    </div>
+  );
 }
 
 function TextCell({ children }: { children: React.ReactNode }) {
@@ -32,26 +43,26 @@ export const foodColumns: ColumnDef<Food>[] = [
   },
   {
     id: "url",
-    accessorFn: (row) => row.url,
-    header: () => <HeaderCell>รูป</HeaderCell>,
+    accessorFn: ({ url }) => url,
+    header: ({ column }) => <HeaderCell column={column}>รูป</HeaderCell>,
     cell: ({ row }) => <ImageCell url={row.original.url} />,
   },
   {
     id: "name",
-    accessorFn: (row) => row.name,
-    header: () => <HeaderCell>ชื่อ</HeaderCell>,
+    accessorFn: ({ name }) => name,
+    header: ({ column }) => <HeaderCell column={column}>ชื่อ</HeaderCell>,
     cell: ({ row }) => <TextCell>{row.original.name}</TextCell>,
   },
   {
     id: "category",
-    accessorFn: (row) => row.category,
-    header: () => <HeaderCell>ประเภท</HeaderCell>,
+    accessorFn: ({ category }) => category,
+    header: ({ column }) => <HeaderCell column={column}>ประเภท</HeaderCell>,
     cell: ({ row }) => <TextCell>{row.original.category}</TextCell>,
   },
   {
     id: "price",
-    accessorFn: (row) => row.price,
-    header: () => <HeaderCell>ราคา</HeaderCell>,
+    accessorFn: ({ price }) => price,
+    header: ({ column }) => <HeaderCell column={column}>ราคา</HeaderCell>,
     cell: ({ row }) => <TextCell>{row.original.price}</TextCell>,
   },
 ];

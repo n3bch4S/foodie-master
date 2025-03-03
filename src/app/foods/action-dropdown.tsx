@@ -9,13 +9,13 @@ import {
 import { deleteFood, Food } from "@/lib/food";
 import { Row } from "@tanstack/react-table";
 
-type ActionDropdownProps = {
-  row: Row<Food>;
-};
-
 async function deleteRow(row: Row<Food>) {
   await deleteFood(row.original.id);
 }
+
+type ActionDropdownProps = {
+  row: Row<Food>;
+};
 
 export function ActionDropdown({ row }: ActionDropdownProps) {
   return (
