@@ -1,9 +1,9 @@
-import { fetchFood } from "@/lib/food";
+import { fetchAllFood } from "@/lib/food";
 import { foodColumns } from "./columns";
 import { DataTable } from "./data-table";
 
 export default async function Food() {
-  const foodData = await fetchFood();
+  const foodData = await fetchAllFood();
 
   return (
     <div className="container">
