@@ -1,3 +1,5 @@
+"use client";
+
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -7,17 +9,18 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { deleteFood, Food } from "@/lib/food";
-import { Row } from "@tanstack/react-table";
+import { Row, Table } from "@tanstack/react-table";
+import React from "react";
 
-async function deleteRow(row: Row<Food>) {
-  await deleteFood(row.original.id);
+async function removeFood(id: string, table: Table<Food>): Promise<void> {
+  await deleteFood(id).then(() => 0);
 }
 
 type ActionDropdownProps = {
   row: Row<Food>;
 };
 
-export function ActionDropdown({ row }: ActionDropdownProps) {
+export function FoodActionDropdown({ row }: ActionDropdownProps) {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger>เพิ่มเติม</DropdownMenuTrigger>

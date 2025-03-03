@@ -5,7 +5,7 @@ import { Food } from "@/lib/food";
 import Image from "next/image";
 import React from "react";
 import { AspectRatio } from "@/components/ui/aspect-ratio";
-import { ActionDropdown } from "./action-dropdown";
+import { FoodActionDropdown } from "./food-action-dropdown";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 
@@ -46,7 +46,7 @@ function ImageCell({ url }: { url?: string }) {
 export const foodColumns: ColumnDef<Food>[] = [
   {
     id: "action",
-    cell: ({ row }) => <ActionDropdown row={row} />,
+    cell: ({ row }) => <FoodActionDropdown row={row} />,
   },
   {
     id: "url",
