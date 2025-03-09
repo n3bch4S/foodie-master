@@ -20,7 +20,7 @@ import {
 } from "@/components/ui/table";
 import { PaginationBar } from "./paginationBar";
 import React from "react";
-import { CreateForm } from "./create-form";
+import { CreateForm } from "./create-food-dialog";
 
 type TableModel<TData> = {
   columns: ColumnDef<TData>[];

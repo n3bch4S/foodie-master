@@ -1,7 +1,7 @@
 import { fetchAllFood } from "@/lib/food";
 import { foodColumns } from "./columns";
 import { DataTable } from "./data-table";
-import { CreateForm } from "./create-form";
+import { CreateForm } from "./create-food-dialog";
 
 export default async function Food() {
   const foodData = await fetchAllFood();
