@@ -1,30 +1,29 @@
-import { createUploadthing, type FileRouter } from "uploadthing/next";
 import { auth } from "@clerk/nextjs";
+import { createUploadthing, type FileRouter } from "uploadthing/next";
 
 const f = createUploadthing();
 
-const authenticateUser = () => {
+function getUser() {
   const user = auth();
-  // If you throw, the user will not be able to upload
-  if (!user) throw new Error("Unauthorized");
-  // Whatever is returned here is accessible in onUploadComplete as `metadata`
+  if (!user) throw new Error("Unauthorize");
   return user;
-};
+}
 
-// FileRouter for your app, can contain multiple FileRoutes
 export const ourFileRouter = {
-  // Define as many FileRoutes as you like, each with a unique routeSlug
+  foodImage: f(["image/png", "image/jpeg"])
+    .middleware(getUser)
+    .onUploadComplete(() => {}),
   subaccountLogo: f({ image: { maxFileSize: "4MB", maxFileCount: 1 } })
-    .middleware(authenticateUser)
+    .middleware(getUser)
     .onUploadComplete(() => {}),
   avatar: f({ image: { maxFileSize: "4MB", maxFileCount: 1 } })
-    .middleware(authenticateUser)
+    .middleware(getUser)
     .onUploadComplete(() => {}),
   agencyLogo: f({ image: { maxFileSize: "4MB", maxFileCount: 1 } })
-    .middleware(authenticateUser)
+    .middleware(getUser)
     .onUploadComplete(() => {}),
   media: f({ image: { maxFileSize: "4MB", maxFileCount: 1 } })
-    .middleware(authenticateUser)
+    .middleware(getUser)
     .onUploadComplete(() => {}),
 } satisfies FileRouter;
 
