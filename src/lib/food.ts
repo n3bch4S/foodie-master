@@ -12,7 +12,7 @@ export type FoodDetail = Food & { id: string };
 
 const prisma = new PrismaClient();
 
-export async function createFood(food: Food) {
+export async function createFood(food: Food): Promise<void> {
   console.log("Creating food", food);
   const newFood = await prisma.foodItem.create({ data: { ...food } });
   console.log("Food created with id", newFood.id);

@@ -14,8 +14,9 @@ import { createFood } from "@/lib/food";
 import { UploadButton } from "@/lib/uploadthing";
 import { zodResolver } from "@hookform/resolvers/zod";
 import Image from "next/image";
-import { useState } from "react";
+import { useCallback, useState } from "react";
 import { useForm } from "react-hook-form";
+import { toast } from "sonner";
 import { z } from "zod";
 
 const foodFormSchema = z.object({
@@ -25,14 +26,8 @@ const foodFormSchema = z.object({
   imageUrl: z.string().url(),
 });
 
-// 2. Define a submit handler.
-function onSubmit(values: z.infer<typeof foodFormSchema>) {
-  createFood(values);
-}
-
 export function FoodForm() {
   const [imageName, setImageName] = useState<string>("");
-  // 1. Define your form.
   const form = useForm<z.infer<typeof foodFormSchema>>({
     resolver: zodResolver(foodFormSchema),
     defaultValues: {
@@ -42,6 +37,21 @@ export function FoodForm() {
       imageUrl: "",
     },
   });
+
+  const onSubmit = useCallback(
+    async (values: z.infer<typeof foodFormSchema>) => {
+      await createFood(values)
+        .then(() => {
+          form.reset(form.formState.defaultValues);
+          setImageName("");
+          toast.success(`บันทึก "${values.name}" สำเร็จ`);
+        })
+        .catch((e) => {
+          toast.error(`บันทึก "${values.name}" ล้มเหลว ${e}`);
+        });
+    },
+    [form]
+  );
 
   return (
     <Form {...form}>
@@ -76,7 +86,10 @@ export function FoodForm() {
                     onClientUploadComplete={([completedFile]) => {
                       form.setValue("imageUrl", completedFile.ufsUrl);
                       setImageName(completedFile.name);
-                      console.log("ufsUrl", completedFile.ufsUrl);
+                      toast.success("อัปโหลดรูปภาพสำเร็จ");
+                    }}
+                    onUploadError={(e) => {
+                      toast.error(`${e}`);
                     }}
                   />
                   <FormMessage />
@@ -126,8 +139,16 @@ export function FoodForm() {
             </FormItem>
           )}
         />
-
-        <Button type="submit">บันทึก</Button>
+        <Button
+          type="submit"
+          disabled={
+            form.getValues().name === "" ||
+            form.getValues().category === "" ||
+            form.getValues().imageUrl === ""
+          }
+        >
+          บันทึก
+        </Button>
       </form>
     </Form>
   );
