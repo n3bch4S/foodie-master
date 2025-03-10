@@ -433,10 +433,10 @@ model AddOns {
 }
 
 model FoodItem {
-  id          String  @id @default(uuid())
-  name        String
-  description String?
-  price       Decimal
-  imageLink   String?
-  isActive    Boolean @default(true)
+  id       String  @id @default(uuid())
+  name     String
+  category String
+  price    Decimal
+  imageUrl String?
+  isActive Boolean @default(true)
 }

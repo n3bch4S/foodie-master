@@ -7,8 +7,8 @@ export default async function Food() {
   const foodData = await fetchAllFood();
 
   return (
-    <div className="container bg-slate-200 flex flex-col h-screen text-center">
-      <div className="bg-slate-800 flex justify-end p-4">
+    <div className="container flex flex-col h-screen text-center">
+      <div className="flex justify-end p-4">
         <CreateForm />
       </div>
       <div className="bg-slate-950 h-full p-4">

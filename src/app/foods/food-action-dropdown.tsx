@@ -8,16 +8,16 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { deleteFood, Food } from "@/lib/food";
+import { deleteFood, FoodDetail } from "@/lib/food";
 import { Row, Table } from "@tanstack/react-table";
 import React from "react";
 
-async function removeFood(id: string, table: Table<Food>): Promise<void> {
+async function removeFood(id: string, table: Table<FoodDetail>): Promise<void> {
   await deleteFood(id).then(() => 0);
 }
 
 type ActionDropdownProps = {
-  row: Row<Food>;
+  row: Row<FoodDetail>;
 };
 
 export function FoodActionDropdown({ row }: ActionDropdownProps) {

@@ -1,7 +1,7 @@
 "use client";
 
 import { Column, ColumnDef } from "@tanstack/react-table";
-import { Food } from "@/lib/food";
+import { FoodDetail } from "@/lib/food";
 import Image from "next/image";
 import React from "react";
 import { AspectRatio } from "@/components/ui/aspect-ratio";
@@ -10,7 +10,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 
 type HeaderCellProps = {
-  column: Column<Food>;
+  column: Column<FoodDetail>;
   columnType: React.HTMLInputTypeAttribute;
   children: React.ReactNode;
 };
@@ -43,20 +43,20 @@ function ImageCell({ url }: { url?: string }) {
   );
 }
 
-export const foodColumns: ColumnDef<Food>[] = [
+export const foodColumns: ColumnDef<FoodDetail>[] = [
   {
     id: "action",
     cell: ({ row }) => <FoodActionDropdown row={row} />,
   },
   {
-    id: "url",
-    accessorFn: ({ url }) => url,
+    id: "imageUrl",
+    accessorFn: ({ imageUrl }) => imageUrl,
     header: ({ column }) => (
       <HeaderCell column={column} columnType="hidden">
         รูป
       </HeaderCell>
     ),
-    cell: ({ row }) => <ImageCell url={row.original.url} />,
+    cell: ({ row }) => <ImageCell url={row.original.imageUrl} />,
   },
   {
     id: "name",

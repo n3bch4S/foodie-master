@@ -1,21 +1,25 @@
+"use server";
+
+import { PrismaClient } from "@prisma/client";
+
 export type Food = {
-  id: string;
   name: string;
   category: string;
   price: number;
-  url?: string;
+  imageUrl?: string;
 };
+export type FoodDetail = Food & { id: string };
 
-type FoodNoId = Omit<Food, "id">;
+const prisma = new PrismaClient();
 
-export async function createFood(food: FoodNoId): Promise<void> {
-  console.log(`Creating food...`);
-  const newFood: Food = { ...food, id: "-1" };
-  console.log(`Food created with id '${newFood.id}'`);
+export async function createFood(food: Food) {
+  console.log("Creating food", food);
+  const newFood = await prisma.foodItem.create({ data: { ...food } });
+  console.log("Food created with id", newFood.id);
 }
 
-export async function fetchFood(id: string): Promise<Food> {
-  function getFood(foods: Food[]): Food | undefined {
+export async function fetchFood(id: string): Promise<FoodDetail> {
+  function getFood(foods: FoodDetail[]): FoodDetail | undefined {
     return foods.find((food) => food.id === id);
   }
 
@@ -33,7 +37,7 @@ export async function fetchFood(id: string): Promise<Food> {
   });
 }
 
-export async function fetchAllFood(): Promise<Food[]> {
+export async function fetchAllFood(): Promise<FoodDetail[]> {
   console.log("Fetching all foods...");
   console.log("Done fetching all foods");
   return [
@@ -42,7 +46,7 @@ export async function fetchAllFood(): Promise<Food[]> {
       name: "โจ๊ก",
       category: "จานหลัก",
       price: 50,
-      url: "https://www.centralworld.co.th/storage/stores/K/kfc.jpg",
+      imageUrl: "https://www.centralworld.co.th/storage/stores/K/kfc.jpg",
     },
     { id: "2", name: "กะเพรา", category: "จานหลัก", price: 59 },
     { id: "3", name: "ก๋วยเตี๋ยว", category: "จานหลัก", price: 55 },
@@ -57,14 +61,14 @@ export async function fetchAllFood(): Promise<Food[]> {
   ];
 }
 
-export async function editFood(id: string, newFood: FoodNoId): Promise<void> {
+export async function editFood(id: string, newFood: Food): Promise<void> {
   console.log(`Editing food '${id}'...`);
 
-  function updateFood(foods: Food[]): void {
+  function updateFood(foods: FoodDetail[]): void {
     foods.map((food) => {
       if (food.id === id) {
         console.log(`Found food '${id}', updating...`);
-        const editedFood: Food = { ...newFood, id };
+        const editedFood: FoodDetail = { ...newFood, id };
         console.log(`Updated food '${id}'`);
         return editedFood;
       }

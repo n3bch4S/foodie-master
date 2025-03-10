@@ -5,12 +5,12 @@ import {
   PaginationItem,
 } from "@/components/ui/pagination";
 import { Table } from "@tanstack/react-table";
-import { Food } from "@/lib/food";
+import { FoodDetail } from "@/lib/food";
 import { Button } from "@/components/ui/button";
 
 type PaginationBarProps<TData> = { table: Table<TData> };
 
-export function PaginationBar({ table }: PaginationBarProps<Food>) {
+export function PaginationBar({ table }: PaginationBarProps<FoodDetail>) {
   return (
     <Pagination>
       <PaginationContent>

@@ -9,7 +9,7 @@ import {
   getSortedRowModel,
   useReactTable,
 } from "@tanstack/react-table";
-import { Food } from "@/lib/food";
+import { FoodDetail } from "@/lib/food";
 import {
   Table,
   TableBody,
@@ -27,8 +27,8 @@ type TableModel<TData> = {
   data: TData[];
 };
 
-export function DataTable({ columns, data }: TableModel<Food>) {
-  const table = useReactTable<Food>({
+export function DataTable({ columns, data }: TableModel<FoodDetail>) {
+  const table = useReactTable<FoodDetail>({
     data,
     columns,
     getCoreRowModel: getCoreRowModel(),

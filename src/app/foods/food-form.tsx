@@ -10,29 +10,37 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import { createFood } from "@/lib/food";
 import { UploadButton } from "@/lib/uploadthing";
 import { zodResolver } from "@hookform/resolvers/zod";
+import Image from "next/image";
+import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 
-const formSchema = z.object({
+const foodFormSchema = z.object({
   name: z.string(),
   category: z.string(),
   price: z.coerce.number().nonnegative(),
-  image: z.string().url(),
+  imageUrl: z.string().url(),
 });
 
 // 2. Define a submit handler.
-function onSubmit(values: z.infer<typeof formSchema>) {
-  // Do something with the form values.
-  // ✅ This will be type-safe and validated.
-  console.log(values);
+function onSubmit(values: z.infer<typeof foodFormSchema>) {
+  createFood(values);
 }
 
 export function FoodForm() {
+  const [imageName, setImageName] = useState<string>("");
   // 1. Define your form.
-  const form = useForm<z.infer<typeof formSchema>>({
-    resolver: zodResolver(formSchema),
+  const form = useForm<z.infer<typeof foodFormSchema>>({
+    resolver: zodResolver(foodFormSchema),
+    defaultValues: {
+      name: "",
+      category: "",
+      price: 0,
+      imageUrl: "",
+    },
   });
 
   return (
@@ -42,33 +50,38 @@ export function FoodForm() {
         className="flex flex-col gap-4"
       >
         <div className="flex gap-4">
-          <div className="size-32 rounded border-4 border-slate-400 border-dashed" />
+          {form.getValues("imageUrl") ? (
+            <Image
+              src={form.getValues("imageUrl")}
+              alt="food image"
+              width={64}
+              height={64}
+              className="size-32"
+            />
+          ) : (
+            <div className="size-32 rounded border-4 border-slate-200 border-dashed">
+              {form.getValues().imageUrl}
+            </div>
+          )}
           <div className="flex flex-col gap-4">
             <FormField
               control={form.control}
-              name="image"
-              render={({ field }) => (
+              name="imageUrl"
+              render={() => (
                 <FormItem>
-                  <FormLabel>รูป</FormLabel>
-                  <FormControl>
-                    <Input type="file" {...field} />
-                  </FormControl>
+                  <FormLabel>อัปโหลดรูป</FormLabel>
+                  <div>{imageName}</div>
+                  <UploadButton
+                    endpoint={"foodImage"}
+                    onClientUploadComplete={([completedFile]) => {
+                      form.setValue("imageUrl", completedFile.ufsUrl);
+                      setImageName(completedFile.name);
+                      console.log("ufsUrl", completedFile.ufsUrl);
+                    }}
+                  />
                   <FormMessage />
                 </FormItem>
               )}
-            />
-            <Button>อัปโหลดรูป</Button>
-            <UploadButton
-              endpoint={"foodImage"}
-              onClientUploadComplete={(res) => {
-                // Do something with the response
-                console.log("Files: ", res);
-                alert("Upload Completed");
-              }}
-              onUploadError={(error: Error) => {
-                // Do something with the error.
-                alert(`ERROR! ${error.message}`);
-              }}
             />
           </div>
         </div>
@@ -80,7 +93,7 @@ export function FoodForm() {
               <FormItem>
                 <FormLabel>ชื่อ</FormLabel>
                 <FormControl>
-                  <Input type="text" placeholder="ส้มตำ..." {...field} />
+                  <Input {...field} placeholder="ส้มตำ..." />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -93,7 +106,7 @@ export function FoodForm() {
               <FormItem>
                 <FormLabel>ประเภท</FormLabel>
                 <FormControl>
-                  <Input placeholder="จานหลัก..." {...field} />
+                  <Input {...field} placeholder="จานหลัก..." />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -107,7 +120,7 @@ export function FoodForm() {
             <FormItem>
               <FormLabel>ราคา</FormLabel>
               <FormControl>
-                <Input placeholder="79..." {...field} />
+                <Input {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>
