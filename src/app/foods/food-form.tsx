@@ -69,9 +69,7 @@ export function FoodForm() {
               className="size-32"
             />
           ) : (
-            <div className="size-32 rounded border-4 border-slate-200 border-dashed">
-              {form.getValues().imageUrl}
-            </div>
+            <div className="size-32 rounded border-4 border-slate-200 border-dashed" />
           )}
           <div className="flex flex-col gap-4">
             <FormField

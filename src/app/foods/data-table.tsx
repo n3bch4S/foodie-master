@@ -1,7 +1,6 @@
 "use client";
 
 import {
-  ColumnDef,
   flexRender,
   getCoreRowModel,
   getFilteredRowModel,
@@ -9,7 +8,6 @@ import {
   getSortedRowModel,
   useReactTable,
 } from "@tanstack/react-table";
-import { FoodDetail } from "@/lib/food";
 import {
   Table,
   TableBody,
@@ -20,17 +18,17 @@ import {
 } from "@/components/ui/table";
 import { PaginationBar } from "./paginationBar";
 import React from "react";
-import { CreateForm } from "./create-food-dialog";
+import { FoodDetail } from "@/lib/food";
+import { foodColumns } from "./columns";
 
-type TableModel<TData> = {
-  columns: ColumnDef<TData>[];
-  data: TData[];
+type DataTableProps = {
+  data: FoodDetail[];
 };
 
-export function DataTable({ columns, data }: TableModel<FoodDetail>) {
+export function DataTable({ data }: DataTableProps) {
   const table = useReactTable<FoodDetail>({
     data,
-    columns,
+    columns: foodColumns,
     getCoreRowModel: getCoreRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
     getSortedRowModel: getSortedRowModel(),
@@ -38,35 +36,36 @@ export function DataTable({ columns, data }: TableModel<FoodDetail>) {
   });
 
   return (
-    <div>
-      <CreateForm />
-      <Table>
-        <TableHeader>
-          {table.getHeaderGroups().map((headerGroup) => (
-            <TableRow key={headerGroup.id}>
-              {headerGroup.headers.map((header) => (
-                <TableHead key={header.id}>
-                  {flexRender(
-                    header.column.columnDef.header,
-                    header.getContext()
-                  )}
-                </TableHead>
-              ))}
-            </TableRow>
-          ))}
-        </TableHeader>
-        <TableBody>
-          {table.getRowModel().rows.map((row) => (
-            <TableRow key={row.id}>
-              {row.getVisibleCells().map((cell) => (
-                <TableCell key={cell.id}>
-                  {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                </TableCell>
-              ))}
-            </TableRow>
-          ))}
-        </TableBody>
-      </Table>
+    <div className="flex flex-col gap-4 h-full">
+      <div className="flex-1 py-4">
+        <Table>
+          <TableHeader>
+            {table.getHeaderGroups().map((headerGroup) => (
+              <TableRow key={headerGroup.id}>
+                {headerGroup.headers.map((header) => (
+                  <TableHead key={header.id}>
+                    {flexRender(
+                      header.column.columnDef.header,
+                      header.getContext()
+                    )}
+                  </TableHead>
+                ))}
+              </TableRow>
+            ))}
+          </TableHeader>
+          <TableBody>
+            {table.getRowModel().rows.map((row) => (
+              <TableRow key={row.id}>
+                {row.getVisibleCells().map((cell) => (
+                  <TableCell key={cell.id}>
+                    {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                  </TableCell>
+                ))}
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+      </div>
       <PaginationBar table={table} />
     </div>
   );

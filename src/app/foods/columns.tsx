@@ -1,13 +1,13 @@
 "use client";
 
 import { Column, ColumnDef } from "@tanstack/react-table";
-import { FoodDetail } from "@/lib/food";
 import Image from "next/image";
 import React from "react";
 import { AspectRatio } from "@/components/ui/aspect-ratio";
 import { FoodActionDropdown } from "./food-action-dropdown";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { FoodDetail } from "@/lib/food";
 
 type HeaderCellProps = {
   column: Column<FoodDetail>;
@@ -22,7 +22,6 @@ function HeaderCell({ column, columnType, children }: HeaderCellProps) {
       <Button onClick={() => column.toggleSorting()}>เรียง</Button>
       <Input
         type={columnType}
-        placeholder="ค้นหา"
         onChange={({ target }) => column.setFilterValue(target.value)}
       />
     </div>
@@ -44,10 +43,6 @@ function ImageCell({ url }: { url?: string }) {
 }
 
 export const foodColumns: ColumnDef<FoodDetail>[] = [
-  {
-    id: "action",
-    cell: ({ row }) => <FoodActionDropdown row={row} />,
-  },
   {
     id: "imageUrl",
     accessorFn: ({ imageUrl }) => imageUrl,
@@ -87,5 +82,9 @@ export const foodColumns: ColumnDef<FoodDetail>[] = [
       </HeaderCell>
     ),
     cell: ({ row }) => <TextCell>{row.original.price}</TextCell>,
+  },
+  {
+    id: "action",
+    cell: ({ row }) => <FoodActionDropdown row={row} />,
   },
 ];

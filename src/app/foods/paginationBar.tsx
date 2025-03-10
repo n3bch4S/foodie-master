@@ -12,15 +12,15 @@ type PaginationBarProps<TData> = { table: Table<TData> };
 
 export function PaginationBar({ table }: PaginationBarProps<FoodDetail>) {
   return (
-    <Pagination>
-      <PaginationContent>
+    <Pagination className="py-4 flex-none">
+      <PaginationContent className="flex gap-4">
         <PaginationItem>
           <Button
             variant={"outline"}
             onClick={() => table.previousPage()}
             disabled={!table.getCanPreviousPage()}
           >
-            ย้อนกลับ
+            ก่อนหน้า
           </Button>
         </PaginationItem>
         <PaginationItem>
@@ -28,7 +28,7 @@ export function PaginationBar({ table }: PaginationBarProps<FoodDetail>) {
             onClick={() => table.nextPage()}
             disabled={!table.getCanNextPage()}
           >
-            ต่อไป
+            ถัดไป
           </Button>
         </PaginationItem>
       </PaginationContent>

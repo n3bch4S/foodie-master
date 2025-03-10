@@ -12,10 +12,15 @@ export type FoodDetail = Food & { id: string };
 
 const prisma = new PrismaClient();
 
-export async function createFood(food: Food): Promise<void> {
+export async function createFood(food: Food): Promise<FoodDetail> {
   console.log("Creating food", food);
   const newFood = await prisma.foodItem.create({ data: { ...food } });
   console.log("Food created with id", newFood.id);
+  return {
+    ...newFood,
+    price: newFood.price.toNumber(),
+    imageUrl: newFood.imageUrl ?? undefined,
+  };
 }
 
 export async function fetchFood(id: string): Promise<FoodDetail> {
@@ -25,7 +30,7 @@ export async function fetchFood(id: string): Promise<FoodDetail> {
 
   return new Promise(async (resolve, reject) => {
     console.log(`Fetching food '${id}'...`);
-    const foundFood = await fetchAllFood().then(getFood);
+    const foundFood = await fetchFoods().then(getFood);
     if (foundFood) {
       console.log(`Food '${id}' found`);
       resolve(foundFood);
@@ -37,28 +42,33 @@ export async function fetchFood(id: string): Promise<FoodDetail> {
   });
 }
 
-export async function fetchAllFood(): Promise<FoodDetail[]> {
-  console.log("Fetching all foods...");
-  console.log("Done fetching all foods");
-  return [
-    {
-      id: "1",
-      name: "โจ๊ก",
-      category: "จานหลัก",
-      price: 50,
-      imageUrl: "https://www.centralworld.co.th/storage/stores/K/kfc.jpg",
-    },
-    { id: "2", name: "กะเพรา", category: "จานหลัก", price: 59 },
-    { id: "3", name: "ก๋วยเตี๋ยว", category: "จานหลัก", price: 55 },
-    { id: "4", name: "บะหมี่", category: "จานหลัก", price: 55 },
-    { id: "5", name: "หมูกรอบ", category: "จานรอง", price: 129 },
-    { id: "6", name: "เล้ง", category: "จานรอง", price: 199 },
-    { id: "7", name: "ส้มตำ", category: "จานหลัก", price: 59 },
-    { id: "8", name: "ปอเปี๊ยะทอด", category: "ของว่าง", price: 199 },
-    { id: "9", name: "ไก่ย่าง", category: "กับข้าว", price: 79 },
-    { id: "10", name: "ข้าวเหนียว", category: "อื่นๆ", price: 10 },
-    { id: "11", name: "น้ำเปล่า", category: "เครื่องดื่ม", price: 15 },
-  ];
+export async function fetchFoods(): Promise<FoodDetail[]> {
+  console.log("Fetching foods");
+  const foods = (await prisma.foodItem.findMany()).map((food) => ({
+    ...food,
+    price: food.price.toNumber(),
+    imageUrl: food.imageUrl ?? undefined,
+  }));
+  console.log(`Fetched ${foods.length} foods`);
+  return foods;
+  // return [
+  //   {
+  //     name: "โจ๊ก",
+  //     category: "จานหลัก",
+  //     price: 50,
+  //     imageUrl: "https://www.centralworld.co.th/storage/stores/K/kfc.jpg",
+  //   },
+  //   { name: "กะเพรา", category: "จานหลัก", price: 59 },
+  //   { name: "ก๋วยเตี๋ยว", category: "จานหลัก", price: 55 },
+  //   { name: "บะหมี่", category: "จานหลัก", price: 55 },
+  //   { name: "หมูกรอบ", category: "จานรอง", price: 129 },
+  //   { name: "เล้ง", category: "จานรอง", price: 199 },
+  //   { name: "ส้มตำ", category: "จานหลัก", price: 59 },
+  //   { name: "ปอเปี๊ยะทอด", category: "ของว่าง", price: 199 },
+  //   { name: "ไก่ย่าง", category: "กับข้าว", price: 79 },
+  //   { name: "ข้าวเหนียว", category: "อื่นๆ", price: 10 },
+  //   { name: "น้ำเปล่า", category: "เครื่องดื่ม", price: 15 },
+  // ];
 }
 
 export async function editFood(id: string, newFood: Food): Promise<void> {
@@ -75,13 +85,13 @@ export async function editFood(id: string, newFood: Food): Promise<void> {
       return food;
     });
   }
-  await fetchAllFood().then(updateFood);
+  await fetchFoods().then(updateFood);
 }
 
 export async function deleteFood(id: string): Promise<void> {
   return new Promise(async (resolve, reject) => {
     console.log(`Deleting food '${id}'...`);
-    const foods = await fetchAllFood();
+    const foods = await fetchFoods();
     const foundFood = foods.find((food) => food.id === id);
     if (foundFood) {
       console.log(`Delete food '${id}' succussfully`);

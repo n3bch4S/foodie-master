@@ -1,5 +1,6 @@
 "use client";
 
+import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -23,7 +24,9 @@ type ActionDropdownProps = {
 export function FoodActionDropdown({ row }: ActionDropdownProps) {
   return (
     <DropdownMenu>
-      <DropdownMenuTrigger>เพิ่มเติม</DropdownMenuTrigger>
+      <DropdownMenuTrigger asChild>
+        <Button variant={"ghost"}>เพิ่มเติม</Button>
+      </DropdownMenuTrigger>
       <DropdownMenuContent>
         <DropdownMenuLabel>My Account</DropdownMenuLabel>
         <DropdownMenuSeparator />
