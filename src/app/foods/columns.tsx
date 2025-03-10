@@ -3,7 +3,6 @@
 import { Column, ColumnDef } from "@tanstack/react-table";
 import Image from "next/image";
 import React from "react";
-import { AspectRatio } from "@/components/ui/aspect-ratio";
 import { FoodActionDropdown } from "./food-action-dropdown";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -19,7 +18,9 @@ function HeaderCell({ column, columnType, children }: HeaderCellProps) {
   return (
     <div>
       {children}
-      <Button onClick={() => column.toggleSorting()}>เรียง</Button>
+      <Button onClick={() => column.toggleSorting()} variant={"outline"}>
+        เรียง
+      </Button>
       <Input
         type={columnType}
         onChange={({ target }) => column.setFilterValue(target.value)}
@@ -34,9 +35,13 @@ function TextCell({ children }: { children: React.ReactNode }) {
 
 function ImageCell({ url }: { url?: string }) {
   return url ? (
-    <AspectRatio ratio={16 / 9}>
-      <Image src={url} alt="รูปอาหาร" fill sizes="10vw" priority />
-    </AspectRatio>
+    <Image
+      src={url}
+      alt="รูปอาหาร"
+      width={128}
+      height={128}
+      className="rounded"
+    />
   ) : (
     <div>ไม่พบรูปภาพ</div>
   );

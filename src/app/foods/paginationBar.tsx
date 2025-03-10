@@ -25,6 +25,7 @@ export function PaginationBar({ table }: PaginationBarProps<FoodDetail>) {
         </PaginationItem>
         <PaginationItem>
           <Button
+            variant={"outline"}
             onClick={() => table.nextPage()}
             disabled={!table.getCanNextPage()}
           >
