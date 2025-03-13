@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { FoodDetail } from "@/lib/food";
 import { ArrowDownUp } from "lucide-react";
+import { getUtUrl } from "./utils";
 
 type HeaderCellProps = {
   column: Column<FoodDetail>;
@@ -70,8 +71,8 @@ function ImageCell({ url }: { url?: string }) {
 
 export const foodColumns: ColumnDef<FoodDetail>[] = [
   {
-    id: "imageUrl",
-    accessorFn: ({ imageUrl }) => imageUrl,
+    id: "imageKey",
+    accessorFn: ({ imageKey }) => imageKey,
     header: ({ column }) => (
       <HeaderCell
         column={column}
@@ -82,7 +83,9 @@ export const foodColumns: ColumnDef<FoodDetail>[] = [
         รูป
       </HeaderCell>
     ),
-    cell: ({ row }) => <ImageCell url={row.original.imageUrl} />,
+    cell: ({ row }) => (
+      <ImageCell url={getUtUrl(row.original.imageKey ?? "")} />
+    ),
   },
   {
     id: "name",

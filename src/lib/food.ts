@@ -1,89 +1,113 @@
 "use server";
 
+import { currentUser } from "@clerk/nextjs/server";
 import { PrismaClient } from "@prisma/client";
+import { Decimal } from "@prisma/client/runtime/library";
+import { UTApi } from "uploadthing/server";
 
-export type Food = {
+export type FoodDetail = {
+  id: string;
   name: string;
   category: string;
   price: number;
-  imageUrl?: string;
+  imageKey?: string;
+  isActive: boolean;
+  ownerId: string;
 };
-export type FoodDetail = Food & { id: string };
+
+export type Food = Omit<FoodDetail, "id" | "ownerId">;
+type UndefToNull<T> = T extends undefined ? null : T;
+type NumToDec<T> = T extends number ? Decimal : T;
+type ToDb<T> = NumToDec<T> extends T ? UndefToNull<T> : NumToDec<T>;
+type DbFood = {
+  [Property in keyof FoodDetail]-?: ToDb<FoodDetail[Property]>;
+};
 
 const prisma = new PrismaClient();
+const utapi = new UTApi();
 
-export async function createFood(food: Food): Promise<FoodDetail> {
-  console.log("Creating food", food);
-  const newFood = await prisma.foodItem.create({ data: { ...food } });
-  console.log("Food created with id", newFood.id);
+function transformFood(dbFood: DbFood): FoodDetail {
   return {
-    ...newFood,
-    price: newFood.price.toNumber(),
-    imageUrl: newFood.imageUrl ?? undefined,
+    ...dbFood,
+    price: dbFood.price.toNumber(),
+    imageKey: dbFood.imageKey ?? undefined,
   };
 }
 
-export async function fetchFood(id: string): Promise<FoodDetail> {
-  function getFood(foods: FoodDetail[]): FoodDetail | undefined {
-    return foods.find((food) => food.id === id);
-  }
+export async function createFood(food: Food): Promise<FoodDetail> {
+  console.log("Creating food", food);
+  const user = await currentUser().catch((error) =>
+    console.error(`Failed to get current user `, error)
+  );
+  if (!user) return Promise.reject(`ไม่พบผู้ใช้`);
 
-  return new Promise(async (resolve, reject) => {
-    console.log(`Fetching food '${id}'...`);
-    const foundFood = await fetchFoods().then(getFood);
-    if (foundFood) {
-      console.log(`Food '${id}' found`);
-      resolve(foundFood);
-    } else {
-      const errorText = `Food '${id}' not found`;
-      console.error(errorText);
-      reject(errorText);
-    }
-  });
+  const newFood = await prisma.foodItem
+    .create({ data: { ...food, ownerId: user.id } })
+    .catch((error) => {
+      console.error(`Failed to create food`, error);
+      return null;
+    });
+  if (!newFood) return Promise.reject(`ไม่สามารถสร้างอาหาร "${food.name}" ได้`);
+
+  console.log("Food created with id ", newFood.id);
+  return transformFood(newFood);
 }
 
 export async function fetchFoods(): Promise<FoodDetail[]> {
   console.log("Fetching foods");
-  const foods = (await prisma.foodItem.findMany()).map((food) => ({
-    ...food,
-    price: food.price.toNumber(),
-    imageUrl: food.imageUrl ?? undefined,
-  }));
-  console.log(`Fetched ${foods.length} foods`);
-  return foods;
+  const user = await currentUser().catch((error) =>
+    console.error(`Failed to get current user `, error)
+  );
+  if (!user) return Promise.reject(`ไม่พบผู้ใช้`);
+
+  const foods = await prisma.foodItem
+    .findMany({ where: { ownerId: user.id } })
+    .catch((error) => {
+      console.error(`Failed to fetch foods `, error);
+      return null;
+    });
+  if (!foods) return Promise.reject(`ไม่สามารถโหลดรายการอาหารได้`);
+
+  console.log(`Fetched foods successfully with length `, foods.length);
+  return foods.map(transformFood);
 }
 
-export async function editFood(id: string, newFood: Food): Promise<void> {
-  console.log(`Editing food '${id}'...`);
+export async function fetchFood(id: string): Promise<FoodDetail> {
+  console.log(`Fetching food `, id);
+  const food = await prisma.foodItem
+    .findUnique({ where: { id } })
+    .catch((error) => console.error(`Failed to fetch food `, error));
+  if (!food) return Promise.reject(`ไม่พบอาหาร`);
 
-  function updateFood(foods: FoodDetail[]): void {
-    foods.map((food) => {
-      if (food.id === id) {
-        console.log(`Found food '${id}', updating...`);
-        const editedFood: FoodDetail = { ...newFood, id };
-        console.log(`Updated food '${id}'`);
-        return editedFood;
-      }
-      return food;
-    });
-  }
-  await fetchFoods().then(updateFood);
+  console.log(`Fetch food successfully `, food);
+  return transformFood(food);
+}
+
+export async function editFood(id: string, newFood: Food): Promise<FoodDetail> {
+  console.log(`Editing food `, id);
+  const updatedFood = await prisma.foodItem
+    .update({ where: { id }, data: newFood })
+    .catch((error) => console.error(`Failed to update food `, error));
+  if (!updatedFood) return Promise.reject(`ไม่สามารถแก้ไขอาหารได้`);
+
+  console.log(`Successfully edit food `, updatedFood);
+  return transformFood(updatedFood);
 }
 
 export async function deleteFood(id: string): Promise<FoodDetail> {
-  console.log(`Deleting food '${id}'...`);
+  console.log(`Deleting food `, id);
   const deletedFood = await prisma.foodItem
     .delete({ where: { id } })
-    .then((food) => ({
-      ...food,
-      price: food.price.toNumber(),
-      imageUrl: food.imageUrl ?? undefined,
-    }))
-    .catch((error) => {
-      console.error(`Failed to delete food "${id}"`, error);
-      return null;
-    });
+    .catch((error) => console.error(`Failed to delete food `, error));
   if (!deletedFood) return Promise.reject(`ลบอาหารไม่สำเร็จ`);
+
+  if (deletedFood.imageKey) {
+    console.log(`Deleting food image `, deletedFood.imageKey);
+    await utapi
+      .deleteFiles(deletedFood.imageKey)
+      .catch((error) => console.error(`Failed to delete food image `, error));
+  }
+
   console.log(`Successfully delete`, deletedFood);
-  return deletedFood;
+  return transformFood(deletedFood);
 }

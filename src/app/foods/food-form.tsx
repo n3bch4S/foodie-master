@@ -19,30 +19,25 @@ import { useCallback, useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { z } from "zod";
+import { getUtUrl } from "./utils";
 
 const foodFormSchema = z.object({
   name: z.string(),
   category: z.string(),
   price: z.coerce.number().nonnegative(),
-  imageUrl: z.string().url(),
+  imageKey: z.string().optional(),
 });
 
 export function FoodForm() {
   const [imageName, setImageName] = useState<string>("");
   const form = useForm<z.infer<typeof foodFormSchema>>({
     resolver: zodResolver(foodFormSchema),
-    defaultValues: {
-      name: "",
-      category: "",
-      price: 0,
-      imageUrl: "",
-    },
   });
   const router = useRouter();
 
   const onSubmit = useCallback(
     async (values: z.infer<typeof foodFormSchema>) => {
-      await createFood(values)
+      await createFood({ ...values, isActive: true })
         .then(() => {
           form.reset(form.formState.defaultValues);
           setImageName("");
@@ -63,9 +58,9 @@ export function FoodForm() {
         className="flex flex-col gap-4"
       >
         <div className="flex gap-4">
-          {form.getValues("imageUrl") ? (
+          {form.getValues("imageKey") ? (
             <Image
-              src={form.getValues("imageUrl")}
+              src={getUtUrl(form.getValues().imageKey ?? "")}
               alt="food image"
               width={64}
               height={64}
@@ -77,7 +72,7 @@ export function FoodForm() {
           <div className="flex flex-col gap-4">
             <FormField
               control={form.control}
-              name="imageUrl"
+              name="imageKey"
               render={() => (
                 <FormItem>
                   <FormLabel>อัปโหลดรูป</FormLabel>
@@ -85,7 +80,7 @@ export function FoodForm() {
                   <UploadButton
                     endpoint={"foodImage"}
                     onClientUploadComplete={([completedFile]) => {
-                      form.setValue("imageUrl", completedFile.ufsUrl);
+                      form.setValue("imageKey", completedFile.key);
                       setImageName(completedFile.name);
                       toast.success("อัปโหลดรูปภาพสำเร็จ");
                     }}
@@ -147,7 +142,7 @@ export function FoodForm() {
           disabled={
             form.getValues().name === "" ||
             form.getValues().category === "" ||
-            form.getValues().imageUrl === ""
+            form.getValues().imageKey === ""
           }
         >
           บันทึก

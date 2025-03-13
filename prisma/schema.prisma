@@ -432,11 +432,20 @@ model AddOns {
   @@index([agencyId])
 }
 
+model UserII {
+  id       String     @id @default(uuid())
+  FoodItem FoodItem[]
+}
+
 model FoodItem {
   id       String  @id @default(uuid())
   name     String
   category String
   price    Decimal
-  imageUrl String?
+  imageKey String?
   isActive Boolean @default(true)
+  owner    UserII  @relation(fields: [ownerId], references: [id])
+  ownerId  String
+
+  @@index([ownerId])
 }
