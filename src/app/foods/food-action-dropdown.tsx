@@ -10,18 +10,17 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { deleteFood, FoodDetail } from "@/lib/food";
-import { Row, Table } from "@tanstack/react-table";
+import { Row } from "@tanstack/react-table";
+import { useRouter } from "next/navigation";
 import React from "react";
-
-async function removeFood(id: string, table: Table<FoodDetail>): Promise<void> {
-  await deleteFood(id).then(() => 0);
-}
+import { toast } from "sonner";
 
 type ActionDropdownProps = {
   row: Row<FoodDetail>;
 };
 
 export function FoodActionDropdown({ row }: ActionDropdownProps) {
+  const router = useRouter();
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
@@ -32,7 +31,19 @@ export function FoodActionDropdown({ row }: ActionDropdownProps) {
         <DropdownMenuSeparator />
         <DropdownMenuItem>แก้ไข</DropdownMenuItem>
         <DropdownMenuItem
-          onClick={async () => await deleteFood(row.original.id)}
+          onClick={async () =>
+            await deleteFood(row.original.id)
+              .then(() => {
+                toast.success(`ลบสำเร็จ`, {
+                  description: `"${row.original.name}" ถูกลบแล้ว`,
+                });
+                router.refresh();
+              })
+              .catch((message) => {
+                if (typeof message === "string")
+                  toast.warning(`ลบไม่สำเร็จ`, { description: message });
+              })
+          }
         >
           ลบ
         </DropdownMenuItem>

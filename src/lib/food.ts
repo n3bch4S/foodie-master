@@ -51,24 +51,6 @@ export async function fetchFoods(): Promise<FoodDetail[]> {
   }));
   console.log(`Fetched ${foods.length} foods`);
   return foods;
-  // return [
-  //   {
-  //     name: "โจ๊ก",
-  //     category: "จานหลัก",
-  //     price: 50,
-  //     imageUrl: "https://www.centralworld.co.th/storage/stores/K/kfc.jpg",
-  //   },
-  //   { name: "กะเพรา", category: "จานหลัก", price: 59 },
-  //   { name: "ก๋วยเตี๋ยว", category: "จานหลัก", price: 55 },
-  //   { name: "บะหมี่", category: "จานหลัก", price: 55 },
-  //   { name: "หมูกรอบ", category: "จานรอง", price: 129 },
-  //   { name: "เล้ง", category: "จานรอง", price: 199 },
-  //   { name: "ส้มตำ", category: "จานหลัก", price: 59 },
-  //   { name: "ปอเปี๊ยะทอด", category: "ของว่าง", price: 199 },
-  //   { name: "ไก่ย่าง", category: "กับข้าว", price: 79 },
-  //   { name: "ข้าวเหนียว", category: "อื่นๆ", price: 10 },
-  //   { name: "น้ำเปล่า", category: "เครื่องดื่ม", price: 15 },
-  // ];
 }
 
 export async function editFood(id: string, newFood: Food): Promise<void> {
@@ -88,18 +70,20 @@ export async function editFood(id: string, newFood: Food): Promise<void> {
   await fetchFoods().then(updateFood);
 }
 
-export async function deleteFood(id: string): Promise<void> {
-  return new Promise(async (resolve, reject) => {
-    console.log(`Deleting food '${id}'...`);
-    const foods = await fetchFoods();
-    const foundFood = foods.find((food) => food.id === id);
-    if (foundFood) {
-      console.log(`Delete food '${id}' succussfully`);
-      resolve();
-    } else {
-      const errorText = `Food '${id} not found, cannot delete'`;
-      console.error(errorText);
-      reject(errorText);
-    }
-  });
+export async function deleteFood(id: string): Promise<FoodDetail> {
+  console.log(`Deleting food '${id}'...`);
+  const deletedFood = await prisma.foodItem
+    .delete({ where: { id } })
+    .then((food) => ({
+      ...food,
+      price: food.price.toNumber(),
+      imageUrl: food.imageUrl ?? undefined,
+    }))
+    .catch((error) => {
+      console.error(`Failed to delete food "${id}"`, error);
+      return null;
+    });
+  if (!deletedFood) return Promise.reject(`ลบอาหารไม่สำเร็จ`);
+  console.log(`Successfully delete`, deletedFood);
+  return deletedFood;
 }

@@ -14,6 +14,7 @@ import { createFood } from "@/lib/food";
 import { UploadButton } from "@/lib/uploadthing";
 import { zodResolver } from "@hookform/resolvers/zod";
 import Image from "next/image";
+import { useRouter } from "next/navigation";
 import { useCallback, useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
@@ -37,6 +38,7 @@ export function FoodForm() {
       imageUrl: "",
     },
   });
+  const router = useRouter();
 
   const onSubmit = useCallback(
     async (values: z.infer<typeof foodFormSchema>) => {
@@ -45,12 +47,13 @@ export function FoodForm() {
           form.reset(form.formState.defaultValues);
           setImageName("");
           toast.success(`บันทึก "${values.name}" สำเร็จ`);
+          router.refresh();
         })
         .catch((e) => {
           toast.error(`บันทึก "${values.name}" ล้มเหลว ${e}`);
         });
     },
-    [form]
+    [form, router]
   );
 
   return (
