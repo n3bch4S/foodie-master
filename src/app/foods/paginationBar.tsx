@@ -12,7 +12,7 @@ type PaginationBarProps<TData> = { table: Table<TData> };
 
 export function PaginationBar({ table }: PaginationBarProps<FoodDetail>) {
   return (
-    <Pagination className="py-4 flex-none">
+    <Pagination className="pb-4 flex-none">
       <PaginationContent className="flex gap-4">
         <PaginationItem>
           <Button

@@ -86,8 +86,10 @@ export function FoodForm() {
                       setImageName(completedFile.name);
                       toast.success("อัปโหลดรูปภาพสำเร็จ");
                     }}
-                    onUploadError={(e) => {
-                      toast.error(`${e}`);
+                    onUploadError={() => {
+                      toast.error(`อัปโหลดไม่สำเร็จ`, {
+                        description: "โปรดลองอีกครั้ง",
+                      });
                     }}
                   />
                   <FormMessage />

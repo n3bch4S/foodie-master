@@ -7,24 +7,44 @@ import { FoodActionDropdown } from "./food-action-dropdown";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { FoodDetail } from "@/lib/food";
+import { ArrowDownUp } from "lucide-react";
 
 type HeaderCellProps = {
   column: Column<FoodDetail>;
-  columnType: React.HTMLInputTypeAttribute;
+  inputType: React.HTMLInputTypeAttribute;
+  canSort: boolean;
+  canSearch: boolean;
   children: React.ReactNode;
 };
 
-function HeaderCell({ column, columnType, children }: HeaderCellProps) {
+function HeaderCell({
+  column,
+  inputType,
+  canSort,
+  canSearch,
+  children,
+}: HeaderCellProps) {
   return (
-    <div>
-      {children}
-      <Button onClick={() => column.toggleSorting()} variant={"outline"}>
-        เรียง
-      </Button>
-      <Input
-        type={columnType}
-        onChange={({ target }) => column.setFilterValue(target.value)}
-      />
+    <div className="flex flex-col justify-center items-center h-24">
+      <div className="flex justify-center items-center gap-2">
+        {children}
+        {canSort ? (
+          <Button
+            size={"icon"}
+            onClick={() => column.toggleSorting()}
+            variant={"outline"}
+          >
+            <ArrowDownUp size={16} strokeWidth={2} />
+          </Button>
+        ) : null}
+      </div>
+
+      {canSearch ? (
+        <Input
+          type={"text"}
+          onChange={({ target }) => column.setFilterValue(target.value)}
+        />
+      ) : null}
     </div>
   );
 }
@@ -41,6 +61,7 @@ function ImageCell({ url }: { url?: string }) {
       width={128}
       height={128}
       className="rounded"
+      priority
     />
   ) : (
     <div>ไม่พบรูปภาพ</div>
@@ -52,7 +73,12 @@ export const foodColumns: ColumnDef<FoodDetail>[] = [
     id: "imageUrl",
     accessorFn: ({ imageUrl }) => imageUrl,
     header: ({ column }) => (
-      <HeaderCell column={column} columnType="hidden">
+      <HeaderCell
+        column={column}
+        canSort={false}
+        canSearch={false}
+        inputType="hidden"
+      >
         รูป
       </HeaderCell>
     ),
@@ -62,7 +88,12 @@ export const foodColumns: ColumnDef<FoodDetail>[] = [
     id: "name",
     accessorFn: ({ name }) => name,
     header: ({ column }) => (
-      <HeaderCell column={column} columnType="search">
+      <HeaderCell
+        column={column}
+        canSort={true}
+        canSearch={true}
+        inputType="search"
+      >
         ชื่อ
       </HeaderCell>
     ),
@@ -72,7 +103,12 @@ export const foodColumns: ColumnDef<FoodDetail>[] = [
     id: "category",
     accessorFn: ({ category }) => category,
     header: ({ column }) => (
-      <HeaderCell column={column} columnType="search">
+      <HeaderCell
+        column={column}
+        canSort={true}
+        canSearch={true}
+        inputType="search"
+      >
         ประเภท
       </HeaderCell>
     ),
@@ -82,7 +118,12 @@ export const foodColumns: ColumnDef<FoodDetail>[] = [
     id: "price",
     accessorFn: ({ price }) => price,
     header: ({ column }) => (
-      <HeaderCell column={column} columnType="hidden">
+      <HeaderCell
+        column={column}
+        canSort={true}
+        canSearch={false}
+        inputType="hidden"
+      >
         ราคา
       </HeaderCell>
     ),
