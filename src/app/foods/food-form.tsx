@@ -10,7 +10,7 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { createFood } from "@/lib/food";
+import { createFood, FoodDetail } from "@/lib/food";
 import { UploadButton } from "@/lib/uploadthing";
 import { zodResolver } from "@hookform/resolvers/zod";
 import Image from "next/image";
@@ -41,7 +41,7 @@ export function FoodForm() {
         .then(() => {
           form.reset(form.formState.defaultValues);
           setImageName("");
-          toast.success(`บันทึก "${values.name}" สำเร็จ`);
+          toast.success(`บันทึกอาหารสำเร็จ`, { description: values.name });
           router.refresh();
         })
         .catch((e) => {

@@ -6,8 +6,16 @@ import React from "react";
 import { FoodActionDropdown } from "./food-action-dropdown";
 import { Button } from "@/components/ui/button";
 import { FoodDetail } from "@/lib/food";
-import { ArrowDownUp } from "lucide-react";
+import { ArrowDownUp, MoreHorizontal } from "lucide-react";
 import { getUtUrl } from "./utils";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 type HeaderCellProps = {
   column: Column<FoodDetail>;
@@ -62,16 +70,15 @@ function ImageCell({ url }: { url?: string }) {
 export const foodColumns: ColumnDef<FoodDetail>[] = [
   {
     accessorKey: "imageKey",
-    header: ({ column }) =>
-      "รูปอาหาร",
-      // <HeaderCell
-      //   column={column}
-      //   canSort={false}
-      //   canSearch={false}
-      //   inputType="hidden"
-      // >
-      //   รูป
-      // </HeaderCell>
+    header: ({ column }) => "รูปอาหาร",
+    // <HeaderCell
+    //   column={column}
+    //   canSort={false}
+    //   canSearch={false}
+    //   inputType="hidden"
+    // >
+    //   รูป
+    // </HeaderCell>
     cell: ({ row }) =>
       row.original.imageKey ? (
         <Image
@@ -128,6 +135,29 @@ export const foodColumns: ColumnDef<FoodDetail>[] = [
   },
   {
     id: "action",
-    cell: ({ row }) => <FoodActionDropdown row={row} />,
+    cell: ({ row }) => {
+      const foodDetail = row.original;
+      return (
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button variant="ghost" className="h-8 w-8 p-0">
+              <span className="sr-only">เลือกการดำเนินการ</span>
+              <MoreHorizontal className="h-4 w-4" />
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end">
+            <DropdownMenuLabel>ดำเนินการ</DropdownMenuLabel>
+            <DropdownMenuItem
+              onClick={() => navigator.clipboard.writeText(foodDetail.id)}
+            >
+              คัดลอก ID
+            </DropdownMenuItem>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem>แก้ไข</DropdownMenuItem>
+            <DropdownMenuItem>ลบ</DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
+      );
+    },
   },
 ];
