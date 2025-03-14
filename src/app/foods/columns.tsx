@@ -5,7 +5,6 @@ import Image from "next/image";
 import React from "react";
 import { FoodActionDropdown } from "./food-action-dropdown";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { FoodDetail } from "@/lib/food";
 import { ArrowDownUp } from "lucide-react";
 import { getUtUrl } from "./utils";
@@ -26,25 +25,16 @@ function HeaderCell({
   children,
 }: HeaderCellProps) {
   return (
-    <div className="flex flex-col justify-center items-center h-24">
-      <div className="flex justify-center items-center gap-2">
-        {children}
-        {canSort ? (
-          <Button
-            size={"icon"}
-            onClick={() => column.toggleSorting()}
-            variant={"outline"}
-          >
-            <ArrowDownUp size={16} strokeWidth={2} />
-          </Button>
-        ) : null}
-      </div>
-
-      {canSearch ? (
-        <Input
-          type={"text"}
-          onChange={({ target }) => column.setFilterValue(target.value)}
-        />
+    <div className="flex justify-center items-center gap-2">
+      {children}
+      {canSort ? (
+        <Button
+          size={"icon"}
+          onClick={() => column.toggleSorting()}
+          variant={"outline"}
+        >
+          <ArrowDownUp size={16} strokeWidth={2} />
+        </Button>
       ) : null}
     </div>
   );
@@ -71,25 +61,31 @@ function ImageCell({ url }: { url?: string }) {
 
 export const foodColumns: ColumnDef<FoodDetail>[] = [
   {
-    id: "imageKey",
-    accessorFn: ({ imageKey }) => imageKey,
-    header: ({ column }) => (
-      <HeaderCell
-        column={column}
-        canSort={false}
-        canSearch={false}
-        inputType="hidden"
-      >
-        รูป
-      </HeaderCell>
-    ),
-    cell: ({ row }) => (
-      <ImageCell url={getUtUrl(row.original.imageKey ?? "")} />
-    ),
+    accessorKey: "imageKey",
+    header: ({ column }) =>
+      "รูปอาหาร",
+      // <HeaderCell
+      //   column={column}
+      //   canSort={false}
+      //   canSearch={false}
+      //   inputType="hidden"
+      // >
+      //   รูป
+      // </HeaderCell>
+    cell: ({ row }) =>
+      row.original.imageKey ? (
+        <Image
+          src={getUtUrl(row.original.imageKey)}
+          alt="food image"
+          width={100}
+          height={100}
+        />
+      ) : (
+        "ไม่มีรูปภาพ"
+      ),
   },
   {
-    id: "name",
-    accessorFn: ({ name }) => name,
+    accessorKey: "name",
     header: ({ column }) => (
       <HeaderCell
         column={column}
@@ -103,8 +99,7 @@ export const foodColumns: ColumnDef<FoodDetail>[] = [
     cell: ({ row }) => <TextCell>{row.original.name}</TextCell>,
   },
   {
-    id: "category",
-    accessorFn: ({ category }) => category,
+    accessorKey: "category",
     header: ({ column }) => (
       <HeaderCell
         column={column}
@@ -118,8 +113,7 @@ export const foodColumns: ColumnDef<FoodDetail>[] = [
     cell: ({ row }) => <TextCell>{row.original.category}</TextCell>,
   },
   {
-    id: "price",
-    accessorFn: ({ price }) => price,
+    accessorKey: "price",
     header: ({ column }) => (
       <HeaderCell
         column={column}

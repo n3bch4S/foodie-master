@@ -45,7 +45,9 @@ export function FoodForm() {
           router.refresh();
         })
         .catch((e) => {
-          toast.error(`บันทึก "${values.name}" ล้มเหลว ${e}`);
+          toast.error(`บันทึก "${values.name}" ล้มเหลว`, {
+            description: e.message,
+          });
         });
     },
     [form, router]

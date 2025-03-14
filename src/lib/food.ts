@@ -47,7 +47,7 @@ export async function createFood(food: Food): Promise<FoodDetail> {
       console.error(`Failed to create food`, error);
       return null;
     });
-  if (!newFood) return Promise.reject(`ไม่สามารถสร้างอาหาร "${food.name}" ได้`);
+  if (!newFood) return Promise.reject("ระบบไม่สามารถบันทึกอาหารได้");
 
   console.log("Food created with id ", newFood.id);
   return transformFood(newFood);
@@ -68,7 +68,7 @@ export async function fetchFoods(): Promise<FoodDetail[]> {
     });
   if (!foods) return Promise.reject(`ไม่สามารถโหลดรายการอาหารได้`);
 
-  console.log(`Fetched foods successfully with length `, foods.length);
+  console.log(`Fetched foods successfully with length`, foods.length);
   return foods.map(transformFood);
 }
 
