@@ -45,6 +45,7 @@ export function DataTable<TData, TValue>({
   );
   const [columnVisibility, setColumnVisibility] =
     React.useState<VisibilityState>({});
+  const [rowSelection, setRowSelection] = React.useState({});
   const table = useReactTable({
     data,
     columns,
@@ -55,7 +56,8 @@ export function DataTable<TData, TValue>({
     onSortingChange: setSorting,
     onColumnFiltersChange: setColumnFilters,
     onColumnVisibilityChange: setColumnVisibility,
-    state: { sorting, columnFilters, columnVisibility },
+    onRowSelectionChange: setRowSelection,
+    state: { sorting, columnFilters, columnVisibility, rowSelection },
   });
 
   return (
@@ -145,13 +147,18 @@ export function DataTable<TData, TValue>({
         </Table>
       </div>
       <div className="flex items-center justify-end space-x-2 py-4">
+        <div className="flex-1 text-sm text-muted-foreground">
+          {"เลือก"} {table.getFilteredSelectedRowModel().rows.length}{" "}
+          {"รายการจากทั้งหมด "}
+          {table.getFilteredRowModel().rows.length} รายการ
+        </div>
         <Button
           variant="outline"
           size="sm"
           onClick={() => table.previousPage()}
           disabled={!table.getCanPreviousPage()}
         >
-          Previous
+          ก่อนหน้า
         </Button>
         <Button
           variant="outline"
@@ -159,7 +166,7 @@ export function DataTable<TData, TValue>({
           onClick={() => table.nextPage()}
           disabled={!table.getCanNextPage()}
         >
-          Next
+          ถัดไป
         </Button>
       </div>
     </div>
