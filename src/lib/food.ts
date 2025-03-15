@@ -58,7 +58,7 @@ export async function fetchFoods(): Promise<FoodDetail[]> {
   const user = await currentUser().catch((error) =>
     console.error(`Failed to get current user `, error)
   );
-  if (!user) return Promise.reject(`ไม่พบผู้ใช้`);
+  if (!user) return Promise.reject(`ไม่พบผู้ใช้ในระบบตอนนี้`);
 
   const foods = await prisma.foodItem
     .findMany({ where: { ownerId: user.id } })
@@ -66,7 +66,7 @@ export async function fetchFoods(): Promise<FoodDetail[]> {
       console.error(`Failed to fetch foods `, error);
       return null;
     });
-  if (!foods) return Promise.reject(`ไม่สามารถโหลดรายการอาหารได้`);
+  if (!foods) return Promise.reject(`ระบบไม่สามารถโหลดรายการอาหารได้`);
 
   console.log(`Fetched foods successfully with length`, foods.length);
   return foods.map(transformFood);

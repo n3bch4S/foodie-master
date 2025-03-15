@@ -4,7 +4,9 @@ import { DataTable } from "./data-table";
 import { foodColumns } from "./columns";
 
 export default async function Food() {
-  const foodData = await fetchFoods().catch(() => [] as FoodDetail[]);
+  const foodData = await fetchFoods().catch(() => {
+    return [] as FoodDetail[];
+  });
   return (
     <div className="container flex flex-col h-screen">
       <div className="flex justify-end px-4 pt-4">
