@@ -6,7 +6,7 @@ import React from "react";
 import { FoodActionDropdown } from "./food-action-dropdown";
 import { Button } from "@/components/ui/button";
 import { FoodDetail } from "@/lib/food";
-import { ArrowDownUp, MoreHorizontal } from "lucide-react";
+import { ArrowDownUp, ArrowUpDown, MoreHorizontal } from "lucide-react";
 import { getUtUrl } from "./utils";
 import {
   DropdownMenu,
@@ -94,14 +94,13 @@ export const foodColumns: ColumnDef<FoodDetail>[] = [
   {
     accessorKey: "name",
     header: ({ column }) => (
-      <HeaderCell
-        column={column}
-        canSort={true}
-        canSearch={true}
-        inputType="search"
+      <Button
+        variant="ghost"
+        onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
       >
-        ชื่อ
-      </HeaderCell>
+        Email
+        <ArrowUpDown className="ml-2 h-4 w-4" />
+      </Button>
     ),
     cell: ({ row }) => <TextCell>{row.original.name}</TextCell>,
   },
