@@ -17,6 +17,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Checkbox } from "@/components/ui/checkbox";
 import { DataTableColumnHeader } from "./data-table-column-header";
+import { FoodsActionDropdown } from "./foods-action-dropdown";
 
 export const foodColumns: ColumnDef<FoodDetail>[] = [
   {
@@ -87,6 +88,7 @@ export const foodColumns: ColumnDef<FoodDetail>[] = [
   },
   {
     id: "ดำเนินการ",
+    header: ({ table }) => <FoodsActionDropdown table={table} />,
     cell: ({ row }) => {
       const foodDetail = row.original;
       return (
