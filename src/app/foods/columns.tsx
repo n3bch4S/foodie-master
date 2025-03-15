@@ -52,33 +52,10 @@ function TextCell({ children }: { children: React.ReactNode }) {
   return <div>{children}</div>;
 }
 
-function ImageCell({ url }: { url?: string }) {
-  return url ? (
-    <Image
-      src={url}
-      alt="รูปอาหาร"
-      width={128}
-      height={128}
-      className="rounded"
-      priority
-    />
-  ) : (
-    <div>ไม่พบรูปภาพ</div>
-  );
-}
-
 export const foodColumns: ColumnDef<FoodDetail>[] = [
   {
     accessorKey: "imageKey",
-    header: ({ column }) => "รูปอาหาร",
-    // <HeaderCell
-    //   column={column}
-    //   canSort={false}
-    //   canSearch={false}
-    //   inputType="hidden"
-    // >
-    //   รูป
-    // </HeaderCell>
+    header: "รูปอาหาร",
     cell: ({ row }) =>
       row.original.imageKey ? (
         <Image
@@ -86,6 +63,7 @@ export const foodColumns: ColumnDef<FoodDetail>[] = [
           alt="food image"
           width={100}
           height={100}
+          className="size-32"
         />
       ) : (
         "ไม่มีรูปภาพ"
@@ -98,7 +76,7 @@ export const foodColumns: ColumnDef<FoodDetail>[] = [
         variant="ghost"
         onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
       >
-        Email
+        ชื่อ
         <ArrowUpDown className="ml-2 h-4 w-4" />
       </Button>
     ),
