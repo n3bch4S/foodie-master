@@ -1,12 +1,11 @@
 "use client";
 
-import { Column, ColumnDef } from "@tanstack/react-table";
+import { ColumnDef } from "@tanstack/react-table";
 import Image from "next/image";
 import React from "react";
-import { FoodActionDropdown } from "./food-action-dropdown";
 import { Button } from "@/components/ui/button";
 import { FoodDetail } from "@/lib/food";
-import { ArrowDownUp, ArrowUpDown, MoreHorizontal } from "lucide-react";
+import { MoreHorizontal } from "lucide-react";
 import { getUtUrl } from "./utils";
 import {
   DropdownMenu,
@@ -19,44 +18,9 @@ import {
 import { Checkbox } from "@/components/ui/checkbox";
 import { DataTableColumnHeader } from "./data-table-column-header";
 
-type HeaderCellProps = {
-  column: Column<FoodDetail>;
-  inputType: React.HTMLInputTypeAttribute;
-  canSort: boolean;
-  canSearch: boolean;
-  children: React.ReactNode;
-};
-
-function HeaderCell({
-  column,
-  inputType,
-  canSort,
-  canSearch,
-  children,
-}: HeaderCellProps) {
-  return (
-    <div className="flex justify-center items-center gap-2">
-      {children}
-      {canSort ? (
-        <Button
-          size={"icon"}
-          onClick={() => column.toggleSorting()}
-          variant={"outline"}
-        >
-          <ArrowDownUp size={16} strokeWidth={2} />
-        </Button>
-      ) : null}
-    </div>
-  );
-}
-
-function TextCell({ children }: { children: React.ReactNode }) {
-  return <div>{children}</div>;
-}
-
 export const foodColumns: ColumnDef<FoodDetail>[] = [
   {
-    id: "select",
+    id: "เลือก",
     header: ({ table }) => (
       <Checkbox
         checked={
@@ -78,8 +42,11 @@ export const foodColumns: ColumnDef<FoodDetail>[] = [
     enableHiding: false,
   },
   {
-    accessorKey: "imageKey",
-    header: "รูปอาหาร",
+    id: "รูป",
+    accessorFn: ({ imageKey }) => imageKey,
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title="รูป" />
+    ),
     cell: ({ row }) =>
       row.original.imageKey ? (
         <Image
@@ -92,30 +59,34 @@ export const foodColumns: ColumnDef<FoodDetail>[] = [
       ) : (
         "ไม่มีรูปภาพ"
       ),
+    enableSorting: false,
   },
   {
-    accessorKey: "name",
+    id: "ชื่อ",
+    accessorFn: ({ name }) => name,
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title="ชื่อ" />
     ),
-    cell: ({ row }) => <TextCell>{row.original.name}</TextCell>,
+    cell: ({ row }) => row.original.name,
   },
   {
-    accessorKey: "category",
+    id: "ประเภท",
+    accessorFn: ({ category }) => category,
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title="ประเภท" />
     ),
-    cell: ({ row }) => <TextCell>{row.original.category}</TextCell>,
+    cell: ({ row }) => row.original.category,
   },
   {
-    accessorKey: "price",
+    id: "ราคา",
+    accessorFn: ({ price }) => price,
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title="ราคา" />
     ),
-    cell: ({ row }) => <TextCell>{row.original.price}</TextCell>,
+    cell: ({ row }) => row.original.price,
   },
   {
-    id: "action",
+    id: "ดำเนินการ",
     cell: ({ row }) => {
       const foodDetail = row.original;
       return (
@@ -140,5 +111,7 @@ export const foodColumns: ColumnDef<FoodDetail>[] = [
         </DropdownMenu>
       );
     },
+    enableSorting: false,
+    enableHiding: false,
   },
 ];
