@@ -17,6 +17,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Checkbox } from "@/components/ui/checkbox";
+import { DataTableColumnHeader } from "./data-table-column-header";
 
 type HeaderCellProps = {
   column: Column<FoodDetail>;
@@ -95,41 +96,21 @@ export const foodColumns: ColumnDef<FoodDetail>[] = [
   {
     accessorKey: "name",
     header: ({ column }) => (
-      <Button
-        variant="ghost"
-        onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-      >
-        ชื่อ
-        <ArrowUpDown className="ml-2 h-4 w-4" />
-      </Button>
+      <DataTableColumnHeader column={column} title="ชื่อ" />
     ),
     cell: ({ row }) => <TextCell>{row.original.name}</TextCell>,
   },
   {
     accessorKey: "category",
     header: ({ column }) => (
-      <HeaderCell
-        column={column}
-        canSort={true}
-        canSearch={true}
-        inputType="search"
-      >
-        ประเภท
-      </HeaderCell>
+      <DataTableColumnHeader column={column} title="ประเภท" />
     ),
     cell: ({ row }) => <TextCell>{row.original.category}</TextCell>,
   },
   {
     accessorKey: "price",
     header: ({ column }) => (
-      <HeaderCell
-        column={column}
-        canSort={true}
-        canSearch={false}
-        inputType="hidden"
-      >
-        ราคา
-      </HeaderCell>
+      <DataTableColumnHeader column={column} title="ราคา" />
     ),
     cell: ({ row }) => <TextCell>{row.original.price}</TextCell>,
   },
