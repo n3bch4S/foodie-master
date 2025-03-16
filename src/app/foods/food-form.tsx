@@ -10,7 +10,7 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { createFood } from "@/lib/food";
+import { createFood, editFood, FoodDetail } from "@/lib/food";
 import { UploadButton } from "@/lib/uploadthing";
 import { zodResolver } from "@hookform/resolvers/zod";
 import Image from "next/image";
@@ -20,53 +20,76 @@ import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { z } from "zod";
 import { getUtUrl } from "./utils";
+import { Row } from "@tanstack/react-table";
 
 const foodFormSchema = z.object({
   name: z.string(),
   category: z.string(),
   price: z.coerce.number().nonnegative(),
   imageKey: z.string().optional(),
+  isActive: z.boolean(),
 });
 
-interface FoodFormProps {
-  isCreate: boolean;
+interface FoodFormProps<TData> {
+  row?: Row<TData>;
 }
 
-export function FoodForm({ isCreate }: FoodFormProps) {
+export function FoodForm({ row }: FoodFormProps<FoodDetail>) {
   const [imageName, setImageName] = useState<string>("");
   const form = useForm<z.infer<typeof foodFormSchema>>({
     resolver: zodResolver(foodFormSchema),
-    defaultValues: {
-      name: undefined,
-      category: undefined,
-      price: undefined,
-      imageKey: undefined,
-    },
+    defaultValues: row
+      ? {
+          name: row.original.name,
+          category: row.original.category,
+          price: row.original.price,
+          imageKey: row.original.imageKey,
+          isActive: row.original.isActive,
+        }
+      : {
+          name: undefined,
+          category: undefined,
+          price: undefined,
+          imageKey: undefined,
+          isActive: true,
+        },
   });
   const router = useRouter();
-
-  const onSubmit = useCallback(
-    async (values: z.infer<typeof foodFormSchema>) => {
-      await createFood({ ...values, isActive: true })
+  const handleCreateFood = useCallback(
+    async (value: z.infer<typeof foodFormSchema>) => {
+      await createFood({ ...value, isActive: true })
         .then(() => {
-          form.reset(form.formState.defaultValues);
-          setImageName("");
-          toast.success(`บันทึกอาหารสำเร็จ`, { description: values.name });
           router.refresh();
+          toast.success(`บันทึกอาหารสำเร็จ`, { description: value.name });
         })
         .catch((e) => {
-          toast.error(`บันทึก "${values.name}" ล้มเหลว`, {
+          toast.error(`บันทึก "${value.name}" ล้มเหลว`, {
             description: e.message,
           });
         });
     },
     [form, router]
   );
+  const handleUpdateFood = useCallback(
+    async (value: z.infer<typeof foodFormSchema>) => {
+      if (!row) return;
+      editFood(row.original.id, { ...value })
+        .then(() => {
+          setImageName("");
+          router.refresh();
+          toast.success(`แก้ไขสำเร็จ`);
+        })
+        .catch((error) => {
+          toast.error(`แก้ไขล้มเหลว`, { description: error.message });
+        });
+    },
+    [form, router, row]
+  );
 
   return (
     <Form {...form}>
       <form
-        onSubmit={form.handleSubmit(onSubmit)}
+        onSubmit={form.handleSubmit(row ? handleUpdateFood : handleCreateFood)}
         className="flex flex-col gap-4"
       >
         <div className="flex gap-4">
