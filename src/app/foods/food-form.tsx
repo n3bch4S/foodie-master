@@ -32,9 +32,10 @@ const foodFormSchema = z.object({
 
 interface FoodFormProps<TData> {
   row?: Row<TData>;
+  setIsOpen?: (open: boolean) => void;
 }
 
-export function FoodForm({ row }: FoodFormProps<FoodDetail>) {
+export function FoodForm({ row, setIsOpen }: FoodFormProps<FoodDetail>) {
   const [imageName, setImageName] = useState<string>("");
   const form = useForm<z.infer<typeof foodFormSchema>>({
     resolver: zodResolver(foodFormSchema),
@@ -60,6 +61,7 @@ export function FoodForm({ row }: FoodFormProps<FoodDetail>) {
       await createFood({ ...value, isActive: true })
         .then(() => {
           router.refresh();
+          setIsOpen && setIsOpen(false);
           toast.success(`บันทึกอาหารสำเร็จ`, { description: value.name });
         })
         .catch((e) => {
@@ -75,8 +77,8 @@ export function FoodForm({ row }: FoodFormProps<FoodDetail>) {
       if (!row) return;
       editFood(row.original.id, { ...value })
         .then(() => {
-          setImageName("");
           router.refresh();
+          setIsOpen && setIsOpen(false);
           toast.success(`แก้ไขสำเร็จ`);
         })
         .catch((error) => {

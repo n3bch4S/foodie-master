@@ -13,12 +13,14 @@ interface FoodDialogProps<TData> {
   row?: Row<TData>;
   dialogTitle?: string;
   dialogDescription?: string;
+  setIsOpen: (open: boolean) => void;
 }
 
 export function FoodDialogContent({
   row,
   dialogTitle,
   dialogDescription,
+  setIsOpen,
 }: FoodDialogProps<FoodDetail>) {
   return (
     <DialogContent>
@@ -26,7 +28,7 @@ export function FoodDialogContent({
       {dialogDescription && (
         <DialogDescription>{dialogDescription}</DialogDescription>
       )}
-      <FoodForm row={row} />
+      <FoodForm setIsOpen={setIsOpen} row={row} />
     </DialogContent>
   );
 }

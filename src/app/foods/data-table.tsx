@@ -37,6 +37,7 @@ export function DataTable<TData, TValue>({
   columns,
   data,
 }: DataTableProps<TData, TValue>) {
+  const [isCreateOpen, setIsCreateOpen] = React.useState<boolean>(false);
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
     []
@@ -70,11 +71,12 @@ export function DataTable<TData, TValue>({
           className="max-w-sm"
         />
         <DataTableViewOptions table={table} />
-        <Dialog>
+        <Dialog open={isCreateOpen} onOpenChange={setIsCreateOpen}>
           <DialogTrigger asChild>
             <Button variant={"outline"}>+ เพิ่มอาหาร</Button>
           </DialogTrigger>
           <FoodDialogContent
+            setIsOpen={setIsCreateOpen}
             dialogTitle="เพิ่มอาหาร"
             dialogDescription="โปรดใส่รายละเอียดอาหารของคุณ"
           />

@@ -13,7 +13,7 @@ import { deleteFood, FoodDetail } from "@/lib/food";
 import { Row, Table } from "@tanstack/react-table";
 import { MoreHorizontal } from "lucide-react";
 import { useRouter } from "next/navigation";
-import React, { useCallback } from "react";
+import React, { useCallback, useState } from "react";
 import { toast } from "sonner";
 import { Dialog, DialogTrigger } from "@/components/ui/dialog";
 import { FoodDialogContent } from "./food-dialog";
@@ -32,6 +32,8 @@ export function FoodActionDropdown({
   if (table && row)
     throw new Error(`"table" and "row" can not defined at same time`);
   const router = useRouter();
+
+  const [isUpdateOpen, setIsUpdateOpen] = useState<boolean>(false);
 
   const handleDeleteFoods = useCallback(async () => {
     if (!table) return;
@@ -70,7 +72,7 @@ export function FoodActionDropdown({
   }, [router, row]);
 
   return (
-    <Dialog>
+    <Dialog open={isUpdateOpen} onOpenChange={setIsUpdateOpen}>
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
           <Button
@@ -110,6 +112,7 @@ export function FoodActionDropdown({
         </DropdownMenuContent>
       </DropdownMenu>
       <FoodDialogContent
+        setIsOpen={setIsUpdateOpen}
         row={row}
         dialogTitle="แก้ไขอาหาร"
         dialogDescription="โปรดใส่รายละเอียดอาหารของคุณ"
