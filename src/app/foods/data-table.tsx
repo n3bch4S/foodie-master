@@ -23,8 +23,10 @@ import {
 import React from "react";
 import { Input } from "@/components/ui/input";
 import { DataTablePagination } from "./data-table-pagination";
-import { CreateForm } from "./create-food-dialog";
+import { FoodDialogContent } from "./food-dialog";
 import { DataTableViewOptions } from "./data-table-view-option";
+import { Button } from "@/components/ui/button";
+import { Dialog, DialogTrigger } from "@/components/ui/dialog";
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
@@ -68,7 +70,15 @@ export function DataTable<TData, TValue>({
           className="max-w-sm"
         />
         <DataTableViewOptions table={table} />
-        <CreateForm />
+        <Dialog>
+          <DialogTrigger asChild>
+            <Button variant={"outline"}>+ เพิ่มอาหาร</Button>
+          </DialogTrigger>
+          <FoodDialogContent
+            dialogTitle="เพิ่มอาหาร"
+            dialogDescription="โปรดใส่รายละเอียดอาหารของคุณ"
+          />
+        </Dialog>
       </div>
       <div className="rounded-md border">
         <Table>

@@ -15,6 +15,8 @@ import { MoreHorizontal } from "lucide-react";
 import { useRouter } from "next/navigation";
 import React, { useCallback } from "react";
 import { toast } from "sonner";
+import { Dialog, DialogTrigger } from "@/components/ui/dialog";
+import { FoodDialogContent } from "./food-dialog";
 
 interface ActionDropdownProps<TData> {
   table?: Table<TData>;
@@ -29,8 +31,8 @@ export function FoodActionDropdown({
     throw new Error(`Either "table" or "row" must be defined`);
   if (table && row)
     throw new Error(`"table" and "row" can not defined at same time`);
-
   const router = useRouter();
+
   const handleDeleteFoods = useCallback(async () => {
     if (!table) return;
     const tryDeleteFoods = table.getSelectedRowModel().rows.map((row) =>
@@ -52,6 +54,7 @@ export function FoodActionDropdown({
       router.refresh();
     });
   }, [router, table]);
+
   const handleDeleteFood = useCallback(async () => {
     if (!row) return;
     await deleteFood(row.original.id)
@@ -65,40 +68,52 @@ export function FoodActionDropdown({
         toast.error(`ลบอาหารล้มเหลว`, { description: error.message });
       });
   }, [router, row]);
+
   return (
-    <DropdownMenu>
-      <DropdownMenuTrigger asChild>
-        <Button
-          variant="ghost"
-          disabled={
-            table &&
-            !table.getIsSomeRowsSelected() &&
-            !table.getIsAllPageRowsSelected()
-          }
-          className="h-8 w-8 p-0"
-        >
-          <span className="sr-only">เลือกการดำเนินการ</span>
-          <MoreHorizontal className="h-4 w-4" />
-        </Button>
-      </DropdownMenuTrigger>
-      <DropdownMenuContent align="end">
-        <DropdownMenuLabel>ดำเนินการ</DropdownMenuLabel>
-        {row && (
-          <DropdownMenuItem
-            onClick={() => navigator.clipboard.writeText(row.original.id)}
+    <Dialog>
+      <DropdownMenu>
+        <DropdownMenuTrigger asChild>
+          <Button
+            variant="ghost"
+            disabled={
+              table &&
+              !table.getIsSomeRowsSelected() &&
+              !table.getIsAllPageRowsSelected()
+            }
+            className="h-8 w-8 p-0"
           >
-            คัดลอก ID
+            <span className="sr-only">เลือกการดำเนินการ</span>
+            <MoreHorizontal className="h-4 w-4" />
+          </Button>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent align="end">
+          <DropdownMenuLabel>ดำเนินการ</DropdownMenuLabel>
+          {row && (
+            <DropdownMenuItem
+              onClick={() => navigator.clipboard.writeText(row.original.id)}
+            >
+              คัดลอก ID
+            </DropdownMenuItem>
+          )}
+          <DropdownMenuSeparator />
+          {row && (
+            <DialogTrigger asChild>
+              <DropdownMenuItem>แก้ไข</DropdownMenuItem>
+            </DialogTrigger>
+          )}
+          <DropdownMenuItem
+            onClick={table ? handleDeleteFoods : handleDeleteFood}
+            className="text-red-400 data-[highlighted]:bg-red-100 data-[highlighted]:text-red-400"
+          >
+            ลบ
           </DropdownMenuItem>
-        )}
-        <DropdownMenuSeparator />
-        <DropdownMenuItem>แก้ไข</DropdownMenuItem>
-        <DropdownMenuItem
-          onClick={table ? handleDeleteFoods : handleDeleteFood}
-          className="text-red-400 data-[highlighted]:bg-red-100 data-[highlighted]:text-red-400"
-        >
-          ลบ
-        </DropdownMenuItem>
-      </DropdownMenuContent>
-    </DropdownMenu>
+        </DropdownMenuContent>
+      </DropdownMenu>
+      <FoodDialogContent
+        row={row}
+        dialogTitle="แก้ไขอาหาร"
+        dialogDescription="โปรดใส่รายละเอียดอาหารของคุณ"
+      />
+    </Dialog>
   );
 }
