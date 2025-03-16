@@ -10,7 +10,7 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { createFood, FoodDetail } from "@/lib/food";
+import { createFood } from "@/lib/food";
 import { UploadButton } from "@/lib/uploadthing";
 import { zodResolver } from "@hookform/resolvers/zod";
 import Image from "next/image";
@@ -28,10 +28,20 @@ const foodFormSchema = z.object({
   imageKey: z.string().optional(),
 });
 
-export function FoodForm() {
+interface FoodFormProps {
+  isCreate: boolean;
+}
+
+export function FoodForm({ isCreate }: FoodFormProps) {
   const [imageName, setImageName] = useState<string>("");
   const form = useForm<z.infer<typeof foodFormSchema>>({
     resolver: zodResolver(foodFormSchema),
+    defaultValues: {
+      name: undefined,
+      category: undefined,
+      price: undefined,
+      imageKey: undefined,
+    },
   });
   const router = useRouter();
 

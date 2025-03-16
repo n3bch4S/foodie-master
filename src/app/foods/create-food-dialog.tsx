@@ -17,7 +17,7 @@ export function CreateForm() {
       <DialogContent>
         <DialogTitle>เพิ่มอาหาร</DialogTitle>
         <DialogDescription>โปรดใส่รายละเอียดอาหารของคุณ</DialogDescription>
-        <FoodForm />
+        <FoodForm isCreate />
       </DialogContent>
     </Dialog>
   );

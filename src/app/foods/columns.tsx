@@ -3,21 +3,11 @@
 import { ColumnDef } from "@tanstack/react-table";
 import Image from "next/image";
 import React from "react";
-import { Button } from "@/components/ui/button";
 import { FoodDetail } from "@/lib/food";
-import { MoreHorizontal } from "lucide-react";
 import { getUtUrl } from "./utils";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
 import { Checkbox } from "@/components/ui/checkbox";
 import { DataTableColumnHeader } from "./data-table-column-header";
-import { FoodsActionDropdown } from "./foods-action-dropdown";
+import { FoodActionDropdown } from "./food-action-dropdown";
 
 export const foodColumns: ColumnDef<FoodDetail>[] = [
   {
@@ -88,33 +78,8 @@ export const foodColumns: ColumnDef<FoodDetail>[] = [
   },
   {
     id: "ดำเนินการ",
-    header: ({ table }) => <FoodsActionDropdown table={table} />,
-    cell: ({ row }) => {
-      const foodDetail = row.original;
-      return (
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="ghost" className="h-8 w-8 p-0">
-              <span className="sr-only">เลือกการดำเนินการ</span>
-              <MoreHorizontal className="h-4 w-4" />
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end">
-            <DropdownMenuLabel>ดำเนินการ</DropdownMenuLabel>
-            <DropdownMenuItem
-              onClick={() => navigator.clipboard.writeText(foodDetail.id)}
-            >
-              คัดลอก ID
-            </DropdownMenuItem>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem>แก้ไข</DropdownMenuItem>
-            <DropdownMenuItem className="text-red-400 data-[highlighted]:bg-red-100 data-[highlighted]:text-red-400">
-              ลบ
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
-      );
-    },
+    header: ({ table }) => <FoodActionDropdown table={table} />,
+    cell: ({ row }) => <FoodActionDropdown row={row} />,
     enableSorting: false,
     enableHiding: false,
   },
