@@ -26,7 +26,9 @@ export function FoodsActionDropdown({ table }: FoodsActionDropdownProps) {
       <DropdownMenuTrigger asChild>
         <Button
           variant="ghost"
-          disabled={!table.getIsSomeRowsSelected()}
+          disabled={
+            !table.getIsSomeRowsSelected() && !table.getIsAllPageRowsSelected()
+          }
           className="h-8 w-8 p-0"
         >
           <span className="sr-only">เลือกการดำเนินการ</span>
@@ -57,6 +59,7 @@ export function FoodsActionDropdown({ table }: FoodsActionDropdownProps) {
               router.refresh();
             });
           }}
+          className="text-red-400 data-[highlighted]:bg-red-100 data-[highlighted]:text-red-400"
         >
           ลบ
         </DropdownMenuItem>

@@ -108,7 +108,9 @@ export const foodColumns: ColumnDef<FoodDetail>[] = [
             </DropdownMenuItem>
             <DropdownMenuSeparator />
             <DropdownMenuItem>แก้ไข</DropdownMenuItem>
-            <DropdownMenuItem>ลบ</DropdownMenuItem>
+            <DropdownMenuItem className="text-red-400 data-[highlighted]:bg-red-100 data-[highlighted]:text-red-400">
+              ลบ
+            </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
       );
