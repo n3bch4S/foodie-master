@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import {
   Form,
   FormControl,
+  FormDescription,
   FormField,
   FormItem,
   FormLabel,
@@ -22,6 +23,7 @@ import { z } from "zod";
 import { getUtUrl } from "./utils";
 import { Row } from "@tanstack/react-table";
 import { AspectRatio } from "@/components/ui/aspect-ratio";
+import { Switch } from "@/components/ui/switch";
 
 const foodFormSchema = z.object({
   name: z.string(),
@@ -95,6 +97,22 @@ export function FoodForm({ row, setIsOpen }: FoodFormProps<FoodDetail>) {
         onSubmit={form.handleSubmit(row ? handleUpdateFood : handleCreateFood)}
         className="flex flex-col gap-4"
       >
+        <FormField
+          control={form.control}
+          name="isActive"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>การมองเห็น</FormLabel>
+              <FormDescription>
+                หากเปิดอาหารนี้จะแสดงในระบบของคุณ
+                หากปิดอาหารนี้จะไม่แสดงในระบบของคุณ
+              </FormDescription>
+              <FormControl>
+                <Switch />
+              </FormControl>
+            </FormItem>
+          )}
+        />
         <div className="flex gap-4">
           {form.getValues("imageKey") ? (
             <div className="size-32">
