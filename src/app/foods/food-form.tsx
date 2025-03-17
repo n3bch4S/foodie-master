@@ -101,14 +101,19 @@ export function FoodForm({ row, setIsOpen }: FoodFormProps<FoodDetail>) {
           control={form.control}
           name="isActive"
           render={({ field }) => (
-            <FormItem>
-              <FormLabel>การมองเห็น</FormLabel>
-              <FormDescription>
-                หากเปิดอาหารนี้จะแสดงในระบบของคุณ
-                หากปิดอาหารนี้จะไม่แสดงในระบบของคุณ
-              </FormDescription>
+            <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
+              <div className="space-y-0.5">
+                <FormLabel className="text-base">การมองเห็น</FormLabel>
+                <FormDescription>
+                  หากเปิดอาหารนี้จะแสดงในระบบของคุณ
+                  หากปิดอาหารนี้จะไม่แสดงในระบบของคุณ
+                </FormDescription>
+              </div>
               <FormControl>
-                <Switch />
+                <Switch
+                  checked={field.value}
+                  onCheckedChange={field.onChange}
+                />
               </FormControl>
             </FormItem>
           )}
