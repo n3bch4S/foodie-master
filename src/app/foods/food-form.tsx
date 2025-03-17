@@ -21,6 +21,7 @@ import { toast } from "sonner";
 import { z } from "zod";
 import { getUtUrl } from "./utils";
 import { Row } from "@tanstack/react-table";
+import { AspectRatio } from "@/components/ui/aspect-ratio";
 
 const foodFormSchema = z.object({
   name: z.string(),
@@ -96,13 +97,17 @@ export function FoodForm({ row, setIsOpen }: FoodFormProps<FoodDetail>) {
       >
         <div className="flex gap-4">
           {form.getValues("imageKey") ? (
-            <Image
-              src={getUtUrl(form.getValues().imageKey ?? "")}
-              alt="food image"
-              width={64}
-              height={64}
-              className="size-32"
-            />
+            <div className="size-32">
+              <AspectRatio>
+                <Image
+                  src={getUtUrl(form.getValues().imageKey ?? "")}
+                  alt="รูปอาหาร"
+                  fill
+                  sizes="10vw"
+                  className="rounded-md object-cover"
+                />
+              </AspectRatio>
+            </div>
           ) : (
             <div className="size-32 rounded border-4 border-slate-200 border-dashed" />
           )}

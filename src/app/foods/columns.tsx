@@ -8,6 +8,7 @@ import { getUtUrl } from "./utils";
 import { Checkbox } from "@/components/ui/checkbox";
 import { DataTableColumnHeader } from "./data-table-column-header";
 import { FoodActionDropdown } from "./food-action-dropdown";
+import { AspectRatio } from "@/components/ui/aspect-ratio";
 
 export const foodColumns: ColumnDef<FoodDetail>[] = [
   {
@@ -40,13 +41,16 @@ export const foodColumns: ColumnDef<FoodDetail>[] = [
     ),
     cell: ({ row }) =>
       row.original.imageKey ? (
-        <Image
-          src={getUtUrl(row.original.imageKey)}
-          alt="food image"
-          width={100}
-          height={100}
-          className="size-32"
-        />
+        <AspectRatio>
+          <Image
+            src={getUtUrl(row.original.imageKey)}
+            alt={"รูป: " + row.original.name}
+            fill
+            sizes="10vw"
+            className="rounded-md object-cover"
+            priority
+          />
+        </AspectRatio>
       ) : (
         "ไม่มีรูปภาพ"
       ),
