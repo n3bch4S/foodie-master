@@ -61,7 +61,7 @@ export function FoodForm({ row, setIsOpen }: FoodFormProps<FoodDetail>) {
   const router = useRouter();
   const handleCreateFood = useCallback(
     async (value: z.infer<typeof foodFormSchema>) => {
-      await createFood({ ...value, isActive: true })
+      await createFood({ ...value })
         .then(() => {
           router.refresh();
           setIsOpen && setIsOpen(false);

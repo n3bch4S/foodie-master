@@ -9,6 +9,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { DataTableColumnHeader } from "./data-table-column-header";
 import { FoodActionDropdown } from "./food-action-dropdown";
 import { AspectRatio } from "@/components/ui/aspect-ratio";
+import { FoodActiveSwitch } from "./food-active-switch";
 
 export const foodColumns: ColumnDef<FoodDetail>[] = [
   {
@@ -79,6 +80,12 @@ export const foodColumns: ColumnDef<FoodDetail>[] = [
       <DataTableColumnHeader column={column} title="ราคา" />
     ),
     cell: ({ row }) => row.original.price,
+  },
+  {
+    id: "การมองเห็น",
+    accessorFn: ({ isActive }) => isActive,
+    cell: ({ row }) => <FoodActiveSwitch row={row} />,
+    enableSorting: false,
   },
   {
     id: "ดำเนินการ",
