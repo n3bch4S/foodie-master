@@ -73,7 +73,7 @@ export function FoodForm({ row, setIsOpen }: FoodFormProps<FoodDetail>) {
           });
         });
     },
-    [form, router]
+    [router, setIsOpen]
   );
   const handleUpdateFood = useCallback(
     async (value: z.infer<typeof foodFormSchema>) => {
@@ -88,7 +88,7 @@ export function FoodForm({ row, setIsOpen }: FoodFormProps<FoodDetail>) {
           toast.error(`แก้ไขล้มเหลว`, { description: error.message });
         });
     },
-    [form, router, row]
+    [router, row, setIsOpen]
   );
 
   return (
