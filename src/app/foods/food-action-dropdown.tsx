@@ -76,7 +76,7 @@ export function FoodActionDropdown({
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
           <Button
-            variant="ghost"
+            variant={row ? "ghost" : "outline"}
             disabled={
               table &&
               !table.getIsSomeRowsSelected() &&
