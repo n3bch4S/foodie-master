@@ -431,3 +431,13 @@ model AddOns {
 
   @@index([agencyId])
 }
+
+model FoodItem {
+  id       String  @id @default(uuid())
+  name     String
+  category String
+  price    Decimal
+  imageKey String?
+  isActive Boolean @default(true)
+  ownerId  String
+}
