@@ -2,11 +2,11 @@
 import { useDroppable, UseDroppableArguments } from "@dnd-kit/core";
 import { CSSProperties } from "react";
 
-interface DroppableProps extends UseDroppableArguments {
+interface DropCompProps extends UseDroppableArguments {
   children?: React.ReactNode;
 }
 
-export function Droppable({ id, disabled, data, children }: DroppableProps) {
+export function DropComp({ id, disabled, data, children }: DropCompProps) {
   const droppableState = useDroppable({ id, disabled, data });
   const style: CSSProperties = {
     borderColor: droppableState.isOver ? "green" : undefined,

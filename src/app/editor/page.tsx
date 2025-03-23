@@ -1,5 +1,5 @@
-import { Dnd } from "./dnd";
+import { DndCtx } from "./dnd-ctx";
 
-export default function Editor() {
-  return <Dnd />;
+export default async function Editor() {
+  return <DndCtx />;
 }

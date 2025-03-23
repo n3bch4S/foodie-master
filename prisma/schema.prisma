@@ -441,3 +441,8 @@ model FoodItem {
   isActive Boolean @default(true)
   ownerId  String
 }
+
+model Dom {
+  id  String @id @default(uuid())
+  dom Json   @default("{\"id\":\"root\",\"children\":[]}")
+}

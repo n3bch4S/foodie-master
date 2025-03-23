@@ -1,8 +1,8 @@
 "use client";
 import { DndContext, DragEndEvent, UniqueIdentifier } from "@dnd-kit/core";
-import { DragNDrop } from "./drag-n-drop";
+import { DragDropComp } from "./drag-drop-comp";
 import { useCallback, useMemo, useState } from "react";
-import { Droppable } from "./droppable";
+import { DropComp } from "./drop-comp";
 
 interface Component {
   id: UniqueIdentifier;
@@ -14,16 +14,16 @@ function renderComponent(component: Component): React.ReactNode {
   if (component.id === "root" && component.children.length === 0) return null;
   if (component.id === "root" && component.children.length > 0)
     return (
-      <Droppable id={component.id}>
+      <DropComp id={component.id}>
         body
         {component.children.map((child) => renderComponent(child))}
-      </Droppable>
+      </DropComp>
     );
   return (
-    <DragNDrop key={component.id} id={component.id}>
+    <DragDropComp key={component.id} id={component.id}>
       {component.innerText ? component.innerText : null}
       {component.children.map((child) => renderComponent(child))}
-    </DragNDrop>
+    </DragDropComp>
   );
 }
 
@@ -80,7 +80,7 @@ function moveComponent(
   return newComponent;
 }
 
-export function Dnd() {
+export function DndCtx() {
   const [body, setBody] = useState<Component>({
     id: "root",
     children: [

@@ -8,17 +8,19 @@ import {
 import { CSS } from "@dnd-kit/utilities";
 import { CSSProperties } from "react";
 
-interface DragNDropProps extends UseDroppableArguments, UseDraggableArguments {
+interface DragDropCompProps
+  extends UseDroppableArguments,
+    UseDraggableArguments {
   children?: React.ReactNode;
 }
 
-export function DragNDrop({
+export function DragDropComp({
   id,
   disabled,
   data,
   attributes,
   children,
-}: DragNDropProps) {
+}: DragDropCompProps) {
   const dropState = useDroppable({
     id,
     disabled,
