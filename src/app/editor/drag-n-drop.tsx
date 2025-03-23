@@ -36,9 +36,9 @@ export function DragNDrop({
         dragState.setNodeRef(element);
         dropState.setNodeRef(element);
       }}
-      style={style}
       {...dragState.listeners}
-      {...dragState.attributes}
+      // {...dragState.attributes}
+      style={style}
       className="border-4 rounded-3xl p-4 m-4"
     >
       {children}
