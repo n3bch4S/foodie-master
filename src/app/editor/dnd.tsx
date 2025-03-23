@@ -2,6 +2,7 @@
 import { DndContext, DragEndEvent, UniqueIdentifier } from "@dnd-kit/core";
 import { DragNDrop } from "./drag-n-drop";
 import { useCallback, useMemo, useState } from "react";
+import { Droppable } from "./droppable";
 
 interface Component {
   id: UniqueIdentifier;
@@ -12,7 +13,12 @@ interface Component {
 function renderComponent(component: Component): React.ReactNode {
   if (component.id === "root" && component.children.length === 0) return null;
   if (component.id === "root" && component.children.length > 0)
-    return <>{component.children.map((child) => renderComponent(child))}</>;
+    return (
+      <Droppable id={component.id}>
+        body
+        {component.children.map((child) => renderComponent(child))}
+      </Droppable>
+    );
   return (
     <DragNDrop key={component.id} id={component.id}>
       {component.innerText ? component.innerText : null}

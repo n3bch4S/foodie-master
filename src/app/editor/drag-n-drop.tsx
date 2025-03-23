@@ -39,7 +39,7 @@ export function DragNDrop({
       {...dragState.listeners}
       // {...dragState.attributes}
       style={style}
-      className="border-4 rounded-3xl p-4 m-4"
+      className="border-4 rounded-3xl p-4"
     >
       {children}
     </div>
