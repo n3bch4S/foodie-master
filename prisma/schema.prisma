@@ -442,7 +442,19 @@ model FoodItem {
   ownerId  String
 }
 
+model Site {
+  id      String @id @default(uuid())
+  ownerId String
+
+  Dom Dom[]
+}
+
 model Dom {
-  id  String @id @default(uuid())
-  dom Json   @default("{\"id\":\"root\",\"children\":[]}")
+  id       String   @id @default(uuid())
+  dom      Json     @default("{\"id\":\"root\",\"children\":[]}")
+  updateAt DateTime @updatedAt
+  site     Site     @relation(fields: [siteId], references: [id])
+  siteId   String
+
+  @@index([siteId])
 }
