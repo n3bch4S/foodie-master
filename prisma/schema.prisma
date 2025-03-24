@@ -451,6 +451,8 @@ model Site {
 
 model Page {
   id         String     @id @default(uuid())
+  name       String
+  isMainPage Boolean    @default(false)
   snapshotAt DateTime?
   domStackAt DateTime?
   site       Site       @relation(fields: [siteId], references: [id])

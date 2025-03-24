@@ -36,6 +36,10 @@ function toPageDetail(value: unknown): PageDetail {
     throw new Error(`Can't parse value to PageDetail: ${tryParse.error}`);
   return tryParse.data;
 }
+// TODO: continue tomorrow
+// export async function createPage(): Promise<PageDetail> {
+//   return await db.page.create({data: {}})
+// };
 
 // export async function createDom(dom: Page, siteId: string): Promise<PageDetail> {
 //   return await db.dom

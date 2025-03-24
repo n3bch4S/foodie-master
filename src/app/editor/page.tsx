@@ -1,8 +1,3 @@
-import { DndCtx } from "@/components/dnd/dnd-ctx";
-import { renderComponent } from "@/lib/page/tsx";
-import { currentUser } from "@clerk/nextjs/server";
-import { getLatestPage } from "@/lib/page";
-
 export default async function Editor() {
   // const data = await currentUser()
   //   .then((user) =>
@@ -15,5 +10,6 @@ export default async function Editor() {
   //     component: await renderComponent(pageDetail.dom),
   //   }));
 
-  return <DndCtx dom={{ id: "root", children: [] }}>hello</DndCtx>;
+  // return <DndCtx dom={{ id: "root", children: [] }}>hello</DndCtx>;
+  return null;
 }
