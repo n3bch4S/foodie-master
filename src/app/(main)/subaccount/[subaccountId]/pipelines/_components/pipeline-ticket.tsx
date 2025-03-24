@@ -1,4 +1,4 @@
-import TicketForm from "@/components/forms/ticket-form";
+import TicketForm from "@/components/form/ticket-form";
 import CustomModal from "@/components/global/custom-modal";
 import TagComponent from "@/components/global/tag";
 import LinkIcon from "@/components/icons/link";

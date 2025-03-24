@@ -1,5 +1,5 @@
 "use client";
-import CreateFunnelPage from "@/components/forms/funnel-page";
+import CreateFunnelPage from "@/components/form/funnel-page";
 import CustomModal from "@/components/global/custom-modal";
 import { AlertDialog } from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";

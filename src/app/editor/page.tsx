@@ -1,10 +1,19 @@
-import { getDomDetail } from "@/lib/dom";
-import { DndCtx } from "./dnd-ctx";
-import { renderComponent } from "@/lib/dom/tsx";
+import { DndCtx } from "@/components/dnd/dnd-ctx";
+import { renderComponent } from "@/lib/page/tsx";
+import { currentUser } from "@clerk/nextjs/server";
+import { getLatestPage } from "@/lib/page";
 
 export default async function Editor() {
-  const domDetail = await getDomDetail();
-  const rendered = await renderComponent(domDetail.dom);
+  // const data = await currentUser()
+  //   .then((user) =>
+  //     user
+  //       ? getLatestPage(user.id, "8841ee40-e032-44cd-8cb9-462e331e96f1")
+  //       : Promise.reject(`Can't find user data`)
+  //   )
+  //   .then(async (pageDetail) => ({
+  //     dom: pageDetail.dom,
+  //     component: await renderComponent(pageDetail.dom),
+  //   }));
 
-  return <DndCtx dom={domDetail.dom}>{rendered}</DndCtx>;
+  return <DndCtx dom={{ id: "root", children: [] }}>hello</DndCtx>;
 }

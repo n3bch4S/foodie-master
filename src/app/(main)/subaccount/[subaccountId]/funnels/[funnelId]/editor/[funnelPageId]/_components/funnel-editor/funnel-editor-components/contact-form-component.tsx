@@ -1,5 +1,5 @@
 "use client";
-import ContactForm from "@/components/forms/contact-form";
+import ContactForm from "@/components/form/contact-form";
 import { Badge } from "@/components/ui/badge";
 import { toast } from "@/components/ui/use-toast";
 import { EditorBtns } from "@/lib/constants";

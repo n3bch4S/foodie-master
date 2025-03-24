@@ -36,7 +36,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Copy, Edit, MoreHorizontal, Trash } from "lucide-react";
 import { useModal } from "@/providers/modal-provider";
-import UserDetails from "@/components/forms/user-details";
+import UserDetails from "@/components/form/user-details";
 
 import { deleteUser, getUser } from "@/lib/queries";
 import { useToast } from "@/components/ui/use-toast";

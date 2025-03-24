@@ -1,5 +1,5 @@
 "use client";
-import LaneForm from "@/components/forms/lane-form";
+import LaneForm from "@/components/form/lane-form";
 import CustomModal from "@/components/global/custom-modal";
 import { Button } from "@/components/ui/button";
 import {

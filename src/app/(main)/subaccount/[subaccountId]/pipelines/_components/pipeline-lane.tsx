@@ -1,5 +1,5 @@
 "use client";
-import CreateLaneForm from "@/components/forms/lane-form";
+import CreateLaneForm from "@/components/form/lane-form";
 
 import {
   AlertDialog,
@@ -31,7 +31,7 @@ import { useRouter } from "next/navigation";
 import React, { Dispatch, SetStateAction, useMemo } from "react";
 // import PipelineTicket from './pipeline-ticket'
 import CustomModal from "@/components/global/custom-modal";
-import TicketForm from "@/components/forms/ticket-form";
+import TicketForm from "@/components/form/ticket-form";
 import PipelineTicket from "./pipeline-ticket";
 
 interface PipelaneLaneProps {

@@ -1,9 +1,9 @@
 "use client";
 import { DndContext } from "@dnd-kit/core";
-import { Dom, moveComponent } from "@/lib/dom";
+import { Page, moveComponent } from "@/lib/page";
 
 interface DndCtxProps {
-  dom: Dom;
+  dom: Page;
   children: React.ReactNode;
 }
 

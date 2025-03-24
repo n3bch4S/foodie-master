@@ -1,5 +1,5 @@
-import SubAccountDetails from "@/components/forms/subaccount-details";
-import UserDetails from "@/components/forms/user-details";
+import SubAccountDetails from "@/components/form/subaccount-details";
+import UserDetails from "@/components/form/user-details";
 import BlurPage from "@/components/global/blur-page";
 import { db } from "@/lib/db";
 import { currentUser } from "@clerk/nextjs";

@@ -4,7 +4,7 @@ import { Funnel, SubAccount } from "@prisma/client";
 import { db } from "@/lib/db";
 import { getConnectAccountProducts } from "@/lib/stripe/stripe-actions";
 
-import FunnelForm from "@/components/forms/funnel-form";
+import FunnelForm from "@/components/form/funnel-form";
 import {
   Card,
   CardContent,
