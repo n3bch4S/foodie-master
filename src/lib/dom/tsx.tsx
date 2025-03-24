@@ -1,8 +1,8 @@
 "use server";
 
-import { DropComp } from "@/app/editor/drop-comp";
+import { DropComp } from "@/components/dnd/drop-comp";
 import { Dom } from ".";
-import { DragDropComp } from "@/app/editor/drag-drop-comp";
+import { DragDropComp } from "@/components/dnd/drag-drop-comp";
 
 function renderComponentHelper(component: Dom): React.ReactNode {
   if (component.id === "root" && component.children.length === 0) return null;
