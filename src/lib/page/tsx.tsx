@@ -1,10 +1,10 @@
 "use server";
 
 import { DropComp } from "@/components/dnd/drop-comp";
-import { Page } from ".";
 import { DragDropComp } from "@/components/dnd/drag-drop-comp";
+import { Dom } from "./types";
 
-function renderComponentHelper(component: Page): React.ReactNode {
+function renderComponentHelper(component: Dom): React.ReactNode {
   if (component.id === "root" && component.children.length === 0) return null;
   if (component.id === "root" && component.children.length > 0)
     return (
@@ -22,7 +22,7 @@ function renderComponentHelper(component: Page): React.ReactNode {
 }
 
 export async function renderComponent(
-  component: Page
+  component: Dom
 ): Promise<React.ReactNode> {
   return renderComponentHelper(component);
 }

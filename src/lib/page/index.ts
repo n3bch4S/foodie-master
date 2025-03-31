@@ -2,31 +2,7 @@
 
 import { UniqueIdentifier } from "@dnd-kit/core";
 import { PrismaClient } from "@prisma/client";
-import { JsonValue } from "@prisma/client/runtime/library";
-import { z } from "zod";
-
-const basePageSchema = z
-  .object({
-    id: z.union([z.string(), z.number()]),
-    innerText: z.optional(z.string()),
-  })
-  .strict();
-export type Page = z.infer<typeof basePageSchema> & { children: Page[] };
-const pageSchema: z.ZodType<Page> = basePageSchema
-  .extend({
-    children: z.lazy(() => pageSchema.array()),
-  })
-  .strict();
-
-const pageDetailSchema = z
-  .object({
-    id: z.string().uuid(),
-    dom: pageSchema,
-    updateAt: z.date(),
-    siteId: z.string().uuid(),
-  })
-  .strict();
-type PageDetail = z.infer<typeof pageDetailSchema>;
+import { Dom, Page, PageDetail, pageDetailSchema, pageSchema } from "./types";
 
 const db = new PrismaClient();
 
@@ -36,10 +12,17 @@ function toPageDetail(value: unknown): PageDetail {
     throw new Error(`Can't parse value to PageDetail: ${tryParse.error}`);
   return tryParse.data;
 }
-// TODO: continue tomorrow
-// export async function createPage(): Promise<PageDetail> {
-//   return await db.page.create({data: {}})
-// };
+
+export async function createPage(page: Page): Promise<PageDetail> {
+  console.log(`creating page`, page);
+  const parsedPage = JSON.parse(JSON.stringify(page));
+  const createdPage = {
+    ...pageSchema.parse(parsedPage),
+    id: crypto.randomUUID(),
+  };
+  console.log(`created page`, createdPage);
+  return createdPage;
+}
 
 // export async function createDom(dom: Page, siteId: string): Promise<PageDetail> {
 //   return await db.dom
@@ -79,7 +62,7 @@ export async function getLatestPage(
 //   return await db.dom.update({ data: {}, where: { id } });
 // }
 
-function findIn(component: Page, id: UniqueIdentifier): Page | null {
+function findIn(component: Dom, id: UniqueIdentifier): Dom | null {
   if (component.id === id) return component;
   if (component.children.length === 0) return null;
   const foundChild = component.children.find(
@@ -89,7 +72,7 @@ function findIn(component: Page, id: UniqueIdentifier): Page | null {
   return null;
 }
 
-function findParentIn(component: Page, id: UniqueIdentifier): Page | null {
+function findParentIn(component: Dom, id: UniqueIdentifier): Dom | null {
   if (component.children.length === 0) return null;
   const foundChild = component.children.find((child) => child.id === id);
   if (foundChild) return component;
@@ -100,18 +83,18 @@ function findParentIn(component: Page, id: UniqueIdentifier): Page | null {
   return null;
 }
 
-function deepClone(component: Page): Page {
+function deepClone(component: Dom): Dom {
   return {
     ...component,
     children: component.children.map(deepClone),
-  } as Page;
+  } as Dom;
 }
 
 export async function moveComponent(
-  component: Page,
+  component: Dom,
   childId: UniqueIdentifier,
   newParentId: UniqueIdentifier
-): Promise<Page> {
+): Promise<Dom> {
   const newComponent = deepClone(component);
   const oldParent = findParentIn(newComponent, childId);
   if (!oldParent)
