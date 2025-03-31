@@ -25,3 +25,12 @@ export type PageDetail = z.infer<typeof pageDetailSchema>;
 
 export const pageSchema = pageDetailSchema.omit({ id: true });
 export type Page = z.infer<typeof pageSchema>;
+
+export const siteDetailSchema = z
+  .object({
+    id: z.string().uuid(),
+    name: z.string().min(1),
+    ownerId: z.string().uuid(),
+  })
+  .strict();
+export type SiteDetail = z.infer<typeof siteDetailSchema>;
