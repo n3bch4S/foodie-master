@@ -14,8 +14,8 @@ import {
 } from "../ui/form";
 import { Input } from "../ui/input";
 import { Button } from "../ui/button";
-import { createPage } from "@/lib/page";
 import { toast } from "sonner";
+import { createPage } from "@/lib/page";
 
 const formSchema = z.object({
   pageName: z.string().min(1, { message: "กรุณากรอกชื่อหน้า" }),
@@ -35,9 +35,13 @@ export function PageForm() {
       name: values.pageName,
       dom: { id: "1", innerText: "test", children: [] },
       siteId: crypto.randomUUID(),
-    }).catch((err) => {
-      toast.error(`สร้างหน้าไม่สำเร็จ`, { description: err.message });
-    });
+    })
+      .then((pageDetail) => {
+        toast.success(`สร้างหน้าสำเร็จ`, { description: pageDetail.name });
+      })
+      .catch((err) => {
+        toast.error(`สร้างหน้าไม่สำเร็จ`, { description: err.message });
+      });
   }
 
   return (
