@@ -2,7 +2,14 @@
 
 import { UniqueIdentifier } from "@dnd-kit/core";
 import { PrismaClient } from "@prisma/client";
-import { Dom, Page, PageDetail, pageDetailSchema, pageSchema } from "./types";
+import {
+  Dom,
+  Page,
+  PageDetail,
+  pageDetailSchema,
+  pageSchema,
+  SiteDetail,
+} from "./types";
 
 const db = new PrismaClient();
 
@@ -13,13 +20,15 @@ function toPageDetail(value: unknown): PageDetail {
   return tryParse.data;
 }
 
-export async function createPage(page: Page): Promise<PageDetail> {
-  console.log(`creating page`, page);
-  const parsedPage = JSON.parse(JSON.stringify(page));
-  const createdPage = {
-    ...pageSchema.parse(parsedPage),
-    id: crypto.randomUUID(),
-  };
+// TODO: continue
+async function safeFindSite(): SiteDetail {
+  // find site by ownerId if no create new site with name "tempName" and ownerId id from clerk
+
+  const site = db.site.findFirst({ where });
+}
+
+export async function createPage(name: string): Promise<PageDetail> {
+  console.log(`creating page`, name);
   console.log(`created page`, createdPage);
   return createdPage;
 }
