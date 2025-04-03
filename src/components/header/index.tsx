@@ -1,17 +1,49 @@
 import { SignedIn, SignedOut, SignInButton, UserButton } from "@clerk/nextjs";
+import Link from "next/link";
+import { badgeVariants } from "../ui/badge";
+import { Button } from "../ui/button";
+import {
+  NavigationMenu,
+  NavigationMenuItem,
+  NavigationMenuLink,
+  NavigationMenuList,
+  navigationMenuTriggerStyle,
+} from "@/components/ui/navigation-menu";
+
+const homeUrl: string = process.env.NEXT_PUBLIC_DOMAIN ?? "/";
 
 export function Header() {
   return (
-    <header
-      style={{ display: "flex", justifyContent: "space-between", padding: 20 }}
-    >
-      <h1>My App</h1>
+    <div className="flex justify-between gap-4 p-4">
+      <Link href="/" className={badgeVariants()}>
+        Foodie Master
+      </Link>
+      <NavigationMenu>
+        <NavigationMenuList className="flex gap-4">
+          <NavigationMenuItem>
+            <Link href="/foods" legacyBehavior passHref>
+              <NavigationMenuLink className={navigationMenuTriggerStyle()}>
+                รายการอาหาร
+              </NavigationMenuLink>
+            </Link>
+          </NavigationMenuItem>
+          <NavigationMenuItem>
+            <Link href="/editor" legacyBehavior passHref>
+              <NavigationMenuLink className={navigationMenuTriggerStyle()}>
+                หน้าเว็บไซต์
+              </NavigationMenuLink>
+            </Link>
+          </NavigationMenuItem>
+        </NavigationMenuList>
+      </NavigationMenu>
       <SignedIn>
         <UserButton />
       </SignedIn>
       <SignedOut>
-        <SignInButton />
+        <SignInButton>
+          <Button>เข้าสู่ระบบ</Button>
+        </SignInButton>
       </SignedOut>
-    </header>
+    </div>
   );
 }
