@@ -13,10 +13,14 @@ export const domSchema: z.ZodType<Dom> = baseDomSchema
   })
   .strict();
 
+export const pageTypeEnum = z.enum(["HOME", "ORDER", "CUSTOM"]);
+export type PageType = z.infer<typeof pageTypeEnum>;
+
 export const pageDetailSchema = z
   .object({
     id: z.string().uuid(),
     name: z.string(),
+    type: pageTypeEnum,
     dom: domSchema,
     siteId: z.string().uuid(),
   })
