@@ -4,12 +4,14 @@ import { UniqueIdentifier } from "@dnd-kit/core";
 import { PrismaClient } from "@prisma/client";
 import {
   Dom,
-  Page,
+  domSchema,
   PageDetail,
   pageDetailSchema,
-  pageSchema,
+  PageType,
   SiteDetail,
 } from "./types";
+import { auth } from "@clerk/nextjs";
+import { CUSTOM_PAGE_DOM, HOME_PAGE_DOM, ORDER_PAGE_DOM } from "./constants";
 
 const db = new PrismaClient();
 
@@ -20,56 +22,70 @@ function toPageDetail(value: unknown): PageDetail {
   return tryParse.data;
 }
 
-// TODO: continue
-async function safeFindSite(): SiteDetail {
-  // find site by ownerId if no create new site with name "tempName" and ownerId id from clerk
-
-  const site = db.site.findFirst({ where });
+async function safeCreateSite(ownerId: string): Promise<SiteDetail> {
+  console.log(`safeCreateSite for owner`, ownerId);
+  const site = await db.site
+    .findFirst({ where: { ownerId } })
+    .then(async (site) => {
+      if (!site)
+        return await db.site.create({
+          data: { name: "TEMP_NAME", ownerId },
+        });
+      return site;
+    });
+  console.log(`created site`, site);
+  return site;
 }
 
-export async function createPage(name: string): Promise<PageDetail> {
+async function validateNonCreatePage(
+  siteId: string,
+  name: string
+): Promise<void> {
+  console.log(`validate page ${name} not created for site`, siteId);
+  await db.page.findFirst({ where: { name, siteId } }).then((page) => {
+    if (page) {
+      throw new Error(`Page with name ${name} already exists`);
+    }
+  });
+  console.log(`page ${name} not created for site`, siteId);
+}
+
+function findDom(type: PageType): Dom {
+  switch (type) {
+    case "HOME":
+      return HOME_PAGE_DOM;
+    case "ORDER":
+      return ORDER_PAGE_DOM;
+    case "CUSTOM":
+      return CUSTOM_PAGE_DOM;
+  }
+}
+
+export async function createPage(
+  name: string,
+  type: PageType
+): Promise<PageDetail> {
   console.log(`creating page`, name);
+  const { userId } = auth();
+  if (!userId) throw new Error(`User not authenticated`);
+  const createdPage = await safeCreateSite(userId)
+    .then(async ({ id }) => {
+      await validateNonCreatePage(id, name);
+      return await db.page.create({
+        data: { name, type, dom: findDom(type), siteId: id },
+      });
+    })
+    .then((page) => {
+      const pageDetail: PageDetail = {
+        ...page,
+        dom: domSchema.parse(page.dom),
+      };
+      return pageDetail;
+    });
+
   console.log(`created page`, createdPage);
   return createdPage;
 }
-
-// export async function createDom(dom: Page, siteId: string): Promise<PageDetail> {
-//   return await db.dom
-//     .create({ data: { dom, siteId } })
-//     .then((mightDom) =>
-//       mightDom ? toDomDetail(mightDom) : Promise.reject(`Can't create DOM`)
-//     );
-// }
-
-// export async function getDomDetail(siteId: string): Promise<PageDetail> {
-//   return await db.dom
-//     .findFirst({
-//       where: { siteId },
-//     })
-//     .then((mightDom) =>
-//       mightDom ? toDomDetail(mightDom) : Promise.reject(`No DOM found`)
-//     );
-// }
-
-export async function getLatestPage(
-  ownerId: string,
-  siteId: string
-): Promise<PageDetail> {
-  return db.domStack
-    .findFirst({
-      include: { page: { include: { site: true } } },
-      where: { page: { siteId, site: { ownerId } } },
-    })
-    .then((mightPage) => {
-      return mightPage
-        ? toPageDetail(mightPage)
-        : Promise.reject(`Can't find page`);
-    });
-}
-
-// export async function updateDomDetail(): Promise<DomDetail> {
-//   return await db.dom.update({ data: {}, where: { id } });
-// }
 
 function findIn(component: Dom, id: UniqueIdentifier): Dom | null {
   if (component.id === id) return component;
