@@ -1,4 +1,5 @@
 import { Header } from "@/components/header";
+import { Separator } from "@/components/ui/separator";
 import { ClerkProvider } from "@clerk/nextjs";
 
 export default function RootLayout({
@@ -9,6 +10,7 @@ export default function RootLayout({
   return (
     <ClerkProvider>
       <Header />
+      <Separator />
       {children}
     </ClerkProvider>
   );
