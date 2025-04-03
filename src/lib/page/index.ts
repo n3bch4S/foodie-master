@@ -2,25 +2,11 @@
 
 import { UniqueIdentifier } from "@dnd-kit/core";
 import { PrismaClient } from "@prisma/client";
-import {
-  Dom,
-  domSchema,
-  PageDetail,
-  pageDetailSchema,
-  PageType,
-  SiteDetail,
-} from "./types";
+import { Dom, domSchema, PageDetail, PageType, SiteDetail } from "./types";
 import { auth } from "@clerk/nextjs";
 import { CUSTOM_PAGE_DOM, HOME_PAGE_DOM, ORDER_PAGE_DOM } from "./constants";
 
 const db = new PrismaClient();
-
-function toPageDetail(value: unknown): PageDetail {
-  const tryParse = pageDetailSchema.safeParse(value);
-  if (!tryParse.success)
-    throw new Error(`Can't parse value to PageDetail: ${tryParse.error}`);
-  return tryParse.data;
-}
 
 async function safeCreateSite(ownerId: string): Promise<SiteDetail> {
   console.log(`safeCreateSite for owner`, ownerId);
