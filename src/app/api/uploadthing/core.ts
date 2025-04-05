@@ -13,6 +13,9 @@ export const ourFileRouter = {
   foodImage: f(["image/png", "image/jpeg"])
     .middleware(authenticateUser)
     .onUploadComplete(() => {}),
+  restaurantLogo: f(["image/png", "image/jpeg"])
+    .middleware(authenticateUser)
+    .onUploadComplete(() => {}),
   subaccountLogo: f({
     image: { maxFileSize: "4MB", maxFileCount: 1 },
   })
