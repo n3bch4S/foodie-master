@@ -1,4 +1,9 @@
-import { AppWindow, ChartNoAxesCombined, ChefHat } from "lucide-react";
+import {
+  AppWindow,
+  ChartNoAxesCombined,
+  ChefHat,
+  Settings,
+} from "lucide-react";
 import {
   Sidebar,
   SidebarContent,
@@ -9,6 +14,7 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
+import { Header } from "./header";
 
 const items = [
   {
@@ -26,11 +32,17 @@ const items = [
     url: "/report",
     icon: ChartNoAxesCombined,
   },
+  {
+    title: "ตั้งค่าร้านอาหาร",
+    url: "/settings",
+    icon: Settings,
+  },
 ];
 
 export function AppSidebar() {
   return (
     <Sidebar collapsible="none">
+      <Header />
       <SidebarContent>
         <SidebarGroup>
           <SidebarGroupLabel>แอปพลิเคชัน</SidebarGroupLabel>
