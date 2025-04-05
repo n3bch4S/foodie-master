@@ -10,8 +10,6 @@ import {
   navigationMenuTriggerStyle,
 } from "@/components/ui/navigation-menu";
 
-const homeUrl: string = process.env.NEXT_PUBLIC_DOMAIN ?? "/";
-
 export function Header() {
   return (
     <div className="flex justify-between gap-4 p-4">
