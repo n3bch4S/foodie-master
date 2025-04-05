@@ -1,5 +1,5 @@
 import { ClerkProvider } from "@clerk/nextjs";
-import { SidebarProvider } from "@/components/ui/sidebar";
+import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/app-sidebar";
 
 export default function RootLayout({
@@ -11,7 +11,9 @@ export default function RootLayout({
     <ClerkProvider>
       <SidebarProvider>
         <AppSidebar />
-        <main>{children}</main>
+        <SidebarInset>
+          <main>{children}</main>
+        </SidebarInset>
       </SidebarProvider>
     </ClerkProvider>
   );

@@ -16,6 +16,7 @@ import {
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
 import { Header } from "./header";
+import { Footer } from "./footer";
 
 const items = [
   {
@@ -47,7 +48,7 @@ const items = [
 
 export function AppSidebar() {
   return (
-    <Sidebar collapsible="none">
+    <Sidebar variant="inset" collapsible="none">
       <Header />
       <SidebarContent>
         <SidebarGroup>
@@ -68,6 +69,7 @@ export function AppSidebar() {
           </SidebarGroupContent>
         </SidebarGroup>
       </SidebarContent>
+      <Footer />
     </Sidebar>
   );
 }
