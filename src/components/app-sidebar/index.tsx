@@ -1,8 +1,9 @@
 import {
   AppWindow,
   ChartNoAxesCombined,
-  ChefHat,
-  Settings,
+  ShoppingBag,
+  Store,
+  Utensils,
 } from "lucide-react";
 import {
   Sidebar,
@@ -18,9 +19,14 @@ import { Header } from "./header";
 
 const items = [
   {
-    title: "จัดการอาหาร",
+    title: "ร้านอาหารของคุณ",
+    url: "/settings",
+    icon: Store,
+  },
+  {
+    title: "เมนูอาหาร",
     url: "/foods",
-    icon: ChefHat,
+    icon: Utensils,
   },
   {
     title: "ออกแบบเว็บไซต์",
@@ -28,14 +34,14 @@ const items = [
     icon: AppWindow,
   },
   {
+    title: "จัดการการสั่งซื้อ",
+    url: "/orders",
+    icon: ShoppingBag,
+  },
+  {
     title: "รายงาน",
     url: "/report",
     icon: ChartNoAxesCombined,
-  },
-  {
-    title: "ตั้งค่าร้านอาหาร",
-    url: "/settings",
-    icon: Settings,
   },
 ];
 
