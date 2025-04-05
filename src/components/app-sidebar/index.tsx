@@ -20,7 +20,7 @@ import { Header } from "./header";
 const items = [
   {
     title: "ร้านอาหารของคุณ",
-    url: "/settings",
+    url: "/restaurant",
     icon: Store,
   },
   {
