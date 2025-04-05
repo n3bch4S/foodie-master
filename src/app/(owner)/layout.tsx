@@ -1,7 +1,5 @@
-import { Header } from "@/components/header";
-import { Separator } from "@/components/ui/separator";
 import { ClerkProvider } from "@clerk/nextjs";
-import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
+import { SidebarProvider } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/app-sidebar";
 
 export default function RootLayout({
@@ -13,12 +11,7 @@ export default function RootLayout({
     <ClerkProvider>
       <SidebarProvider>
         <AppSidebar />
-        <main>
-          <Header />
-          <Separator />
-          <SidebarTrigger />
-          {children}
-        </main>
+        <main>{children}</main>
       </SidebarProvider>
     </ClerkProvider>
   );

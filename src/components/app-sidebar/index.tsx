@@ -1,5 +1,4 @@
-import { Calendar, Home, Inbox, Search, Settings } from "lucide-react";
-
+import { AppWindow, ChartNoAxesCombined, ChefHat } from "lucide-react";
 import {
   Sidebar,
   SidebarContent,
@@ -11,41 +10,30 @@ import {
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
 
-// Menu items.
 const items = [
   {
-    title: "Home",
-    url: "#",
-    icon: Home,
+    title: "จัดการอาหาร",
+    url: "/foods",
+    icon: ChefHat,
   },
   {
-    title: "Inbox",
-    url: "#",
-    icon: Inbox,
+    title: "ออกแบบเว็บไซต์",
+    url: "/editor",
+    icon: AppWindow,
   },
   {
-    title: "Calendar",
-    url: "#",
-    icon: Calendar,
-  },
-  {
-    title: "Search",
-    url: "#",
-    icon: Search,
-  },
-  {
-    title: "Settings",
-    url: "#",
-    icon: Settings,
+    title: "รายงาน",
+    url: "/report",
+    icon: ChartNoAxesCombined,
   },
 ];
 
 export function AppSidebar() {
   return (
-    <Sidebar>
+    <Sidebar collapsible="none">
       <SidebarContent>
         <SidebarGroup>
-          <SidebarGroupLabel>Application</SidebarGroupLabel>
+          <SidebarGroupLabel>แอปพลิเคชัน</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
               {items.map((item) => (
