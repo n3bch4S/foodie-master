@@ -19,6 +19,7 @@ import { toast } from "sonner";
 import React, { useMemo, useState } from "react";
 import Image from "next/image";
 import { AspectRatio } from "../ui/aspect-ratio";
+import { editRestaurant } from "@/lib/restaurant";
 
 const restaurantFormSchema = z.object({
   name: z.string().min(1, { message: "กรุณากรอกชื่อร้านอาหาร" }),
@@ -27,7 +28,20 @@ const restaurantFormSchema = z.object({
 });
 type RestaurantForm = z.infer<typeof restaurantFormSchema>;
 
-function toUTUrl(key: string) {
+async function onSubmit(values: RestaurantForm): Promise<void> {
+  await editRestaurant({
+    name: values.name,
+    description: values.description ?? null,
+    logoKey: values.logoKey ?? null,
+  })
+    .then((rtrDetail) => {
+      toast.success("สำเร็จ", { description: `บันทึก ${rtrDetail.name}` });
+    })
+    .catch(() => {
+      toast.error(`ไม่สำเร็จ`, { description: `โปรดลองใหม่อีกครั้ง` });
+    });
+}
+function toUTUrl(key: string): string {
   return `https://${process.env.NEXT_PUBLIC_UPLOADTHING_APP_ID}.ufs.sh/f/${key}`;
 }
 
@@ -44,10 +58,6 @@ export function RestaurantForm() {
   const logoKey = useMemo(() => {
     return form.getValues().logoKey;
   }, [form.getValues().logoKey]);
-
-  function onSubmit(values: RestaurantForm) {
-    console.log(values);
-  }
 
   return (
     <Form {...form}>
