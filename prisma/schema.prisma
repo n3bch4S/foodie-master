@@ -432,22 +432,78 @@ model AddOns {
   @@index([agencyId])
 }
 
+model Restaurant {
+  id          String  @id @default(uuid())
+  name        String
+  description String?
+  logoKey     String?
+  ownerId     String
+
+  FoodItem           FoodItem[]
+  SessionTransaction SessionTransaction[]
+  Site               Site?
+}
+
 model FoodItem {
-  id       String  @id @default(uuid())
-  name     String
-  category String
-  price    Decimal
-  imageKey String?
-  isActive Boolean @default(true)
-  ownerId  String
+  id           String  @id @default(uuid())
+  name         String
+  category     String
+  price        Decimal
+  imageKey     String?
+  isActive     Boolean @default(true)
+  restaurantId String
+
+  Restaurant Restaurant @relation(fields: [restaurantId], references: [id])
+  Order      Order[]
+
+  @@index([restaurantId])
+}
+
+enum OrderStatus {
+  PENDING
+  IN_PROGRESS
+  COMPLETED
+  CANCELLED
+}
+
+model SessionTransaction {
+  id           String   @id @default(uuid())
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+  restaurantId String
+
+  Restaurant Restaurant @relation(fields: [restaurantId], references: [id])
+  Order      Order[]
+
+  @@index([restaurantId])
+}
+
+model Order {
+  id                   String      @id @default(uuid())
+  createdAt            DateTime    @default(now())
+  updatedAt            DateTime    @updatedAt
+  status               OrderStatus @default(PENDING)
+  quantity             Int
+  foodItemId           String
+  sessionTransactionId String
+
+  FoodItem           FoodItem           @relation(fields: [foodItemId], references: [id])
+  SessionTransaction SessionTransaction @relation(fields: [sessionTransactionId], references: [id])
+
+  @@index([foodItemId])
+  @@index([sessionTransactionId])
 }
 
 model Site {
-  id      String @id @default(uuid())
-  name    String
-  ownerId String
+  id           String @id @default(uuid())
+  name         String
+  ownerId      String
+  restaurantId String @unique
 
-  Page Page[]
+  Restaurant Restaurant @relation(fields: [restaurantId], references: [id])
+  Page       Page[]
+
+  @@index([restaurantId])
 }
 
 enum PageType {
@@ -461,8 +517,9 @@ model Page {
   name   String
   type   PageType
   dom    Json
-  site   Site     @relation(fields: [siteId], references: [id])
   siteId String
+
+  site Site @relation(fields: [siteId], references: [id])
 
   @@index([siteId])
 }
