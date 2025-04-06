@@ -10,7 +10,6 @@ import {
 export default function Restaurant() {
   return (
     <>
-      <p>restaurant page name, logo, description</p>
       <Card>
         <CardHeader>
           <CardTitle>ร้านอาหารของคุณ</CardTitle>
