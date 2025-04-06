@@ -16,7 +16,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { UploadButton } from "@/lib/uploadthing";
 import { toast } from "sonner";
-import React, { useMemo, useState } from "react";
+import React, { useState } from "react";
 import Image from "next/image";
 import { AspectRatio } from "../ui/aspect-ratio";
 import { editRestaurant } from "@/lib/restaurant";
@@ -51,7 +51,10 @@ interface RestaurantFormProps {
 }
 
 export function RestaurantForm({ restaurant }: RestaurantFormProps) {
-  const [logoName, setLogoName] = useState<string>("");
+  const [logoName, setLogoName] = useState<string | null>(null);
+  const [logoKey, setLogoKey] = useState<string | null>(
+    restaurant ? restaurant.logoKey : null
+  );
   const form = useForm<RestaurantForm>({
     resolver: zodResolver(restaurantFormSchema),
     defaultValues: restaurant
@@ -62,9 +65,6 @@ export function RestaurantForm({ restaurant }: RestaurantFormProps) {
         }
       : undefined,
   });
-  const logoKey = useMemo(() => {
-    return form.getValues().logoKey;
-  }, [form.getValues().logoKey]);
 
   return (
     <Form {...form}>
@@ -127,6 +127,7 @@ export function RestaurantForm({ restaurant }: RestaurantFormProps) {
               onClientUploadComplete={(res) => {
                 form.setValue("logoKey", res[0].key);
                 setLogoName(res[0].name);
+                setLogoKey(res[0].key);
                 toast.success("อัปโหลดสำเร็จ");
               }}
               onUploadError={() => {
