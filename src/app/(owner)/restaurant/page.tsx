@@ -22,7 +22,7 @@ export default async function Page() {
     }
   );
   return (
-    <>
+    <div className="w-96 p-4">
       <Card>
         <CardHeader>
           <CardTitle>ร้านอาหารของคุณ</CardTitle>
@@ -32,6 +32,6 @@ export default async function Page() {
           <RestaurantForm restaurant={restaurant} />
         </CardContent>
       </Card>
-    </>
+    </div>
   );
 }

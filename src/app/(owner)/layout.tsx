@@ -2,7 +2,7 @@ import { ClerkProvider } from "@clerk/nextjs";
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/app-sidebar";
 
-export default function RootLayout({
+export default function OwnerLayout({
   children,
 }: {
   children: React.ReactNode;
