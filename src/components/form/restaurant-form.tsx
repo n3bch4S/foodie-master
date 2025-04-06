@@ -20,6 +20,7 @@ import React, { useMemo, useState } from "react";
 import Image from "next/image";
 import { AspectRatio } from "../ui/aspect-ratio";
 import { editRestaurant } from "@/lib/restaurant";
+import { Restaurant } from "@/lib/restaurant/types";
 
 const restaurantFormSchema = z.object({
   name: z.string().min(1, { message: "กรุณากรอกชื่อร้านอาหาร" }),
@@ -45,15 +46,21 @@ function toUTUrl(key: string): string {
   return `https://${process.env.NEXT_PUBLIC_UPLOADTHING_APP_ID}.ufs.sh/f/${key}`;
 }
 
-export function RestaurantForm() {
+interface RestaurantFormProps {
+  restaurant?: Restaurant;
+}
+
+export function RestaurantForm({ restaurant }: RestaurantFormProps) {
   const [logoName, setLogoName] = useState<string>("");
   const form = useForm<RestaurantForm>({
     resolver: zodResolver(restaurantFormSchema),
-    defaultValues: {
-      name: "",
-      description: "",
-      logoKey: "",
-    },
+    defaultValues: restaurant
+      ? {
+          name: restaurant.name,
+          description: restaurant.description ?? undefined,
+          logoKey: restaurant.logoKey ?? undefined,
+        }
+      : undefined,
   });
   const logoKey = useMemo(() => {
     return form.getValues().logoKey;
@@ -104,6 +111,7 @@ export function RestaurantForm() {
                   fill
                   sizes="10vw"
                   className="rounded-md object-cover border-4"
+                  priority
                 />
               ) : (
                 <div className="w-full h-full border-4 rounded-md flex justify-center items-center text-slate-400">

@@ -51,6 +51,19 @@ export async function editRestaurant({
     });
 }
 
+export async function getRestaurant(): Promise<RestaurantDetail | null> {
+  const { userId } = auth();
+  if (!userId) throw new Error(`User not authenticated`);
+  return await db.restaurant
+    .findFirst({ where: { ownerId: userId } })
+    .then(async (maybeRestaurant) => {
+      if (!maybeRestaurant) {
+        return null;
+      }
+      return maybeRestaurant;
+    });
+}
+
 // model Restaurant {
 //     id          String  @id @default(uuid())
 //     name        String

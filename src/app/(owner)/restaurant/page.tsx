@@ -6,8 +6,21 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { getRestaurant } from "@/lib/restaurant";
+import { Restaurant } from "@/lib/restaurant/types";
 
-export default function Restaurant() {
+export default async function Page() {
+  const restaurant: Restaurant | undefined = await getRestaurant().then(
+    (maybeRestaurant) => {
+      return maybeRestaurant
+        ? {
+            name: maybeRestaurant.name,
+            description: maybeRestaurant.description,
+            logoKey: maybeRestaurant.logoKey,
+          }
+        : undefined;
+    }
+  );
   return (
     <>
       <Card>
@@ -16,7 +29,7 @@ export default function Restaurant() {
           <CardDescription>โปรดกรอกรายละเอียดร้านอาหารของคุณ</CardDescription>
         </CardHeader>
         <CardContent>
-          <RestaurantForm />
+          <RestaurantForm restaurant={restaurant} />
         </CardContent>
       </Card>
     </>
