@@ -1,6 +1,6 @@
 "use client";
 import { Badge } from "@/components/ui/badge";
-import { EditorElement, useEditor } from "@/providers/editor/editor-provider";
+import { EditorElement, useEditor } from "@/providers/_editor/editor-provider";
 import clsx from "clsx";
 import { Trash } from "lucide-react";
 import React from "react";

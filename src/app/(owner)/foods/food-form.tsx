@@ -13,7 +13,7 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { createFood } from "@/lib/food/index";
-import { FoodContext, FoodForm } from "@/providers/foods";
+import { FoodFormContext, FoodForm } from "@/providers/foods/form";
 import { useContext, useState } from "react";
 import Image from "next/image";
 import { Switch } from "@/components/ui/switch";
@@ -26,7 +26,7 @@ export function MultiFoodForm() {
   const router = useRouter();
   const [imageName, setImageName] = useState<string | null>(null);
   const [imageKey, setImageKey] = useState<string | null>(null);
-  const { form } = useContext(FoodContext)!;
+  const form = useContext(FoodFormContext)!;
 
   return (
     <Form {...form}>

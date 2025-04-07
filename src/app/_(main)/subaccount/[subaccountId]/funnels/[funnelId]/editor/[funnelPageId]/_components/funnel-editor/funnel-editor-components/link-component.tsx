@@ -2,7 +2,7 @@
 import { Badge } from "@/components/ui/badge";
 import { EditorBtns } from "@/lib/constants";
 
-import { EditorElement, useEditor } from "@/providers/editor/editor-provider";
+import { EditorElement, useEditor } from "@/providers/_editor/editor-provider";
 import clsx from "clsx";
 import { Trash } from "lucide-react";
 import Link from "next/link";

@@ -1,7 +1,7 @@
 "use client";
 import { Button } from "@/components/ui/button";
 import { getFunnelPageDetails } from "@/lib/queries";
-import { useEditor } from "@/providers/editor/editor-provider";
+import { useEditor } from "@/providers/_editor/editor-provider";
 import clsx from "clsx";
 import { EyeOff } from "lucide-react";
 import React, { useEffect } from "react";

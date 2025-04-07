@@ -8,7 +8,7 @@ interface FoodProviderProps {
   children: React.ReactNode;
 }
 
-export function FoodProvider({ children }: FoodProviderProps) {
+export function FoodFormContextProvider({ children }: FoodProviderProps) {
   const form = useForm<FoodForm>({
     resolver: zodResolver(foodFormSchema),
     defaultValues: {
@@ -20,11 +20,11 @@ export function FoodProvider({ children }: FoodProviderProps) {
   });
 
   return (
-    <FoodContext.Provider value={{ form }}>{children}</FoodContext.Provider>
+    <FoodFormContext.Provider value={form}>{children}</FoodFormContext.Provider>
   );
 }
 
-export const foodFormSchema = z.object({
+const foodFormSchema = z.object({
   name: z.string(),
   category: z.string(),
   price: z.coerce.number().nonnegative(),
@@ -33,6 +33,6 @@ export const foodFormSchema = z.object({
 });
 export type FoodForm = z.infer<typeof foodFormSchema>;
 
-export const FoodContext = createContext<
-  { form: UseFormReturn<FoodForm, any, undefined> } | undefined
+export const FoodFormContext = createContext<
+  UseFormReturn<FoodForm, any, undefined> | undefined
 >(undefined);

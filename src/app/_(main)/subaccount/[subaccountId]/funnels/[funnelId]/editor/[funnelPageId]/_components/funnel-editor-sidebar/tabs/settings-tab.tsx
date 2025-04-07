@@ -33,7 +33,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { useEditor } from "@/providers/editor/editor-provider";
+import { useEditor } from "@/providers/_editor/editor-provider";
 import { Slider } from "@/components/ui/slider";
 
 type Props = {};

@@ -9,7 +9,6 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { deleteFood, FoodDetail } from "@/lib/food";
 import { Row, Table } from "@tanstack/react-table";
 import { MoreHorizontal } from "lucide-react";
 import { useRouter } from "next/navigation";
@@ -17,6 +16,8 @@ import React, { useCallback, useState } from "react";
 import { toast } from "sonner";
 import { Dialog, DialogTrigger } from "@/components/ui/dialog";
 import { FoodDialogContent } from "./food-dialog";
+import { FoodDetail } from "@/lib/food/types";
+import { deleteFood } from "@/lib/food/index";
 
 interface ActionDropdownProps<TData> {
   table?: Table<TData>;
@@ -61,13 +62,13 @@ export function FoodActionDropdown({
     if (!row) return;
     await deleteFood(row.original.id)
       .then(() => {
-        toast.success(`ลบสำเร็จ`, {
+        toast.success(`ลำเร็จ`, {
           description: `"${row.original.name}" ถูกลบแล้ว`,
         });
         router.refresh();
       })
-      .catch((error) => {
-        toast.error(`ลบอาหารล้มเหลว`, { description: error.message });
+      .catch(() => {
+        toast.error(`ล้มเหลว`, { description: `โปรดลองอีกครั้ง` });
       });
   }, [router, row]);
 

@@ -1,6 +1,6 @@
 import FunnelEditor from "@/app/_(main)/subaccount/[subaccountId]/funnels/[funnelId]/editor/[funnelPageId]/_components/funnel-editor";
 import { getDomainContent } from "@/lib/queries";
-import EditorProvider from "@/providers/editor/editor-provider";
+import EditorProvider from "@/providers/_editor/editor-provider";
 import { notFound } from "next/navigation";
 import React from "react";
 

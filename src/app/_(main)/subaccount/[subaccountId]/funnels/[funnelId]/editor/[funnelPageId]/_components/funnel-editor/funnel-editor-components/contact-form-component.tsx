@@ -10,7 +10,7 @@ import {
 } from "@/lib/queries";
 
 import { ContactUserFormSchema } from "@/lib/types";
-import { EditorElement, useEditor } from "@/providers/editor/editor-provider";
+import { EditorElement, useEditor } from "@/providers/_editor/editor-provider";
 import clsx from "clsx";
 import { Trash } from "lucide-react";
 import { useRouter } from "next/navigation";

@@ -17,6 +17,7 @@ import {
 } from "@/components/ui/sidebar";
 import { Header } from "./header";
 import { Footer } from "./footer";
+import { EditorSidebar } from "./editor-sidebar";
 
 const items = [
   {
@@ -68,6 +69,7 @@ export function AppSidebar() {
             </SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>
+        <EditorSidebar />
       </SidebarContent>
       <Footer />
     </Sidebar>

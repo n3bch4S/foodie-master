@@ -53,3 +53,7 @@ export async function editFood(food: Food, id?: string): Promise<FoodDetail> {
   }
   return await createFood(food);
 }
+
+export async function deleteFood(id: string): Promise<void> {
+  await db.foodItem.delete({ where: { id } });
+}

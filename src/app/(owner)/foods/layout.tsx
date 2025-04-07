@@ -1,9 +1,9 @@
-import { FoodProvider } from "@/providers/foods";
+import { FoodFormContextProvider } from "@/providers/foods/form";
 
 interface FoodsLayoutProps {
   children: React.ReactNode;
 }
 
 export default function FoodsLayout({ children }: FoodsLayoutProps) {
-  return <FoodProvider>{children}</FoodProvider>;
+  return <FoodFormContextProvider>{children}</FoodFormContextProvider>;
 }

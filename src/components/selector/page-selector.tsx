@@ -17,8 +17,7 @@ export function PageSelector() {
         </SelectTrigger>
         <SelectContent>
           <SelectItem value="home">Home</SelectItem>
-          <SelectItem value="about">About</SelectItem>
-          <SelectItem value="contact">Contact</SelectItem>
+          <SelectItem value="order">Order</SelectItem>
           <Separator className="my-2" />
           <PageDialog />
         </SelectContent>
