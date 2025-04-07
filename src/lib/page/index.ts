@@ -90,7 +90,6 @@ export async function createPage(
 export async function getPages(): Promise<PageDetail[]> {
   return await getRestaurant()
     .then((maybeRtr) => {
-      console.log(maybeRtr);
       if (!maybeRtr) throw new Error("Restaurant not found");
       return maybeRtr;
     })
