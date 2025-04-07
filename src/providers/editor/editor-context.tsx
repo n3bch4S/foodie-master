@@ -22,7 +22,7 @@ export function EditorProvider({ children }: EditorProviderProps) {
     isOpenPageDialog: false,
     screenSize: "DESKTOP",
     isPreview: false,
-    currentPage: "home",
+    currentPage: "Home",
   };
 
   const [editorContext, dispatch] = useReducer(editorReducer, initContext);
@@ -45,17 +45,16 @@ export function useEditorDispatch(): EditorDispatchContextType {
 }
 
 export type EditorActionType = {
-  type: string;
-  id: string;
-  text: string;
+  type: "changePage";
+  page?: string;
 };
 function editorReducer(
   editorContext: EditorContextType,
   action: EditorActionType
 ): EditorContextType {
   switch (action.type) {
-    case "added": {
-      return { ...editorContext };
+    case "changePage": {
+      return { ...editorContext, currentPage: action.page! };
     }
     default: {
       throw Error("Unknown action: " + action.type);

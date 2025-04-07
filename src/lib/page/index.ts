@@ -3,9 +3,8 @@
 import { UniqueIdentifier } from "@dnd-kit/core";
 import { PrismaClient } from "@prisma/client";
 import { Dom, domSchema, PageDetail, PageType, SiteDetail } from "./types";
-import { auth } from "@clerk/nextjs";
 import { CUSTOM_PAGE_DOM, HOME_PAGE_DOM, ORDER_PAGE_DOM } from "./constants";
-import { getRestaurant } from "../restaurant";
+import { getRestaurant, getSite } from "../restaurant";
 
 const db = new PrismaClient();
 
@@ -64,18 +63,18 @@ export async function createPage(
   name: string,
   type: PageType
 ): Promise<PageDetail> {
-  return await getRestaurant()
-    .then((maybeRtr) => {
-      if (!maybeRtr) throw new Error("Restaurant not found");
-      return maybeRtr;
+  return await getSite()
+    .then((maybeSite) => {
+      if (!maybeSite) throw new Error("Site not found");
+      return maybeSite;
     })
-    .then((rtr) => {
-      return { rtr, maybePage: db.page.findFirst({ where: { name } }) };
+    .then(async (site) => {
+      return { site, maybePage: await db.page.findFirst({ where: { name } }) };
     })
-    .then(({ rtr, maybePage }) => {
+    .then(async ({ site, maybePage }) => {
       if (!maybePage)
-        return db.page.create({
-          data: { name, type, dom: findDom(type), siteId: rtr.id },
+        return await db.page.create({
+          data: { name, type, dom: findDom(type), siteId: site.id },
         });
       throw new Error(`Page with name ${name} already exists`);
     })
@@ -91,13 +90,20 @@ export async function createPage(
 export async function getPages(): Promise<PageDetail[]> {
   return await getRestaurant()
     .then((maybeRtr) => {
+      console.log(maybeRtr);
       if (!maybeRtr) throw new Error("Restaurant not found");
       return maybeRtr;
     })
-    .then((rtr) => {
-      return db.page.findMany({ where: { site: { restaurantId: rtr.id } } });
+    .then(async (rtr) => {
+      return await db.page.findMany({
+        where: { site: { restaurantId: rtr.id } },
+      });
     })
-    .then((pages) => {
+    .then(async (pages) => {
+      if (!pages.find((page) => page.type.valueOf() === "HOME"))
+        pages = [...pages, await createPage("Home", "HOME")];
+      if (!pages.find((page) => page.type.valueOf() === "ORDER"))
+        pages = [...pages, await createPage("Order", "ORDER")];
       return pages.map((page) => ({
         ...page,
         type: page.type.valueOf() as PageType,
