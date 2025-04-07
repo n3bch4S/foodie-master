@@ -88,6 +88,24 @@ export async function createPage(
     });
 }
 
+export async function getPages(): Promise<PageDetail[]> {
+  return await getRestaurant()
+    .then((maybeRtr) => {
+      if (!maybeRtr) throw new Error("Restaurant not found");
+      return maybeRtr;
+    })
+    .then((rtr) => {
+      return db.page.findMany({ where: { site: { restaurantId: rtr.id } } });
+    })
+    .then((pages) => {
+      return pages.map((page) => ({
+        ...page,
+        type: page.type.valueOf() as PageType,
+        dom: domSchema.parse(page.dom),
+      }));
+    });
+}
+
 function findIn(component: Dom, id: UniqueIdentifier): Dom | null {
   if (component.id === id) return component;
   if (component.children.length === 0) return null;

@@ -1,3 +1,4 @@
+"use client";
 import {
   Select,
   SelectContent,
@@ -7,8 +8,16 @@ import {
 } from "@/components/ui/select";
 import { Separator } from "@/components/ui/separator";
 import { PageDialog } from "@/components/dialog/page-dialog";
+import { useEditor } from "@/providers/editor/editor-context";
+import { PageDetail } from "@/lib/page/types";
 
-export function PageSelector() {
+interface PageSelectorProps {
+  pages: PageDetail[];
+}
+
+export function PageSelector({ pages }: PageSelectorProps) {
+  const editor = useEditor();
+
   return (
     <>
       <Select>
@@ -16,8 +25,13 @@ export function PageSelector() {
           <SelectValue placeholder="Select Page" />
         </SelectTrigger>
         <SelectContent>
-          <SelectItem value="home">Home</SelectItem>
-          <SelectItem value="order">Order</SelectItem>
+          {pages.map((page) => {
+            return (
+              <SelectItem key={page.id} value={page.name}>
+                {page.name}
+              </SelectItem>
+            );
+          })}
           <Separator className="my-2" />
           <PageDialog />
         </SelectContent>
