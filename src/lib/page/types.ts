@@ -27,6 +27,18 @@ export const pageDetailSchema = z
   .strict();
 export type PageDetail = z.infer<typeof pageDetailSchema>;
 
+// model Page {
+//   id     String   @id @default(uuid())
+//   name   String
+//   type   PageType
+//   dom    Json
+//   siteId String
+
+//   site Site @relation(fields: [siteId], references: [id])
+
+//   @@index([siteId])
+// }
+
 export const pageSchema = pageDetailSchema.omit({ id: true });
 export type Page = z.infer<typeof pageSchema>;
 
@@ -34,7 +46,18 @@ export const siteDetailSchema = z
   .object({
     id: z.string().uuid(),
     name: z.string().min(1),
-    ownerId: z.string().uuid(),
+    restaurantId: z.string().uuid(),
   })
   .strict();
 export type SiteDetail = z.infer<typeof siteDetailSchema>;
+
+// model Site {
+//   id           String @id @default(uuid())
+//   name         String
+//   restaurantId String @unique
+
+//   Restaurant Restaurant @relation(fields: [restaurantId], references: [id])
+//   Page       Page[]
+
+//   @@index([restaurantId])
+// }

@@ -497,7 +497,6 @@ model Order {
 model Site {
   id           String @id @default(uuid())
   name         String
-  ownerId      String
   restaurantId String @unique
 
   Restaurant Restaurant @relation(fields: [restaurantId], references: [id])

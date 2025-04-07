@@ -5,22 +5,35 @@ import { PrismaClient } from "@prisma/client";
 import { Dom, domSchema, PageDetail, PageType, SiteDetail } from "./types";
 import { auth } from "@clerk/nextjs";
 import { CUSTOM_PAGE_DOM, HOME_PAGE_DOM, ORDER_PAGE_DOM } from "./constants";
+import { getRestaurant } from "../restaurant";
 
 const db = new PrismaClient();
 
-async function safeCreateSite(ownerId: string): Promise<SiteDetail> {
-  console.log(`safeCreateSite for owner`, ownerId);
-  const site = await db.site
-    .findFirst({ where: { ownerId } })
-    .then(async (site) => {
-      if (!site)
-        return await db.site.create({
-          data: { name: "TEMP_NAME", ownerId },
+async function safeCreateSite(): Promise<SiteDetail> {
+  return getRestaurant()
+    .then((maybeRestaurant) => {
+      if (!maybeRestaurant) throw new Error("Restaurant not found");
+      return maybeRestaurant;
+    })
+    .then((restaurant) => {
+      return {
+        restaurant,
+        maybeSite: db.site.findFirst({
+          where: { restaurantId: restaurant.id },
+        }),
+      };
+    })
+    .then(({ restaurant, maybeSite }) => {
+      if (!maybeSite)
+        return db.site.create({
+          data: { name: restaurant.name, restaurantId: restaurant.id },
         });
-      return site;
+      return maybeSite;
+    })
+    .then((maybeSite) => {
+      if (!maybeSite) throw new Error("Site not found");
+      return maybeSite;
     });
-  console.log(`created site`, site);
-  return site;
 }
 
 async function validateNonCreatePage(
@@ -51,26 +64,28 @@ export async function createPage(
   name: string,
   type: PageType
 ): Promise<PageDetail> {
-  console.log(`creating page`, name);
-  const { userId } = auth();
-  if (!userId) throw new Error(`User not authenticated`);
-  const createdPage = await safeCreateSite(userId)
-    .then(async ({ id }) => {
-      await validateNonCreatePage(id, name);
-      return await db.page.create({
-        data: { name, type, dom: findDom(type), siteId: id },
-      });
+  return await getRestaurant()
+    .then((maybeRtr) => {
+      if (!maybeRtr) throw new Error("Restaurant not found");
+      return maybeRtr;
     })
-    .then((page) => {
-      const pageDetail: PageDetail = {
-        ...page,
-        dom: domSchema.parse(page.dom),
+    .then((rtr) => {
+      return { rtr, maybePage: db.page.findFirst({ where: { name } }) };
+    })
+    .then(({ rtr, maybePage }) => {
+      if (!maybePage)
+        return db.page.create({
+          data: { name, type, dom: findDom(type), siteId: rtr.id },
+        });
+      throw new Error(`Page with name ${name} already exists`);
+    })
+    .then((maybePage) => {
+      return {
+        ...maybePage,
+        type: maybePage.type.valueOf() as PageType,
+        dom: domSchema.parse(maybePage.dom),
       };
-      return pageDetail;
     });
-
-  console.log(`created page`, createdPage);
-  return createdPage;
 }
 
 function findIn(component: Dom, id: UniqueIdentifier): Dom | null {
