@@ -11,7 +11,7 @@ import { PageDialog } from "@/components/dialog/page-dialog";
 import {
   useEditor,
   useEditorDispatch,
-} from "@/providers/editor/editor-context";
+} from "@/providers/editor/editor-provider";
 import { PageDetail } from "@/lib/page/types";
 
 interface PageSelectorProps {
@@ -27,7 +27,7 @@ export function PageSelector({ pages }: PageSelectorProps) {
       <Select
         value={editor.currentPage}
         onValueChange={(value) => {
-          dispatch({ type: "changePage", page: value });
+          dispatch({ type: "changePage", changePage: { page: value } });
         }}
       >
         <SelectTrigger className="w-40">

@@ -23,16 +23,17 @@ function renderComponent(component: Dom): React.ReactNode {
       </DropComp>
     );
 
-  return (
-    <DragDropComp
-      key={component.id}
-      id={component.id}
-      tagName={component.tagName}
-      innerText={component.innerText}
-    >
-      {component.children.map((child) => renderComponent(child))}
-    </DragDropComp>
-  );
+  if (component.canHaveChildren)
+    return (
+      <DragDropComp
+        key={component.id}
+        id={component.id}
+        tagName={component.tagName}
+        innerText={component.innerText}
+      >
+        {component.children.map((child) => renderComponent(child))}
+      </DragDropComp>
+    );
   return (
     <DragDropComp
       key={component.id}

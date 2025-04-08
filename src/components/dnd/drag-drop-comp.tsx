@@ -72,9 +72,10 @@ export function DragDropComp({
           {...dragState.listeners}
           // {...dragState.attributes}
           style={style}
-          className="border-2"
+          className="border-2 min-h-8 min-w-16"
         >
           {innerText}
+          {children}
         </div>
       );
     }
