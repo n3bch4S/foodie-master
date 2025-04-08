@@ -3,7 +3,7 @@ import { EditorSidebar } from "@/components/editor-sidebar";
 
 export default async function Editor() {
   return (
-    <div className="container flex flex-row gap-1 p-4">
+    <div className="w-full h-full flex flex-row">
       <EditorSidebar />
       <EditorCanvas />
     </div>

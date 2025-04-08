@@ -1,9 +1,14 @@
 import { z } from "zod";
 
+export const tagNameSchema = z.enum(["p", "div", "button", "image"]);
+export type TagName = z.infer<typeof tagNameSchema>;
+
 export const baseDomSchema = z
   .object({
     id: z.union([z.string(), z.number()]),
+    tagName: tagNameSchema,
     innerText: z.optional(z.string()),
+    canHaveChildren: z.boolean(),
   })
   .strict();
 export type Dom = z.infer<typeof baseDomSchema> & { children: Dom[] };
@@ -61,5 +66,3 @@ export type SiteDetail = z.infer<typeof siteDetailSchema>;
 
 //   @@index([restaurantId])
 // }
-
-export type TagName = "p" | "div" | "button" | "image";

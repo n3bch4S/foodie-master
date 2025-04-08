@@ -5,11 +5,20 @@ import Image from "next/image";
 import { CSS } from "@dnd-kit/utilities";
 import { CSSProperties } from "react";
 
+type ImageArgs = {
+  src: string;
+  alt: string;
+};
+
+type ButtonArgs = {
+  href: string;
+};
+
 interface DragCompProps extends UseDraggableArguments {
   tagName: TagName;
   children?: React.ReactNode;
-  src?: string;
-  alt?: string;
+  imageTag?: ImageArgs;
+  buttonTag?: ButtonArgs;
 }
 
 export function DragComp({
@@ -19,8 +28,8 @@ export function DragComp({
   attributes,
   tagName,
   children,
-  src,
-  alt,
+  imageTag,
+  buttonTag,
 }: DragCompProps) {
   const dragState = useDraggable({ id, disabled, data, attributes });
   const style: CSSProperties = {
@@ -49,6 +58,7 @@ export function DragComp({
           style={style}
           {...dragState.listeners}
           {...dragState.attributes}
+          className="border-2 hover:border-blue-400 flex flex-col justify-center items-center gap-2 p-4 w-full h-8"
         >
           {children}
         </div>
@@ -60,6 +70,7 @@ export function DragComp({
           style={style}
           {...dragState.listeners}
           {...dragState.attributes}
+          onClick={() => 1}
         >
           {children}
         </button>
@@ -71,8 +82,8 @@ export function DragComp({
           style={style}
           {...dragState.listeners}
           {...dragState.attributes}
-          src={src ?? ""}
-          alt={alt ?? ""}
+          src={imageTag!.src}
+          alt={imageTag!.alt}
         />
       );
   }

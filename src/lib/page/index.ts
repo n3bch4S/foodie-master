@@ -151,6 +151,7 @@ export async function moveComponent(
   const newParent = findIn(newComponent, newParentId);
   if (!newParent)
     return Promise.reject(`Can't find new parent id ${newParentId}`);
+  if (!newParent.canHaveChildren) return newComponent;
   if (oldParent.id === newParent.id) return newComponent;
   const child = findIn(oldParent, childId);
   if (!child) return Promise.reject(`Can't find child with id ${childId}`);

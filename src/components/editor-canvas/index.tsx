@@ -1,35 +1,44 @@
 "use client";
 
 import { Dom } from "@/lib/page/types";
-import { useEditor } from "@/providers/editor/editor-context";
+import { useEditor } from "@/providers/editor/editor-provider";
 import { DropComp } from "../dnd/drop-comp";
 import { DragDropComp } from "../dnd/drag-drop-comp";
+import { useMemo } from "react";
 
 export function EditorCanvas() {
   const editor = useEditor();
-  console.log(editor.dom);
+  const renderedDom = useMemo(() => renderComponent(editor.dom), [editor.dom]);
 
-  return renderComponent(editor.dom);
+  return renderedDom;
 }
 
-function renderComponentHelper(component: Dom): React.ReactNode {
+function renderComponent(component: Dom): React.ReactNode {
   if (component.id === "root" && component.children.length === 0)
     return <DropComp id={component.id} />;
   if (component.id === "root" && component.children.length > 0)
     return (
       <DropComp id={component.id}>
-        body
-        {component.children.map((child) => renderComponentHelper(child))}
+        {component.children.map((child) => renderComponent(child))}
       </DropComp>
     );
+
   return (
-    <DragDropComp key={component.id} id={component.id}>
-      {component.innerText ? component.innerText : null}
-      {component.children.map((child) => renderComponentHelper(child))}
+    <DragDropComp
+      key={component.id}
+      id={component.id}
+      tagName={component.tagName}
+      innerText={component.innerText}
+    >
+      {component.children.map((child) => renderComponent(child))}
     </DragDropComp>
   );
-}
-
-export function renderComponent(component: Dom): React.ReactNode {
-  return renderComponentHelper(component);
+  return (
+    <DragDropComp
+      key={component.id}
+      id={component.id}
+      tagName={component.tagName}
+      innerText={component.innerText}
+    />
+  );
 }
