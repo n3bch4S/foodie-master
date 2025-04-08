@@ -7,6 +7,7 @@ import {
   SidebarMenu,
   SidebarMenuItem,
 } from "../ui/sidebar";
+import { DragComp } from "../dnd/drag-comp";
 
 export function EditorSidebar() {
   const pathname = usePathname();
@@ -17,7 +18,11 @@ export function EditorSidebar() {
         <SidebarGroupLabel>แอปพลิเคชัน</SidebarGroupLabel>
         <SidebarGroupContent>
           <SidebarMenu>
-            <SidebarMenuItem>h1</SidebarMenuItem>
+            <SidebarMenuItem>
+              <DragComp tagName="p" id="side_p">
+                ข้อความ
+              </DragComp>
+            </SidebarMenuItem>
           </SidebarMenu>
         </SidebarGroupContent>
       </SidebarGroup>

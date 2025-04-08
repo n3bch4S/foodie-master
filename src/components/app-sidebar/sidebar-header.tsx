@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { SidebarHeader, SidebarMenu, SidebarMenuItem } from "../ui/sidebar";
 
-export function Header() {
+export function CustomeSidebarHeader() {
   return (
     <SidebarHeader>
       <SidebarMenu>
