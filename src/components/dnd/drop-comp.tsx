@@ -16,7 +16,7 @@ export function DropComp({ id, disabled, data, children }: DropCompProps) {
     <div
       ref={droppableState.setNodeRef}
       style={style}
-      className="container border-4 rounded-3xl"
+      className="container border-2 rounded-md hover:border-2 hover:border-blue-400"
     >
       {children}
     </div>
