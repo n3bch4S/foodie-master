@@ -61,3 +61,5 @@ export type SiteDetail = z.infer<typeof siteDetailSchema>;
 
 //   @@index([restaurantId])
 // }
+
+export type TagName = "p" | "div" | "button" | "image";
