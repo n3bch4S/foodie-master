@@ -1,7 +1,6 @@
 import { ClerkProvider } from "@clerk/nextjs";
-import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
+import { SidebarProvider } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/app-sidebar";
-import { EditorProvider } from "@/providers/editor/editor-context";
 
 export default function OwnerLayout({
   children,
@@ -10,14 +9,10 @@ export default function OwnerLayout({
 }) {
   return (
     <ClerkProvider>
-      <EditorProvider>
-        <SidebarProvider>
-          <AppSidebar />
-          <SidebarInset>
-            <main>{children}</main>
-          </SidebarInset>
-        </SidebarProvider>
-      </EditorProvider>
+      <SidebarProvider>
+        <AppSidebar />
+        {children}
+      </SidebarProvider>
     </ClerkProvider>
   );
 }
