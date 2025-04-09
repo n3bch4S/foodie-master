@@ -1,5 +1,7 @@
-import { ClientPage } from "./_page";
+import { getSession } from "./action";
+import { ClientPage } from "./client";
 
 export default async function Page() {
-  return <ClientPage />;
+  const sessionDetails = await getSession();
+  return <ClientPage sessionDetails={sessionDetails} />;
 }

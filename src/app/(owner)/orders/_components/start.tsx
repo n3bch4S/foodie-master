@@ -2,9 +2,9 @@
 
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
-import { createOrder, createSession, editOrder, editSession } from "../_action";
+import { createOrder, createSession, editOrder, editSession } from "../action";
 import { useState } from "react";
-import { OrderDetail, SessionDetail } from "../_action/types";
+import { OrderDetail, SessionDetail } from "../types";
 
 export function StartSess() {
   const [ssn, setSsn] = useState<SessionDetail | null>(null);
