@@ -4,13 +4,11 @@ import { Dom } from "@/lib/page/types";
 import { useEditor } from "@/providers/editor/editor-provider";
 import { DropComp } from "../dnd/drop-comp";
 import { DragDropComp } from "../dnd/drag-drop-comp";
-import { useMemo } from "react";
 
 export function EditorCanvas() {
   const editor = useEditor();
-  const renderedDom = useMemo(() => renderComponent(editor.dom), [editor.dom]);
 
-  return renderedDom;
+  return renderComponent(editor.dom);
 }
 
 function renderComponent(component: Dom): React.ReactNode {

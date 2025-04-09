@@ -198,7 +198,7 @@ function generatePreInnerText(tagName: TagName): string | undefined {
     case "p":
       return "Paragraph";
     case "div":
-      return "Div";
+      return undefined;
     case "button":
       return "Button";
     case "image":
