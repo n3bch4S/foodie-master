@@ -2,12 +2,13 @@
 
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
-import { createSession, editSession } from "../_action";
+import { createOrder, createSession, editOrder, editSession } from "../_action";
 import { useState } from "react";
-import { SessionDetail } from "../_action/types";
+import { OrderDetail, SessionDetail } from "../_action/types";
 
 export function StartSess() {
   const [ssn, setSsn] = useState<SessionDetail | null>(null);
+  const [odr, setOdr] = useState<OrderDetail | null>(null);
   return (
     <>
       <Button
@@ -32,6 +33,33 @@ export function StartSess() {
         }}
       >
         End
+      </Button>
+      <Button
+        onClick={() => {
+          if (!ssn) {
+            toast.warning("No session found");
+            return;
+          }
+          createOrder(ssn.id, "foodId", 21).then((odr) => {
+            setOdr(odr);
+            toast.success(odr.id, { description: odr.foodItemId });
+          });
+        }}
+      >
+        createorder
+      </Button>
+      <Button
+        onClick={() => {
+          if (!odr) {
+            toast.warning("No order found");
+            return;
+          }
+          editOrder(odr.id, "COMPLETED").then((odr) => {
+            toast.success(odr.id, { description: odr.status });
+          });
+        }}
+      >
+        done Order
       </Button>
     </>
   );

@@ -1,7 +1,12 @@
 "use server";
 import { getRestaurant } from "@/lib/restaurant";
 import { PrismaClient } from "@prisma/client";
-import { SessionDetail } from "./types";
+import {
+  OrderDetail,
+  OrderStatus,
+  orderStatusSchema,
+  SessionDetail,
+} from "./types";
 
 export async function createSession(): Promise<SessionDetail> {
   return await getRestaurant()
@@ -53,4 +58,30 @@ export async function getSession(): Promise<SessionDetail[]> {
       await db.$disconnect();
       return ssn;
     });
+}
+
+export async function createOrder(
+  sessionId: string,
+  foodId: string,
+  quantity: number
+): Promise<OrderDetail> {
+  const db = new PrismaClient();
+  const order = await db.order.create({
+    data: { sessionTransactionId: sessionId, foodItemId: foodId, quantity },
+  });
+  await db.$disconnect();
+  return order;
+}
+
+export async function editOrder(
+  orderId: string,
+  status: OrderStatus
+): Promise<OrderDetail> {
+  const db = new PrismaClient();
+  const order = await db.order.update({
+    where: { id: orderId },
+    data: { status },
+  });
+  await db.$disconnect();
+  return order;
 }
