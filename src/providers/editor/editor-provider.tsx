@@ -183,7 +183,6 @@ function moveComponent(
   const newParent = findIn(newComponent, newParentId);
   if (!newParent) throw new Error(`Can't find new parent id ${newParentId}`);
   if (!newParent.canHaveChildren) return newComponent;
-  if (oldParent.id === newParent.id) return newComponent;
   const child = findIn(oldParent, childId);
   if (!child) throw new Error(`Can't find child with id ${childId}`);
 

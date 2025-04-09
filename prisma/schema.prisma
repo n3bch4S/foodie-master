@@ -461,7 +461,6 @@ model FoodItem {
 
 enum OrderStatus {
   PENDING
-  IN_PROGRESS
   COMPLETED
   CANCELLED
 }
@@ -470,6 +469,7 @@ model SessionTransaction {
   id           String   @id @default(uuid())
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
+  isOpen       Boolean  @default(true)
   restaurantId String
 
   Restaurant Restaurant @relation(fields: [restaurantId], references: [id])
