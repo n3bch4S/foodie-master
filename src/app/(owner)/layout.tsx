@@ -1,5 +1,5 @@
 import { ClerkProvider } from "@clerk/nextjs";
-import { SidebarProvider } from "@/components/ui/sidebar";
+import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/app-sidebar";
 
 export default function OwnerLayout({
@@ -11,7 +11,8 @@ export default function OwnerLayout({
     <ClerkProvider>
       <SidebarProvider>
         <AppSidebar />
-        {children}
+        <SidebarTrigger className="fixed top-4 left-4 bg-blue-400 hover:bg-blue-300" />
+        <main>{children}</main>
       </SidebarProvider>
     </ClerkProvider>
   );

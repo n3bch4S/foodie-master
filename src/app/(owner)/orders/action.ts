@@ -85,3 +85,19 @@ export async function editOrder(
   await db.$disconnect();
   return order;
 }
+
+export async function getOrder(): Promise<OrderDetail[]> {
+  return await getRestaurant()
+    .then((maybeRtr) => {
+      if (!maybeRtr) throw new Error("Restaurant not found");
+      return maybeRtr;
+    })
+    .then(async (rtr) => {
+      const db = new PrismaClient();
+      const order = await db.order.findMany({
+        where: { SessionTransaction: { restaurantId: rtr.id } },
+      });
+      await db.$disconnect();
+      return order;
+    });
+}

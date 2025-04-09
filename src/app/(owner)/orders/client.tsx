@@ -64,39 +64,18 @@ interface ClientPageProps {
 }
 export function ClientPage(props: ClientPageProps) {
   return (
-    <div>
+    <>
       <DataTable columns={sessionColumns} data={props.sessionDetails} />
       <Separator />
       <DataTable columns={orderColumn} data={props.orderDetails} />
-    </div>
+    </>
   );
 }
 
 const sessionColumns: ColumnDef<SessionDetail>[] = [
+  { id: "ID", accessorKey: "id", header: "ID", enableSorting: false },
   {
-    id: "select",
-    header: ({ table }) => (
-      <Checkbox
-        checked={
-          table.getIsAllPageRowsSelected() ||
-          (table.getIsSomePageRowsSelected() && "indeterminate")
-        }
-        onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
-        aria-label="Select all"
-      />
-    ),
-    cell: ({ row }) => (
-      <Checkbox
-        checked={row.getIsSelected()}
-        onCheckedChange={(value) => row.toggleSelected(!!value)}
-        aria-label="Select row"
-      />
-    ),
-    enableSorting: false,
-    enableHiding: false,
-  },
-  { accessorKey: "id", header: "id", enableSorting: false },
-  {
+    id: "สถานะ",
     accessorKey: "isOpen",
     header: (ctx) => {
       return <DataTableColumnHeader column={ctx.column} title="สถานะ" />;
@@ -106,6 +85,7 @@ const sessionColumns: ColumnDef<SessionDetail>[] = [
     },
   },
   {
+    id: "สร้างเมื่อ",
     accessorKey: "createdAt",
     header: (ctx) => {
       return <DataTableColumnHeader column={ctx.column} title="สร้างเมื่อ" />;
@@ -115,40 +95,13 @@ const sessionColumns: ColumnDef<SessionDetail>[] = [
     },
   },
   {
+    id: "แก้ไขเมื่อ",
     accessorKey: "updatedAt",
     header: (ctx) => {
       return <DataTableColumnHeader column={ctx.column} title="แก้ไขเมื่อ" />;
     },
     cell: (ctx) => {
       return ctx.row.original.updatedAt.toLocaleTimeString();
-    },
-  },
-  {
-    id: "actions",
-    cell: ({ row }) => {
-      const payment = row.original;
-
-      return (
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="ghost" className="h-8 w-8 p-0">
-              <span className="sr-only">Open menu</span>
-              <MoreHorizontal className="h-4 w-4" />
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end">
-            <DropdownMenuLabel>ดำเนินการ</DropdownMenuLabel>
-            <DropdownMenuItem
-              onClick={() => navigator.clipboard.writeText(payment.id)}
-            >
-              คัดลอก ID
-            </DropdownMenuItem>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem>View customer</DropdownMenuItem>
-            <DropdownMenuItem>View payment details</DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
-      );
     },
   },
 ];
@@ -177,15 +130,40 @@ const orderColumn: ColumnDef<OrderDetail>[] = [
     enableHiding: false,
   },
   {
+    id: "สถานะ",
+    accessorKey: "status",
+    header: (ctx) => {
+      return <DataTableColumnHeader column={ctx.column} title="สถานะ" />;
+    },
+    cell: (ctx) => {
+      switch (ctx.row.original.status) {
+        case "PENDING":
+          return "กำลังดำเนินการ";
+        case "COMPLETED":
+          return "เสร็จสิ้น";
+        case "CANCELLED":
+          return "ยกเลิก";
+      }
+    },
+  },
+  {
+    id: "สร้างเมื่อ",
+    accessorKey: "createdAt",
+    header: (ctx) => {
+      return <DataTableColumnHeader column={ctx.column} title="สร้างเมื่อ" />;
+    },
+    cell: (ctx) => {
+      return ctx.row.original.createdAt.toLocaleTimeString();
+    },
+  },
+  {
+    id: "แก้ไขเมื่อ",
     accessorKey: "updatedAt",
     header: (ctx) => {
       return <DataTableColumnHeader column={ctx.column} title="แก้ไขเมื่อ" />;
     },
-  },
-  {
-    accessorKey: "createdAt",
-    header: (ctx) => {
-      return <DataTableColumnHeader column={ctx.column} title="สร้างเมื่อ" />;
+    cell: (ctx) => {
+      return ctx.row.original.updatedAt.toLocaleTimeString();
     },
   },
   {
@@ -253,7 +231,7 @@ function DataTable<TData, TValue>({
   });
 
   return (
-    <>
+    <div>
       <div className="flex items-center py-4">
         {findKey && (
           <Input
@@ -267,7 +245,7 @@ function DataTable<TData, TValue>({
         )}
         <DataTableViewOptions table={table} />
       </div>
-      <div className="rounded-md border">
+      <div className="flex rounded-md border">
         <Table>
           <TableHeader>
             {table.getHeaderGroups().map((headerGroup) => (
@@ -316,9 +294,9 @@ function DataTable<TData, TValue>({
             )}
           </TableBody>
         </Table>
-        <DataTablePagination table={table} />
       </div>
-    </>
+      <DataTablePagination table={table} />
+    </div>
   );
 }
 
@@ -383,12 +361,12 @@ export function DataTablePagination<TData>({
   return (
     <div className="flex items-center justify-between px-2">
       <div className="flex-1 text-sm text-muted-foreground">
-        {table.getFilteredSelectedRowModel().rows.length} of{" "}
-        {table.getFilteredRowModel().rows.length} row(s) selected.
+        {table.getFilteredSelectedRowModel().rows.length} จาก{" "}
+        {table.getFilteredRowModel().rows.length} แถวที่เลือก
       </div>
       <div className="flex items-center space-x-6 lg:space-x-8">
         <div className="flex items-center space-x-2">
-          <p className="text-sm font-medium">Rows per page</p>
+          <p className="text-sm font-medium">จำนวนแถวที่แสดง</p>
           <Select
             value={`${table.getState().pagination.pageSize}`}
             onValueChange={(value) => {
@@ -408,7 +386,7 @@ export function DataTablePagination<TData>({
           </Select>
         </div>
         <div className="flex w-[100px] items-center justify-center text-sm font-medium">
-          Page {table.getState().pagination.pageIndex + 1} of{" "}
+          หน้า {table.getState().pagination.pageIndex + 1} จาก{" "}
           {table.getPageCount()}
         </div>
         <div className="flex items-center space-x-2">
@@ -465,7 +443,7 @@ export function DataTableViewOptions<TData>({
       <DropdownMenuTrigger asChild>
         <Button variant="outline" size="sm" className="ml-auto h-8 flex">
           <Settings2 />
-          View
+          มุมมอง
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" className="w-[150px]">
