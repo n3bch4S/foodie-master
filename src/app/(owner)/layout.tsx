@@ -11,8 +11,8 @@ export default function OwnerLayout({
     <ClerkProvider>
       <SidebarProvider>
         <AppSidebar />
-        <SidebarTrigger className="fixed top-4 left-4 bg-blue-400 hover:bg-blue-300" />
-        <main>{children}</main>
+        <SidebarTrigger className="fixed top-4 left-4 bg-blue-400 hover:bg-blue-300 z-10" />
+        <main className="container">{children}</main>
       </SidebarProvider>
     </ClerkProvider>
   );

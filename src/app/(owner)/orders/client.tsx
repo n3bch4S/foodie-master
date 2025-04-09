@@ -130,6 +130,20 @@ const orderColumn: ColumnDef<OrderDetail>[] = [
     enableHiding: false,
   },
   {
+    id: "ID",
+    accessorKey: "id",
+    header: (ctx) => {
+      return <DataTableColumnHeader column={ctx.column} title="ID" />;
+    },
+  },
+  {
+    id: "จำนวน",
+    accessorKey: "quantity",
+    header: (ctx) => {
+      return <DataTableColumnHeader column={ctx.column} title="จำนวน" />;
+    },
+  },
+  {
     id: "สถานะ",
     accessorKey: "status",
     header: (ctx) => {

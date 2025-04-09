@@ -7,6 +7,7 @@ import {
   orderStatusSchema,
   SessionDetail,
 } from "./types";
+import { FoodDetail } from "@/lib/food/types";
 
 export async function createSession(): Promise<SessionDetail> {
   return await getRestaurant()
@@ -86,7 +87,9 @@ export async function editOrder(
   return order;
 }
 
-export async function getOrder(): Promise<OrderDetail[]> {
+export async function getOrder(): Promise<
+  (OrderDetail & { FoodItem: FoodDetail })[]
+> {
   return await getRestaurant()
     .then((maybeRtr) => {
       if (!maybeRtr) throw new Error("Restaurant not found");
@@ -96,8 +99,14 @@ export async function getOrder(): Promise<OrderDetail[]> {
       const db = new PrismaClient();
       const order = await db.order.findMany({
         where: { SessionTransaction: { restaurantId: rtr.id } },
+        include: { FoodItem: true },
       });
       await db.$disconnect();
-      return order;
+      return order.map((o) => {
+        return {
+          ...o,
+          FoodItem: { ...o.FoodItem, price: o.FoodItem.price.toNumber() },
+        };
+      });
     });
 }

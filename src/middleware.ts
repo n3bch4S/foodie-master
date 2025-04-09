@@ -6,6 +6,18 @@ import { authMiddleware } from "@clerk/nextjs";
 // See https://clerk.com/docs/references/nextjs/auth-middleware for more information about configuring your Middleware
 export default authMiddleware({
   publicRoutes: ["/", "/api/uploadthing"],
+  afterAuth(auth, req, evt) {
+    const host = req.headers.get("host");
+    const domains = host ? host.split(".") : null;
+    const path = req.nextUrl.pathname;
+    const searchParams = req.nextUrl.searchParams;
+    if (domains && domains.length === 2) {
+      const url = new URL(`/${domains[0]}${path}?${searchParams}`, req.url);
+      console.log(url.toString());
+      return NextResponse.rewrite(url);
+    }
+    return NextResponse.next();
+  },
   // debug: true,
   // async beforeAuth(auth, req) {},
   // async afterAuth(auth, req) {
