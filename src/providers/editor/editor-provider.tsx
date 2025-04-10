@@ -108,7 +108,7 @@ export type EditInnerArgs = {
 
 export type EditGapArgs = {
   id: UniqueIdentifier;
-  gap: string;
+  gap: number;
 };
 
 export type EditJustifyArgs = {
@@ -121,6 +121,41 @@ export type EditItemsArgs = {
   items: Dom["items"];
 };
 
+export type EditPaddingArgs = {
+  id: UniqueIdentifier;
+  padding: number;
+};
+
+export type EditWidthArgs = {
+  id: UniqueIdentifier;
+  width: number;
+};
+
+export type EditHeightArgs = {
+  id: UniqueIdentifier;
+  height: number;
+};
+
+export type EditFontFamilyArgs = {
+  id: UniqueIdentifier;
+  fontFamily: Dom["fontFamily"];
+};
+
+export type EditFontSizeArgs = {
+  id: UniqueIdentifier;
+  fontSize: number;
+};
+
+export type EditTextColorArgs = {
+  id: UniqueIdentifier;
+  textColor: string;
+};
+
+export type EditBackgroundColorArgs = {
+  id: UniqueIdentifier;
+  backgroundColor: string;
+};
+
 export type EditorActionType = {
   type:
     | "changePage"
@@ -130,7 +165,14 @@ export type EditorActionType = {
     | "editInner"
     | "editGap"
     | "editJustify"
-    | "editItems";
+    | "editItems"
+    | "editPadding"
+    | "editWidth"
+    | "editHeight"
+    | "editFontFamily"
+    | "editFontSize"
+    | "editTextColor"
+    | "editBackgroundColor";
   changePage?: ChangePageArgs;
   addDom?: AddDomArgs;
   updateDom?: UpdateDomArgs;
@@ -140,6 +182,13 @@ export type EditorActionType = {
   editGapArgs?: EditGapArgs;
   editJustifyArgs?: EditJustifyArgs;
   editItemsArgs?: EditItemsArgs;
+  editPaddingArgs?: EditPaddingArgs;
+  editWidthArgs?: EditWidthArgs;
+  editHeightArgs?: EditHeightArgs;
+  editFontFamilyArgs?: EditFontFamilyArgs;
+  editFontSizeArgs?: EditFontSizeArgs;
+  editTextColorArgs?: EditTextColorArgs;
+  editBackgroundColorArgs?: EditBackgroundColorArgs;
 };
 function editorReducer(
   editorContext: EditorContextType,
@@ -216,6 +265,85 @@ function editorReducer(
       const component = findIn(newDom, action.editItemsArgs!.id);
       if (!component) return editorContext;
       component.items = maybeItems.data.items;
+      return { ...editorContext, dom: newDom };
+    }
+    case "editPadding": {
+      const maybePadding = baseDomSchema
+        .pick({ padding: true })
+        .safeParse({ padding: action.editPaddingArgs!.padding });
+      if (!maybePadding.success) return editorContext;
+      const newDom = editorContext.dom;
+      const component = findIn(newDom, action.editPaddingArgs!.id);
+      if (!component) return editorContext;
+      component.padding = maybePadding.data.padding;
+      return { ...editorContext, dom: newDom };
+    }
+    case "editWidth": {
+      const maybeWidth = baseDomSchema
+        .pick({ width: true })
+        .safeParse({ width: action.editWidthArgs!.width });
+      if (!maybeWidth.success) return editorContext;
+      const newDom = editorContext.dom;
+      const component = findIn(newDom, action.editWidthArgs!.id);
+      if (!component) return editorContext;
+      component.width = maybeWidth.data.width;
+      return { ...editorContext, dom: newDom };
+    }
+    case "editHeight": {
+      const maybeHeight = baseDomSchema
+        .pick({ height: true })
+        .safeParse({ height: action.editHeightArgs!.height });
+      if (!maybeHeight.success) return editorContext;
+      const newDom = editorContext.dom;
+      const component = findIn(newDom, action.editHeightArgs!.id);
+      if (!component) return editorContext;
+      component.height = maybeHeight.data.height;
+      return { ...editorContext, dom: newDom };
+    }
+    case "editFontFamily": {
+      const maybeFontFamily = baseDomSchema
+        .pick({ fontFamily: true })
+        .safeParse({ fontFamily: action.editFontFamilyArgs!.fontFamily });
+      if (!maybeFontFamily.success) return editorContext;
+      const newDom = editorContext.dom;
+      const component = findIn(newDom, action.editFontFamilyArgs!.id);
+      if (!component) return editorContext;
+      component.fontFamily = maybeFontFamily.data.fontFamily;
+      return { ...editorContext, dom: newDom };
+    }
+    case "editFontSize": {
+      const maybeFontSize = baseDomSchema
+        .pick({ fontSize: true })
+        .safeParse({ fontSize: action.editFontSizeArgs!.fontSize });
+      if (!maybeFontSize.success) return editorContext;
+      const newDom = editorContext.dom;
+      const component = findIn(newDom, action.editFontSizeArgs!.id);
+      if (!component) return editorContext;
+      component.fontSize = maybeFontSize.data.fontSize;
+      return { ...editorContext, dom: newDom };
+    }
+    case "editTextColor": {
+      const maybeTextColor = baseDomSchema
+        .pick({ textColor: true })
+        .safeParse({ textColor: action.editTextColorArgs!.textColor });
+      if (!maybeTextColor.success) return editorContext;
+      const newDom = editorContext.dom;
+      const component = findIn(newDom, action.editTextColorArgs!.id);
+      if (!component) return editorContext;
+      component.textColor = maybeTextColor.data.textColor;
+      return { ...editorContext, dom: newDom };
+    }
+    case "editBackgroundColor": {
+      const maybeBackgroundColor = baseDomSchema
+        .pick({ backgroundColor: true })
+        .safeParse({
+          backgroundColor: action.editBackgroundColorArgs!.backgroundColor,
+        });
+      if (!maybeBackgroundColor.success) return editorContext;
+      const newDom = editorContext.dom;
+      const component = findIn(newDom, action.editBackgroundColorArgs!.id);
+      if (!component) return editorContext;
+      component.backgroundColor = maybeBackgroundColor.data.backgroundColor;
       return { ...editorContext, dom: newDom };
     }
     default: {

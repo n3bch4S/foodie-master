@@ -4,6 +4,7 @@ import { useDraggable, UseDraggableArguments } from "@dnd-kit/core";
 import Image from "next/image";
 import { CSS } from "@dnd-kit/utilities";
 import { CSSProperties } from "react";
+import { Button } from "../ui/button";
 
 type ImageArgs = {
   src: string;
@@ -65,26 +66,16 @@ export function DragComp({
       );
     case "button":
       return (
-        <button
+        <Button
           ref={dragState.setNodeRef}
           style={style}
           {...dragState.listeners}
           {...dragState.attributes}
           onClick={() => 1}
+          className="bg-blue-950"
         >
           {children}
-        </button>
-      );
-    case "image":
-      return (
-        <Image
-          ref={dragState.setNodeRef}
-          style={style}
-          {...dragState.listeners}
-          {...dragState.attributes}
-          src={imageTag!.src}
-          alt={imageTag!.alt}
-        />
+        </Button>
       );
   }
 }

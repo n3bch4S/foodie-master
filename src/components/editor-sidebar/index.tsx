@@ -11,6 +11,9 @@ export function EditorSidebar() {
       <DragComp tagName="div" id="div">
         กล่อง
       </DragComp>
+      <DragComp tagName="button" id="button">
+        ลิงก์
+      </DragComp>
     </div>
   );
 }

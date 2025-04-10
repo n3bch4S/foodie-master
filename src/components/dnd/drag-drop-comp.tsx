@@ -80,7 +80,7 @@ export function DragDropComp(props: DragDropCompProps) {
                 }}
                 {...dragState.listeners}
                 style={style}
-                className={`hover:border-2 flex ${props.dom.justify} h-32 ${props.dom.items}`}
+                className={`hover:border-2 flex ${props.dom.justify} ${props.dom.items} ${props.dom.padding} ${props.dom.width} ${props.dom.height} ${props.dom.fontFamily} ${props.dom.fontSize} text-[#${props.dom.textColor} bg-[#${props.dom.backgroundColor}]]`}
               >
                 {props.dom.innerText}
               </p>
@@ -109,9 +109,14 @@ export function DragDropComp(props: DragDropCompProps) {
                   id="gap"
                   value={props.dom.gap?.toString()}
                   onChange={(e) => {
+                    const maybeNumber = Number(e.currentTarget.value);
+                    if (Number.isNaN(maybeNumber)) return;
                     editorDispatch({
                       type: "editGap",
-                      editGapArgs: { id: props.id, gap: e.currentTarget.value },
+                      editGapArgs: {
+                        id: props.id,
+                        gap: maybeNumber,
+                      },
                     });
                   }}
                   className="w-32"
@@ -205,6 +210,21 @@ export function DragDropComp(props: DragDropCompProps) {
                   <AlignVerticalJustifyEnd />
                 </Button>
               </div>
+              <div className="flex flex-row gap-4 items-center justify-between">
+                <Label htmlFor="padding">ขนาดขอบใน</Label>
+                <Input
+                  id="padding"
+                  value={props.dom.padding}
+                  onChange={(e) => {
+                    editorDispatch({
+                      type: "editGap",
+                      editGapArgs: { id: props.id, gap: e.currentTarget.value },
+                    });
+                  }}
+                  className="w-32"
+                />
+              </div>
+              padding width height fontFamily fontSize textColor backgroundColor
             </PopoverContent>
           </Popover>
         </>
