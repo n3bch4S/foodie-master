@@ -16,6 +16,15 @@ import {
 } from "@/providers/editor/editor-provider";
 import { Label } from "../ui/label";
 import { Input } from "../ui/input";
+import { Button } from "../ui/button";
+import {
+  AlignCenter,
+  AlignLeft,
+  AlignRight,
+  AlignVerticalJustifyCenter,
+  AlignVerticalJustifyEnd,
+  AlignVerticalJustifyStart,
+} from "lucide-react";
 
 type ImageArgs = {
   src: string;
@@ -31,6 +40,7 @@ interface DragDropCompProps
   children?: React.ReactNode;
 }
 export function DragDropComp(props: DragDropCompProps) {
+  console.log(props.dom);
   const dropState = useDroppable({
     id: props.id,
     disabled: props.disabled,
@@ -70,7 +80,7 @@ export function DragDropComp(props: DragDropCompProps) {
                 }}
                 {...dragState.listeners}
                 style={style}
-                className="hover:border-2 flex"
+                className={`hover:border-2 flex ${props.dom.justify} h-32 ${props.dom.items}`}
               >
                 {props.dom.innerText}
               </p>
@@ -97,7 +107,7 @@ export function DragDropComp(props: DragDropCompProps) {
                 <Label htmlFor="gap">ช่องว่างระหว่างกล่อง</Label>
                 <Input
                   id="gap"
-                  value={props.dom.gap}
+                  value={props.dom.gap?.toString()}
                   onChange={(e) => {
                     editorDispatch({
                       type: "editGap",
@@ -106,6 +116,94 @@ export function DragDropComp(props: DragDropCompProps) {
                   }}
                   className="w-32"
                 />
+              </div>
+              <div className="flex flex-row gap-4 items-center justify-between">
+                <Button
+                  variant="outline"
+                  onClick={() => {
+                    editorDispatch({
+                      type: "editJustify",
+                      editJustifyArgs: {
+                        id: props.id,
+                        justify: "justify-start",
+                      },
+                    });
+                  }}
+                >
+                  <AlignLeft />
+                </Button>
+                <Button
+                  variant="outline"
+                  onClick={() => {
+                    editorDispatch({
+                      type: "editJustify",
+                      editJustifyArgs: {
+                        id: props.id,
+                        justify: "justify-center",
+                      },
+                    });
+                  }}
+                >
+                  <AlignCenter />
+                </Button>
+                <Button
+                  variant="outline"
+                  onClick={() => {
+                    editorDispatch({
+                      type: "editJustify",
+                      editJustifyArgs: {
+                        id: props.id,
+                        justify: "justify-end",
+                      },
+                    });
+                  }}
+                >
+                  <AlignRight />
+                </Button>
+              </div>
+              <div className="flex flex-row gap-4 items-center justify-between">
+                <Button
+                  variant="outline"
+                  onClick={() => {
+                    editorDispatch({
+                      type: "editItems",
+                      editItemsArgs: {
+                        id: props.id,
+                        items: "items-start",
+                      },
+                    });
+                  }}
+                >
+                  <AlignVerticalJustifyStart />
+                </Button>
+                <Button
+                  variant="outline"
+                  onClick={() => {
+                    editorDispatch({
+                      type: "editItems",
+                      editItemsArgs: {
+                        id: props.id,
+                        items: "items-center",
+                      },
+                    });
+                  }}
+                >
+                  <AlignVerticalJustifyCenter />
+                </Button>
+                <Button
+                  variant="outline"
+                  onClick={() => {
+                    editorDispatch({
+                      type: "editItems",
+                      editItemsArgs: {
+                        id: props.id,
+                        items: "items-end",
+                      },
+                    });
+                  }}
+                >
+                  <AlignVerticalJustifyEnd />
+                </Button>
               </div>
             </PopoverContent>
           </Popover>

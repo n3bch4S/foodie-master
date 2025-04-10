@@ -9,7 +9,7 @@ export const baseDomSchema = z
     tagName: tagNameSchema,
     innerText: z.optional(z.string()),
     canHaveChildren: z.boolean(),
-    gap: z.string().optional(),
+    gap: z.coerce.number().nonnegative().optional(),
     justify: z
       .enum(["justify-start", "justify-center", "justify-end"])
       .optional(),

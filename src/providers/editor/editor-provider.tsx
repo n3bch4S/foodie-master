@@ -1,9 +1,10 @@
 "use client";
 import { CUSTOM_PAGE_DOM } from "@/lib/page/constants";
-import { Dom, TagName, tagNameSchema } from "@/lib/page/types";
+import { baseDomSchema, Dom, TagName, tagNameSchema } from "@/lib/page/types";
 import { DndContext, UniqueIdentifier } from "@dnd-kit/core";
 import { createContext, Dispatch, useContext, useReducer } from "react";
 import { v4 } from "uuid";
+import { z } from "zod";
 
 type EditorContextType = {
   isOpenPageDialog: boolean;
@@ -110,6 +111,16 @@ export type EditGapArgs = {
   gap: string;
 };
 
+export type EditJustifyArgs = {
+  id: UniqueIdentifier;
+  justify: Dom["justify"];
+};
+
+export type EditItemsArgs = {
+  id: UniqueIdentifier;
+  items: Dom["items"];
+};
+
 export type EditorActionType = {
   type:
     | "changePage"
@@ -117,7 +128,9 @@ export type EditorActionType = {
     | "addDom"
     | "selectComponent"
     | "editInner"
-    | "editGap";
+    | "editGap"
+    | "editJustify"
+    | "editItems";
   changePage?: ChangePageArgs;
   addDom?: AddDomArgs;
   updateDom?: UpdateDomArgs;
@@ -125,6 +138,8 @@ export type EditorActionType = {
   setIsOpenComponentPopup?: setIsOpenComponentPopupArgs;
   editInnerArgs?: EditInnerArgs;
   editGapArgs?: EditGapArgs;
+  editJustifyArgs?: EditJustifyArgs;
+  editItemsArgs?: EditItemsArgs;
 };
 function editorReducer(
   editorContext: EditorContextType,
@@ -171,10 +186,36 @@ function editorReducer(
       return { ...editorContext, dom: newDom };
     }
     case "editGap": {
+      const maybeGap = baseDomSchema
+        .pick({ gap: true })
+        .safeParse({ gap: action.editGapArgs!.gap });
+      if (!maybeGap.success) return editorContext;
       const newDom = editorContext.dom;
       const component = findIn(newDom, action.editGapArgs!.id);
       if (!component) return editorContext;
-      component.gap = action.editGapArgs!.gap;
+      component.gap = maybeGap.data.gap;
+      return { ...editorContext, dom: newDom };
+    }
+    case "editJustify": {
+      const maybeJustify = baseDomSchema
+        .pick({ justify: true })
+        .safeParse({ justify: action.editJustifyArgs!.justify });
+      if (!maybeJustify.success) return editorContext;
+      const newDom = editorContext.dom;
+      const component = findIn(newDom, action.editJustifyArgs!.id);
+      if (!component) return editorContext;
+      component.justify = maybeJustify.data.justify;
+      return { ...editorContext, dom: newDom };
+    }
+    case "editItems": {
+      const maybeItems = baseDomSchema
+        .pick({ items: true })
+        .safeParse({ items: action.editItemsArgs!.items });
+      if (!maybeItems.success) return editorContext;
+      const newDom = editorContext.dom;
+      const component = findIn(newDom, action.editItemsArgs!.id);
+      if (!component) return editorContext;
+      component.items = maybeItems.data.items;
       return { ...editorContext, dom: newDom };
     }
     default: {
@@ -218,7 +259,6 @@ function addComponent(
 ): Dom {
   const newDom = deepClone(dom);
   const newParent = findIn(newDom, newParentId);
-  console.log(newParent);
   if (!newParent)
     throw new Error(`Can't find parent for component id ${child.id}`);
   if (!newParent.canHaveChildren) return newDom;
@@ -256,8 +296,6 @@ function generatePreInnerText(tagName: TagName): string | undefined {
       return undefined;
     case "button":
       return "Button";
-    case "image":
-      return undefined;
     default:
       throw new Error(`Unknown tag name: ${tagName}`);
   }
