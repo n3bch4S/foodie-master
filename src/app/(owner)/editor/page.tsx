@@ -1,8 +1,13 @@
 import { getPages } from "@/lib/page";
 import { ClientPage } from "./client";
+import { EditorProvider } from "@/providers/editor/editor-provider";
 
 export default async function Editor() {
   const pages = await getPages();
 
-  return <ClientPage pages={pages} />;
+  return (
+    <EditorProvider>
+      <ClientPage pages={pages} />
+    </EditorProvider>
+  );
 }

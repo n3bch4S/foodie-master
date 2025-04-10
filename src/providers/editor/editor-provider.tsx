@@ -1,18 +1,27 @@
 "use client";
-import { CUSTOM_PAGE_DOM } from "@/lib/page/constants";
-import { baseDomSchema, Dom, TagName, tagNameSchema } from "@/lib/page/types";
+import { editPage } from "@/lib/page";
+import {
+  baseDomSchema,
+  Dom,
+  PageDetail,
+  TagName,
+  tagNameSchema,
+} from "@/lib/page/types";
 import { DndContext, UniqueIdentifier } from "@dnd-kit/core";
 import { createContext, Dispatch, useContext, useReducer } from "react";
+import { toast } from "sonner";
 import { v4 } from "uuid";
 
 type EditorContextType = {
+  isOpenPageSelector: boolean;
   isOpenPageDialog: boolean;
   screenSize: "DESKTOP" | "MOBILE";
   isPreview: boolean;
-  currentPage: string;
-  dom: Dom;
+  currentPage: string | null;
+  dom: Dom | null;
   selectedComponentId: UniqueIdentifier | null;
   pageId: string | null;
+  pageDetail: PageDetail | null;
 };
 const EditorContext = createContext<EditorContextType | null>(null);
 
@@ -26,13 +35,15 @@ interface EditorProviderProps {
 }
 export function EditorProvider({ children }: EditorProviderProps) {
   const initContext: EditorContextType = {
+    isOpenPageSelector: false,
     isOpenPageDialog: false,
     screenSize: "DESKTOP",
     isPreview: false,
-    currentPage: "Home",
-    dom: CUSTOM_PAGE_DOM,
+    currentPage: null,
+    dom: null,
     selectedComponentId: null,
     pageId: null,
+    pageDetail: null,
   };
 
   const [editorContext, dispatch] = useReducer(editorReducer, initContext);
@@ -84,6 +95,18 @@ export type SetPageIdArgs = {
   pageId: string | null;
 };
 
+export type SetDomArgs = {
+  dom: Dom | null;
+};
+
+export type SetIsOpenPageSelectorArgs = {
+  isOpen: boolean;
+};
+
+export type SetIsOpenDialogArgs = {
+  isOpen: boolean;
+};
+
 export type AddDomArgs = {
   tagName: TagName;
   newParentId: UniqueIdentifier;
@@ -96,6 +119,11 @@ export type RemoveCompArgs = {
 export type UpdateDomArgs = {
   childId: UniqueIdentifier;
   newParentId: UniqueIdentifier;
+};
+
+export type UpdateDomInPageArgs = {
+  pageId: string;
+  dom: Dom;
 };
 
 export type ChangePageArgs = {
@@ -169,6 +197,9 @@ export type EditorActionType = {
   type:
     | "changePage"
     | "setPageId"
+    | "setDom"
+    | "setIsOpenDialog"
+    | "setIsOpenPageSelector"
     | "updateDom"
     | "addDom"
     | "removeComp"
@@ -186,10 +217,14 @@ export type EditorActionType = {
     | "editTextColor"
     | "editBackgroundColor";
   setPageId?: SetPageIdArgs;
+  setDom?: SetDomArgs;
+  setIsOpenPageSelector?: SetIsOpenPageSelectorArgs;
+  setIsOpenDialog?: SetIsOpenDialogArgs;
   changePage?: ChangePageArgs;
   addDom?: AddDomArgs;
   removeComp?: RemoveCompArgs;
   updateDom?: UpdateDomArgs;
+  updateDomInPage?: UpdateDomInPageArgs;
   selectComponent?: SelectComponentArgs;
   setIsOpenComponentPopup?: setIsOpenComponentPopupArgs;
   editInnerArgs?: EditInnerArgs;
@@ -211,6 +246,21 @@ function editorReducer(
   switch (action.type) {
     case "setPageId": {
       return { ...editorContext, pageId: action.setPageId!.pageId };
+    }
+    case "setDom": {
+      return { ...editorContext, dom: action.setDom!.dom };
+    }
+    case "setIsOpenPageSelector": {
+      return {
+        ...editorContext,
+        isOpenPageSelector: action.setIsOpenPageSelector!.isOpen,
+      };
+    }
+    case "setIsOpenDialog": {
+      return {
+        ...editorContext,
+        isOpenPageDialog: action.setIsOpenDialog!.isOpen,
+      };
     }
     case "changePage": {
       return { ...editorContext, currentPage: action.changePage!.page };
@@ -234,7 +284,7 @@ function editorReducer(
         backgroundColor: undefined,
       };
       const newDom = addComponent(
-        editorContext.dom,
+        editorContext.dom!,
         newChild,
         action.addDom!.newParentId
       );
@@ -243,18 +293,22 @@ function editorReducer(
     case "removeComp": {
       return {
         ...editorContext,
-        dom: removeComponent(editorContext.dom, action.removeComp!.compId),
+        dom: removeComponent(editorContext.dom!, action.removeComp!.compId),
       };
     }
     case "updateDom": {
       const newDom = moveComponent(
-        editorContext.dom,
+        editorContext.dom!,
         action.updateDom!.childId,
         action.updateDom!.newParentId
       );
       return { ...editorContext, dom: newDom };
     }
     case "saveDom": {
+      editPage(editorContext.pageId!, editorContext.dom!).then((page) => {
+        toast.success("สำเร็จ", { description: `บันทึก ${page.name} สำเร็จ` });
+      });
+      return editorContext;
     }
     case "selectComponent": {
       return {
@@ -263,14 +317,14 @@ function editorReducer(
       };
     }
     case "editInner": {
-      const newDom = editorContext.dom;
+      const newDom = editorContext.dom!;
       const component = findIn(newDom, action.editInnerArgs!.id);
       if (!component) return editorContext;
       component.innerText = action.editInnerArgs!.innerText;
       return { ...editorContext, dom: newDom };
     }
     case "editGap": {
-      const newDom = editorContext.dom;
+      const newDom = editorContext.dom!;
       const component = findIn(newDom, action.editGapArgs!.id);
       if (!component) return editorContext;
       component.gap = action.editGapArgs!.gap;
@@ -281,7 +335,7 @@ function editorReducer(
         .pick({ justify: true })
         .safeParse({ justify: action.editJustifyArgs!.justify });
       if (!maybeJustify.success) return editorContext;
-      const newDom = editorContext.dom;
+      const newDom = editorContext.dom!;
       const component = findIn(newDom, action.editJustifyArgs!.id);
       if (!component) return editorContext;
       component.justify = maybeJustify.data.justify;
@@ -292,14 +346,14 @@ function editorReducer(
         .pick({ items: true })
         .safeParse({ items: action.editItemsArgs!.items });
       if (!maybeItems.success) return editorContext;
-      const newDom = editorContext.dom;
+      const newDom = editorContext.dom!;
       const component = findIn(newDom, action.editItemsArgs!.id);
       if (!component) return editorContext;
       component.items = maybeItems.data.items;
       return { ...editorContext, dom: newDom };
     }
     case "editPadding": {
-      const newDom = editorContext.dom;
+      const newDom = editorContext.dom!;
       const component = findIn(newDom, action.editPaddingArgs!.id);
       if (!component) return editorContext;
       component.padding = action.editPaddingArgs!.padding;
@@ -310,7 +364,7 @@ function editorReducer(
         .pick({ width: true })
         .safeParse({ width: action.editWidthArgs!.width });
       if (!maybeWidth.success) return editorContext;
-      const newDom = editorContext.dom;
+      const newDom = editorContext.dom!;
       const component = findIn(newDom, action.editWidthArgs!.id);
       if (!component) return editorContext;
       component.width = maybeWidth.data.width;
@@ -321,7 +375,7 @@ function editorReducer(
         .pick({ height: true })
         .safeParse({ height: action.editHeightArgs!.height });
       if (!maybeHeight.success) return editorContext;
-      const newDom = editorContext.dom;
+      const newDom = editorContext.dom!;
       const component = findIn(newDom, action.editHeightArgs!.id);
       if (!component) return editorContext;
       component.height = maybeHeight.data.height;
@@ -332,7 +386,7 @@ function editorReducer(
         .pick({ fontFamily: true })
         .safeParse({ fontFamily: action.editFontFamilyArgs!.fontFamily });
       if (!maybeFontFamily.success) return editorContext;
-      const newDom = editorContext.dom;
+      const newDom = editorContext.dom!;
       const component = findIn(newDom, action.editFontFamilyArgs!.id);
       if (!component) return editorContext;
       component.fontFamily = maybeFontFamily.data.fontFamily;
@@ -343,7 +397,7 @@ function editorReducer(
         .pick({ fontSize: true })
         .safeParse({ fontSize: action.editFontSizeArgs!.fontSize });
       if (!maybeFontSize.success) return editorContext;
-      const newDom = editorContext.dom;
+      const newDom = editorContext.dom!;
       const component = findIn(newDom, action.editFontSizeArgs!.id);
       if (!component) return editorContext;
       component.fontSize = maybeFontSize.data.fontSize;
@@ -354,7 +408,7 @@ function editorReducer(
         .pick({ textColor: true })
         .safeParse({ textColor: action.editTextColorArgs!.textColor });
       if (!maybeTextColor.success) return editorContext;
-      const newDom = editorContext.dom;
+      const newDom = editorContext.dom!;
       const component = findIn(newDom, action.editTextColorArgs!.id);
       if (!component) return editorContext;
       component.textColor = maybeTextColor.data.textColor;
@@ -367,7 +421,7 @@ function editorReducer(
           backgroundColor: action.editBackgroundColorArgs!.backgroundColor,
         });
       if (!maybeBackgroundColor.success) return editorContext;
-      const newDom = editorContext.dom;
+      const newDom = editorContext.dom!;
       const component = findIn(newDom, action.editBackgroundColorArgs!.id);
       if (!component) return editorContext;
       component.backgroundColor = maybeBackgroundColor.data.backgroundColor;

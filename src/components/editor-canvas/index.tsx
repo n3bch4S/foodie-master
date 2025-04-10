@@ -8,7 +8,7 @@ import { DragDropComp } from "../dnd/drag-drop-comp";
 export function EditorCanvas() {
   const editor = useEditor();
 
-  return renderComponent(editor.dom);
+  return editor.dom ? renderComponent(editor.dom!) : null;
 }
 
 function renderComponent(component: Dom): React.ReactNode {

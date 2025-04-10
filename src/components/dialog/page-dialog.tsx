@@ -4,21 +4,36 @@ import {
   Dialog,
   DialogContent,
   DialogDescription,
-  DialogFooter,
   DialogHeader,
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { Plus } from "lucide-react";
-import { useState } from "react";
 import { PageForm } from "@/components/form/page-form";
+import {
+  useEditor,
+  useEditorDispatch,
+} from "@/providers/editor/editor-provider";
 
 export function PageDialog() {
-  const [open, setOpen] = useState<boolean>(false);
+  const editor = useEditor();
+  const dispatch = useEditorDispatch();
 
   return (
     <>
-      <Dialog open={open} onOpenChange={setOpen}>
+      <Dialog
+        open={editor.isOpenPageDialog}
+        onOpenChange={() => {
+          dispatch({
+            type: "setIsOpenPageSelector",
+            setIsOpenPageSelector: { isOpen: false },
+          });
+          dispatch({
+            type: "setIsOpenDialog",
+            setIsOpenDialog: { isOpen: !editor.isOpenPageDialog },
+          });
+        }}
+      >
         <DialogTrigger asChild>
           <Button variant={"ghost"} className="w-full">
             <Plus className="mr-2 h-4 w-4" />

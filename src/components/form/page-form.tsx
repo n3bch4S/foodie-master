@@ -16,6 +16,8 @@ import { Input } from "../ui/input";
 import { Button } from "../ui/button";
 import { toast } from "sonner";
 import { createPage } from "@/lib/page";
+import { useEditorDispatch } from "@/providers/editor/editor-provider";
+import { useRouter } from "next/navigation";
 
 const formSchema = z.object({
   pageName: z.string().min(1, { message: "กรุณากรอกชื่อหน้า" }),
@@ -23,6 +25,8 @@ const formSchema = z.object({
 type Form = z.infer<typeof formSchema>;
 
 export function PageForm() {
+  const dispatch = useEditorDispatch();
+  const router = useRouter();
   const form = useForm<Form>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -31,12 +35,14 @@ export function PageForm() {
   });
 
   function onSubmit(values: z.infer<typeof formSchema>) {
-    createPage({
-      name: values.pageName,
-      dom: { id: "1", innerText: "test", children: [] },
-      siteId: crypto.randomUUID(),
-    })
+    createPage(values.pageName, "CUSTOM")
       .then((pageDetail) => {
+        dispatch({
+          type: "setIsOpenDialog",
+          setIsOpenDialog: { isOpen: false },
+        });
+        router.refresh();
+        dispatch({ type: "changePage", changePage: { page: pageDetail.name } });
         toast.success(`สร้างหน้าสำเร็จ`, { description: pageDetail.name });
       })
       .catch((err) => {

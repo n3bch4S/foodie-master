@@ -25,13 +25,24 @@ export function PageSelector({ pages }: PageSelectorProps) {
   return (
     <>
       <Select
-        value={editor.currentPage}
+        value={editor.currentPage ?? undefined}
+        open={editor.isOpenPageSelector}
+        onOpenChange={() => {
+          dispatch({
+            type: "setIsOpenPageSelector",
+            setIsOpenPageSelector: { isOpen: !editor.isOpenPageSelector },
+          });
+        }}
         onValueChange={(value) => {
+          const page = pages.find((page) => page.name === value);
+          if (!page) throw new Error("Page not found");
           dispatch({ type: "changePage", changePage: { page: value } });
+          dispatch({ type: "setDom", setDom: { dom: page.dom } });
+          dispatch({ type: "setPageId", setPageId: { pageId: page.id } });
         }}
       >
         <SelectTrigger className="w-40">
-          <SelectValue placeholder="Select Page" />
+          <SelectValue placeholder="เลือกหน้าเพจ" />
         </SelectTrigger>
         <SelectContent>
           {pages.map((page) => {
