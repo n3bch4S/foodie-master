@@ -11,11 +11,14 @@ export default function OwnerLayout({
     <ClerkProvider>
       <SidebarProvider>
         <AppSidebar />
-        <SidebarTrigger className="fixed top-4 left-4 bg-slate-200 hover:bg-slate-300 z-10" />
+
         <div className="fixed top-4 right-4">
           <UserButton />
         </div>
-        <main className="container">{children}</main>
+        <main className="container">
+          <SidebarTrigger className="fixed top-2 left-2 bg-slate-200 hover:bg-slate-300 z-10" />
+          {children}
+        </main>
       </SidebarProvider>
     </ClerkProvider>
   );

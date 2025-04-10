@@ -6,7 +6,9 @@ export function CustomeSidebarHeader() {
     <SidebarHeader>
       <SidebarMenu>
         <SidebarMenuItem>
-          <Link href="/">Foodie Master</Link>
+          <div className="flex justify-center">
+            <Link href="/">Foodie Master</Link>
+          </div>
         </SidebarMenuItem>
       </SidebarMenu>
     </SidebarHeader>

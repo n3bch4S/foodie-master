@@ -12,6 +12,7 @@ type EditorContextType = {
   currentPage: string;
   dom: Dom;
   selectedComponentId: UniqueIdentifier | null;
+  pageId: string | null;
 };
 const EditorContext = createContext<EditorContextType | null>(null);
 
@@ -31,6 +32,7 @@ export function EditorProvider({ children }: EditorProviderProps) {
     currentPage: "Home",
     dom: CUSTOM_PAGE_DOM,
     selectedComponentId: null,
+    pageId: null,
   };
 
   const [editorContext, dispatch] = useReducer(editorReducer, initContext);
@@ -77,6 +79,10 @@ export function useEditor(): EditorContextType {
 export function useEditorDispatch(): EditorDispatchContextType {
   return useContext(EditorDispatchContext)!;
 }
+
+export type SetPageIdArgs = {
+  pageId: string | null;
+};
 
 export type AddDomArgs = {
   tagName: TagName;
@@ -162,9 +168,11 @@ export type EditBackgroundColorArgs = {
 export type EditorActionType = {
   type:
     | "changePage"
+    | "setPageId"
     | "updateDom"
     | "addDom"
     | "removeComp"
+    | "saveDom"
     | "selectComponent"
     | "editInner"
     | "editGap"
@@ -177,6 +185,7 @@ export type EditorActionType = {
     | "editFontSize"
     | "editTextColor"
     | "editBackgroundColor";
+  setPageId?: SetPageIdArgs;
   changePage?: ChangePageArgs;
   addDom?: AddDomArgs;
   removeComp?: RemoveCompArgs;
@@ -200,6 +209,9 @@ function editorReducer(
   action: EditorActionType
 ): EditorContextType {
   switch (action.type) {
+    case "setPageId": {
+      return { ...editorContext, pageId: action.setPageId!.pageId };
+    }
     case "changePage": {
       return { ...editorContext, currentPage: action.changePage!.page };
     }
@@ -241,6 +253,8 @@ function editorReducer(
         action.updateDom!.newParentId
       );
       return { ...editorContext, dom: newDom };
+    }
+    case "saveDom": {
     }
     case "selectComponent": {
       return {

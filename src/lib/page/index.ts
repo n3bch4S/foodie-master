@@ -6,9 +6,10 @@ import { Dom, domSchema, PageDetail, PageType, SiteDetail } from "./types";
 import { CUSTOM_PAGE_DOM, HOME_PAGE_DOM, ORDER_PAGE_DOM } from "./constants";
 import { getRestaurant, getSite } from "../restaurant";
 
-const db = new PrismaClient();
+// const db = new PrismaClient();
 
 async function safeCreateSite(): Promise<SiteDetail> {
+  const db = new PrismaClient();
   return getRestaurant()
     .then((maybeRestaurant) => {
       if (!maybeRestaurant) throw new Error("Restaurant not found");
@@ -29,7 +30,8 @@ async function safeCreateSite(): Promise<SiteDetail> {
         });
       return maybeSite;
     })
-    .then((maybeSite) => {
+    .then(async (maybeSite) => {
+      await db.$disconnect();
       if (!maybeSite) throw new Error("Site not found");
       return maybeSite;
     });
@@ -40,7 +42,9 @@ async function validateNonCreatePage(
   name: string
 ): Promise<void> {
   console.log(`validate page ${name} not created for site`, siteId);
-  await db.page.findFirst({ where: { name, siteId } }).then((page) => {
+  const db = new PrismaClient();
+  await db.page.findFirst({ where: { name, siteId } }).then(async (page) => {
+    await db.$disconnect();
     if (page) {
       throw new Error(`Page with name ${name} already exists`);
     }
@@ -63,6 +67,7 @@ export async function createPage(
   name: string,
   type: PageType
 ): Promise<PageDetail> {
+  const db = new PrismaClient();
   return await getSite()
     .then((maybeSite) => {
       if (!maybeSite) throw new Error("Site not found");
@@ -78,7 +83,8 @@ export async function createPage(
         });
       throw new Error(`Page with name ${name} already exists`);
     })
-    .then((maybePage) => {
+    .then(async (maybePage) => {
+      await db.$disconnect();
       return {
         ...maybePage,
         type: maybePage.type.valueOf() as PageType,
@@ -88,6 +94,7 @@ export async function createPage(
 }
 
 export async function getPages(): Promise<PageDetail[]> {
+  const db = new PrismaClient();
   return await getRestaurant()
     .then((maybeRtr) => {
       if (!maybeRtr) throw new Error("Restaurant not found");
@@ -99,6 +106,7 @@ export async function getPages(): Promise<PageDetail[]> {
       });
     })
     .then(async (pages) => {
+      await db.$disconnect();
       if (!pages.find((page) => page.type.valueOf() === "HOME"))
         pages = [...pages, await createPage("Home", "HOME")];
       if (!pages.find((page) => page.type.valueOf() === "ORDER"))
@@ -109,6 +117,20 @@ export async function getPages(): Promise<PageDetail[]> {
         dom: domSchema.parse(page.dom),
       }));
     });
+}
+
+export async function editPage(
+  pageId: string,
+  dom?: Dom,
+  name?: string
+): Promise<PageDetail> {
+  const db = new PrismaClient();
+  const pageDetail = await db.page.update({
+    where: { id: pageId },
+    data: { dom: dom, name: name },
+  });
+  await db.$disconnect();
+  return { ...pageDetail, dom: domSchema.parse(pageDetail.dom) };
 }
 
 function findIn(component: Dom, id: UniqueIdentifier): Dom | null {
