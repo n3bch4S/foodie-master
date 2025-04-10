@@ -18,7 +18,7 @@ export const baseDomSchema = z
     width: z.coerce.number().nonnegative().optional(),
     height: z.coerce.number().nonnegative().optional(),
     fontFamily: z.enum(["font-sans", "font-serif", "font-mono"]).optional(),
-    fontSize: z.enum(["text-sm", "text-base", "text-lg"]).optional(),
+    fontSize: z.coerce.number().nonnegative().optional(),
     textAlign: z
       .enum(["text-left", "text-center", "text-right", "text-justify"])
       .optional(),

@@ -25,6 +25,13 @@ import {
   AlignVerticalJustifyEnd,
   AlignVerticalJustifyStart,
 } from "lucide-react";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "../ui/select";
 
 type ImageArgs = {
   src: string;
@@ -57,11 +64,11 @@ export function DragDropComp(props: DragDropCompProps) {
   const style: CSSProperties = {
     transform: CSS.Translate.toString(dragState.transform),
     borderColor: dropState.isOver ? "green" : undefined,
-    gap: props.dom.gap ? `${props.dom.gap}px` : undefined,
-    padding: props.dom.padding ? `${props.dom.padding}px` : undefined,
-    width: props.dom.width ? `${props.dom.width}px` : undefined,
-    height: props.dom.height ? `${props.dom.height}px` : undefined,
-    fontSize: props.dom.fontSize ? `${props.dom.fontSize}px` : undefined,
+    gap: props.dom.gap ? `${props.dom.gap}rem` : undefined,
+    padding: props.dom.padding ? `${props.dom.padding}rem` : undefined,
+    width: props.dom.width ? `${props.dom.width}rem` : undefined,
+    height: props.dom.height ? `${props.dom.height}rem` : undefined,
+    fontSize: props.dom.fontSize ? `${props.dom.fontSize}rem` : undefined,
     color: props.dom.textColor ? `#${props.dom.textColor}` : undefined,
     backgroundColor: props.dom.backgroundColor
       ? `#${props.dom.backgroundColor}`
@@ -89,7 +96,13 @@ export function DragDropComp(props: DragDropCompProps) {
                 }}
                 {...dragState.listeners}
                 style={style}
-                className={`hover:border-2 flex ${props.dom.justify} ${props.dom.items} ${props.dom.fontFamily}`}
+                className={`${
+                  editor.selectedComponentId === props.id
+                    ? "border-2 border-pink-300"
+                    : ""
+                } hover:border-2 flex ${props.dom.justify} ${props.dom.items} ${
+                  props.dom.fontFamily
+                }`}
               >
                 {props.dom.innerText}
               </p>
@@ -234,6 +247,62 @@ export function DragDropComp(props: DragDropCompProps) {
                   }}
                   className="w-32"
                 />
+              </div>
+              <div className="flex flex-row gap-4 items-center justify-between">
+                <Label htmlFor="padding">กว้าง</Label>
+                <Input
+                  id="width"
+                  value={props.dom.width}
+                  onChange={(e) => {
+                    const maybeNumber = Number(e.currentTarget.value);
+                    if (Number.isNaN(maybeNumber)) return;
+                    editorDispatch({
+                      type: "editWidth",
+                      editWidthArgs: { id: props.id, width: maybeNumber },
+                    });
+                  }}
+                  className="w-32"
+                />
+              </div>
+              <div className="flex flex-row gap-4 items-center justify-between">
+                <Label htmlFor="padding">สูง</Label>
+                <Input
+                  id="height"
+                  type="number"
+                  value={props.dom.height}
+                  onChange={(e) => {
+                    const maybeNumber = Number(e.currentTarget.value);
+                    if (Number.isNaN(maybeNumber)) return;
+                    editorDispatch({
+                      type: "editHeight",
+                      editHeightArgs: { id: props.id, height: maybeNumber },
+                    });
+                  }}
+                  className="w-32"
+                />
+              </div>
+              <div className="flex flex-row gap-4 items-center justify-between">
+                <Select
+                  value={props.dom.fontFamily}
+                  onValueChange={(val) => {
+                    editorDispatch({
+                      type: "editFontFamily",
+                      editFontFamilyArgs: {
+                        id: props.id,
+                        fontFamily: val as Dom["fontFamily"],
+                      },
+                    });
+                  }}
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="ฟ้อนต์" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="font-sans">font-sans</SelectItem>
+                    <SelectItem value="font-serif">font-serif</SelectItem>
+                    <SelectItem value="font-mono">font-mono</SelectItem>
+                  </SelectContent>
+                </Select>
               </div>
               padding width height fontFamily fontSize textColor backgroundColor
             </PopoverContent>
