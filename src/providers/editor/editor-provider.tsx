@@ -83,6 +83,10 @@ export type AddDomArgs = {
   newParentId: UniqueIdentifier;
 };
 
+export type RemoveCompArgs = {
+  compId: UniqueIdentifier;
+};
+
 export type UpdateDomArgs = {
   childId: UniqueIdentifier;
   newParentId: UniqueIdentifier;
@@ -160,6 +164,7 @@ export type EditorActionType = {
     | "changePage"
     | "updateDom"
     | "addDom"
+    | "removeComp"
     | "selectComponent"
     | "editInner"
     | "editGap"
@@ -174,6 +179,7 @@ export type EditorActionType = {
     | "editBackgroundColor";
   changePage?: ChangePageArgs;
   addDom?: AddDomArgs;
+  removeComp?: RemoveCompArgs;
   updateDom?: UpdateDomArgs;
   selectComponent?: SelectComponentArgs;
   setIsOpenComponentPopup?: setIsOpenComponentPopupArgs;
@@ -221,6 +227,12 @@ function editorReducer(
         action.addDom!.newParentId
       );
       return { ...editorContext, dom: newDom };
+    }
+    case "removeComp": {
+      return {
+        ...editorContext,
+        dom: removeComponent(editorContext.dom, action.removeComp!.compId),
+      };
     }
     case "updateDom": {
       const newDom = moveComponent(
@@ -415,6 +427,14 @@ function moveComponent(
   );
   newParent.children.push(child);
   return newComponent;
+}
+
+function removeComponent(dom: Dom, compId: UniqueIdentifier): Dom {
+  const newDom = deepClone(dom);
+  const parent = findParentIn(newDom, compId);
+  if (!parent) throw new Error(`Can't find parent of component id ${compId}`);
+  parent.children = parent.children.filter((child) => child.id !== compId);
+  return newDom;
 }
 
 function generatePreInnerText(tagName: TagName): string | undefined {

@@ -24,6 +24,7 @@ import {
   AlignVerticalJustifyEnd,
   AlignVerticalJustifyStart,
   PenOff,
+  Trash2,
 } from "lucide-react";
 import {
   Select,
@@ -109,6 +110,18 @@ export function DragDropComp(props: DragDropCompProps) {
               </p>
             </PopoverTrigger>
             <PopoverContent className="flex flex-col gap-4">
+              <Button
+                variant={"destructive"}
+                onClick={(e) => {
+                  editorDispatch({
+                    type: "removeComp",
+                    removeComp: { compId: props.id },
+                  });
+                }}
+                className="absolute -right-14"
+              >
+                <Trash2 />
+              </Button>
               <div className="flex flex-col gap-4 items-center justify-between">
                 <Label htmlFor="innerText">ข้อความ</Label>
                 <Input
@@ -400,11 +413,9 @@ export function DragDropComp(props: DragDropCompProps) {
             dropState.setNodeRef(element);
           }}
           {...dragState.listeners}
-          // {...dragState.attributes}
           style={style}
           className="border-2 min-h-8 min-w-16"
         >
-          {props.dom.innerText}
           {props.children}
         </div>
       );
@@ -417,7 +428,6 @@ export function DragDropComp(props: DragDropCompProps) {
             dropState.setNodeRef(element);
           }}
           {...dragState.listeners}
-          // {...dragState.attributes}
           style={style}
         >
           {props.dom.innerText}
