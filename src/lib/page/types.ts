@@ -22,8 +22,8 @@ export const baseDomSchema = z
     textAlign: z
       .enum(["text-left", "text-center", "text-right", "text-justify"])
       .optional(),
-    textColor: z.string().length(6).optional(),
-    backgroundColor: z.string().length(6).optional(),
+    textColor: z.string().length(7).optional(),
+    backgroundColor: z.string().length(7).optional(),
   })
   .strict();
 export type Dom = z.infer<typeof baseDomSchema> & { children: Dom[] };

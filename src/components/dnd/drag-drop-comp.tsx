@@ -1,5 +1,5 @@
 "use client";
-import { Dom, TagName } from "@/lib/page/types";
+import { Dom } from "@/lib/page/types";
 import {
   useDraggable,
   UseDraggableArguments,
@@ -7,7 +7,6 @@ import {
   UseDroppableArguments,
 } from "@dnd-kit/core";
 import { CSS } from "@dnd-kit/utilities";
-import Image from "next/image";
 import { CSSProperties } from "react";
 import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
 import {
@@ -32,6 +31,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "../ui/select";
+import { Separator } from "../ui/separator";
 
 type ImageArgs = {
   src: string;
@@ -64,14 +64,14 @@ export function DragDropComp(props: DragDropCompProps) {
   const style: CSSProperties = {
     transform: CSS.Translate.toString(dragState.transform),
     borderColor: dropState.isOver ? "green" : undefined,
-    gap: props.dom.gap ? `${props.dom.gap}rem` : undefined,
-    padding: props.dom.padding ? `${props.dom.padding}rem` : undefined,
+    gap: props.dom.gap ? `${props.dom.gap}px` : undefined,
+    padding: props.dom.padding ? `${props.dom.padding}px` : undefined,
     width: props.dom.width ? `${props.dom.width}rem` : undefined,
     height: props.dom.height ? `${props.dom.height}rem` : undefined,
-    fontSize: props.dom.fontSize ? `${props.dom.fontSize}rem` : undefined,
-    color: props.dom.textColor ? `#${props.dom.textColor}` : undefined,
+    fontSize: props.dom.fontSize ? `${props.dom.fontSize}px` : undefined,
+    color: props.dom.textColor ? props.dom.textColor : undefined,
     backgroundColor: props.dom.backgroundColor
-      ? `#${props.dom.backgroundColor}`
+      ? props.dom.backgroundColor
       : undefined,
   };
 
@@ -107,8 +107,8 @@ export function DragDropComp(props: DragDropCompProps) {
                 {props.dom.innerText}
               </p>
             </PopoverTrigger>
-            <PopoverContent className="flex flex-col gap-2">
-              <div className="flex flex-row gap-4 items-center justify-between">
+            <PopoverContent className="flex flex-col gap-4">
+              <div className="flex flex-col gap-4 items-center justify-between">
                 <Label htmlFor="innerText">ข้อความ</Label>
                 <Input
                   id="innerText"
@@ -122,13 +122,221 @@ export function DragDropComp(props: DragDropCompProps) {
                       },
                     });
                   }}
+                />
+              </div>
+              <div className="flex flex-col gap-2 py-2 border-2 rounded-xl border-slate-200">
+                <div className="flex flex-row gap-4 items-center justify-evenly">
+                  ฟ้อนต์
+                  <div className="w-32">
+                    <Select
+                      value={props.dom.fontFamily}
+                      onValueChange={(val) => {
+                        editorDispatch({
+                          type: "editFontFamily",
+                          editFontFamilyArgs: {
+                            id: props.id,
+                            fontFamily: val as Dom["fontFamily"],
+                          },
+                        });
+                      }}
+                    >
+                      <SelectTrigger>
+                        <SelectValue placeholder="ฟ้อนต์" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="font-sans">font-sans</SelectItem>
+                        <SelectItem value="font-serif">font-serif</SelectItem>
+                        <SelectItem value="font-mono">font-mono</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                </div>
+                <div className="flex flex-row justify-around">
+                  <div className="flex flex-row gap-2 items-center justify-center">
+                    <Label htmlFor="fontSize">ขนาด</Label>
+                    <Input
+                      id="fontSize"
+                      type="number"
+                      value={props.dom.fontSize}
+                      onChange={(e) => {
+                        const maybeNumber = Number(e.currentTarget.value);
+                        if (Number.isNaN(maybeNumber)) return;
+                        editorDispatch({
+                          type: "editFontSize",
+                          editFontSizeArgs: {
+                            id: props.id,
+                            fontSize: maybeNumber,
+                          },
+                        });
+                      }}
+                      className="w-16"
+                    />
+                  </div>
+                  <div className="flex flex-row gap-2 items-center justify-center">
+                    <Label htmlFor="textColor">สี</Label>
+                    <Input
+                      id="textColor"
+                      type="color"
+                      value={props.dom.textColor}
+                      onChange={(e) => {
+                        const value = e.currentTarget.value;
+                        editorDispatch({
+                          type: "editTextColor",
+                          editTextColorArgs: { id: props.id, textColor: value },
+                        });
+                      }}
+                      className="w-16"
+                    />
+                  </div>
+                </div>
+                <div className="flex flex-row gap-4 items-center justify-evenly">
+                  <Button
+                    variant="outline"
+                    onClick={() => {
+                      editorDispatch({
+                        type: "editJustify",
+                        editJustifyArgs: {
+                          id: props.id,
+                          justify: "justify-start",
+                        },
+                      });
+                    }}
+                  >
+                    <AlignLeft />
+                  </Button>
+                  <Button
+                    variant="outline"
+                    onClick={() => {
+                      editorDispatch({
+                        type: "editJustify",
+                        editJustifyArgs: {
+                          id: props.id,
+                          justify: "justify-center",
+                        },
+                      });
+                    }}
+                  >
+                    <AlignCenter />
+                  </Button>
+                  <Button
+                    variant="outline"
+                    onClick={() => {
+                      editorDispatch({
+                        type: "editJustify",
+                        editJustifyArgs: {
+                          id: props.id,
+                          justify: "justify-end",
+                        },
+                      });
+                    }}
+                  >
+                    <AlignRight />
+                  </Button>
+                </div>
+                <div className="flex flex-row gap-4 items-center justify-evenly">
+                  <Button
+                    variant="outline"
+                    onClick={() => {
+                      editorDispatch({
+                        type: "editItems",
+                        editItemsArgs: {
+                          id: props.id,
+                          items: "items-start",
+                        },
+                      });
+                    }}
+                  >
+                    <AlignVerticalJustifyStart />
+                  </Button>
+                  <Button
+                    variant="outline"
+                    onClick={() => {
+                      editorDispatch({
+                        type: "editItems",
+                        editItemsArgs: {
+                          id: props.id,
+                          items: "items-center",
+                        },
+                      });
+                    }}
+                  >
+                    <AlignVerticalJustifyCenter />
+                  </Button>
+                  <Button
+                    variant="outline"
+                    onClick={() => {
+                      editorDispatch({
+                        type: "editItems",
+                        editItemsArgs: {
+                          id: props.id,
+                          items: "items-end",
+                        },
+                      });
+                    }}
+                  >
+                    <AlignVerticalJustifyEnd />
+                  </Button>
+                </div>
+              </div>
+              <Separator />
+              <div className="flex flex-row gap-2 justify-evenly">
+                <div className="flex flex-row gap-2 items-center justify-between">
+                  <Label htmlFor="width">กว้าง</Label>
+                  <Input
+                    id="width"
+                    type="number"
+                    value={props.dom.width}
+                    onChange={(e) => {
+                      const maybeNumber = Number(e.currentTarget.value);
+                      if (Number.isNaN(maybeNumber)) return;
+                      editorDispatch({
+                        type: "editWidth",
+                        editWidthArgs: { id: props.id, width: maybeNumber },
+                      });
+                    }}
+                    className="w-16"
+                  />
+                </div>
+                <div className="flex flex-row gap-2 items-center justify-between">
+                  <Label htmlFor="height">สูง</Label>
+                  <Input
+                    id="height"
+                    type="number"
+                    value={props.dom.height}
+                    onChange={(e) => {
+                      const maybeNumber = Number(e.currentTarget.value);
+                      if (Number.isNaN(maybeNumber)) return;
+                      editorDispatch({
+                        type: "editHeight",
+                        editHeightArgs: { id: props.id, height: maybeNumber },
+                      });
+                    }}
+                    className="w-16"
+                  />
+                </div>
+              </div>
+              <div className="flex flex-row gap-2 items-center justify-between">
+                <Label htmlFor="padding">ขนาดขอบใน</Label>
+                <Input
+                  id="padding"
+                  type="number"
+                  value={props.dom.padding}
+                  onChange={(e) => {
+                    const maybeNumber = Number(e.currentTarget.value);
+                    if (Number.isNaN(maybeNumber)) return;
+                    editorDispatch({
+                      type: "editPadding",
+                      editPaddingArgs: { id: props.id, padding: maybeNumber },
+                    });
+                  }}
                   className="w-32"
                 />
               </div>
-              <div className="flex flex-row gap-4 items-center justify-between">
-                <Label htmlFor="gap">ช่องว่างระหว่างกล่อง</Label>
+              <div className="flex flex-row gap-2 items-center justify-between">
+                <Label htmlFor="gap">ความห่าง</Label>
                 <Input
                   id="gap"
+                  type="number"
                   value={props.dom.gap?.toString()}
                   onChange={(e) => {
                     const maybeNumber = Number(e.currentTarget.value);
@@ -144,167 +352,25 @@ export function DragDropComp(props: DragDropCompProps) {
                   className="w-32"
                 />
               </div>
-              <div className="flex flex-row gap-4 items-center justify-between">
-                <Button
-                  variant="outline"
-                  onClick={() => {
-                    editorDispatch({
-                      type: "editJustify",
-                      editJustifyArgs: {
-                        id: props.id,
-                        justify: "justify-start",
-                      },
-                    });
-                  }}
-                >
-                  <AlignLeft />
-                </Button>
-                <Button
-                  variant="outline"
-                  onClick={() => {
-                    editorDispatch({
-                      type: "editJustify",
-                      editJustifyArgs: {
-                        id: props.id,
-                        justify: "justify-center",
-                      },
-                    });
-                  }}
-                >
-                  <AlignCenter />
-                </Button>
-                <Button
-                  variant="outline"
-                  onClick={() => {
-                    editorDispatch({
-                      type: "editJustify",
-                      editJustifyArgs: {
-                        id: props.id,
-                        justify: "justify-end",
-                      },
-                    });
-                  }}
-                >
-                  <AlignRight />
-                </Button>
-              </div>
-              <div className="flex flex-row gap-4 items-center justify-between">
-                <Button
-                  variant="outline"
-                  onClick={() => {
-                    editorDispatch({
-                      type: "editItems",
-                      editItemsArgs: {
-                        id: props.id,
-                        items: "items-start",
-                      },
-                    });
-                  }}
-                >
-                  <AlignVerticalJustifyStart />
-                </Button>
-                <Button
-                  variant="outline"
-                  onClick={() => {
-                    editorDispatch({
-                      type: "editItems",
-                      editItemsArgs: {
-                        id: props.id,
-                        items: "items-center",
-                      },
-                    });
-                  }}
-                >
-                  <AlignVerticalJustifyCenter />
-                </Button>
-                <Button
-                  variant="outline"
-                  onClick={() => {
-                    editorDispatch({
-                      type: "editItems",
-                      editItemsArgs: {
-                        id: props.id,
-                        items: "items-end",
-                      },
-                    });
-                  }}
-                >
-                  <AlignVerticalJustifyEnd />
-                </Button>
-              </div>
-              <div className="flex flex-row gap-4 items-center justify-between">
-                <Label htmlFor="padding">ขนาดขอบใน</Label>
+              <div className="flex flex-row gap-2 items-center justify-between">
+                <Label htmlFor="backgroundColor">สีพื้นหลัง</Label>
                 <Input
-                  id="padding"
-                  value={props.dom.padding}
+                  id="backgroundColor"
+                  type="color"
+                  value={props.dom.backgroundColor}
                   onChange={(e) => {
-                    const maybeNumber = Number(e.currentTarget.value);
-                    if (Number.isNaN(maybeNumber)) return;
+                    const value = e.currentTarget.value;
                     editorDispatch({
-                      type: "editPadding",
-                      editPaddingArgs: { id: props.id, padding: maybeNumber },
+                      type: "editBackgroundColor",
+                      editBackgroundColorArgs: {
+                        id: props.id,
+                        backgroundColor: value,
+                      },
                     });
                   }}
                   className="w-32"
                 />
               </div>
-              <div className="flex flex-row gap-4 items-center justify-between">
-                <Label htmlFor="padding">กว้าง</Label>
-                <Input
-                  id="width"
-                  value={props.dom.width}
-                  onChange={(e) => {
-                    const maybeNumber = Number(e.currentTarget.value);
-                    if (Number.isNaN(maybeNumber)) return;
-                    editorDispatch({
-                      type: "editWidth",
-                      editWidthArgs: { id: props.id, width: maybeNumber },
-                    });
-                  }}
-                  className="w-32"
-                />
-              </div>
-              <div className="flex flex-row gap-4 items-center justify-between">
-                <Label htmlFor="padding">สูง</Label>
-                <Input
-                  id="height"
-                  type="number"
-                  value={props.dom.height}
-                  onChange={(e) => {
-                    const maybeNumber = Number(e.currentTarget.value);
-                    if (Number.isNaN(maybeNumber)) return;
-                    editorDispatch({
-                      type: "editHeight",
-                      editHeightArgs: { id: props.id, height: maybeNumber },
-                    });
-                  }}
-                  className="w-32"
-                />
-              </div>
-              <div className="flex flex-row gap-4 items-center justify-between">
-                <Select
-                  value={props.dom.fontFamily}
-                  onValueChange={(val) => {
-                    editorDispatch({
-                      type: "editFontFamily",
-                      editFontFamilyArgs: {
-                        id: props.id,
-                        fontFamily: val as Dom["fontFamily"],
-                      },
-                    });
-                  }}
-                >
-                  <SelectTrigger>
-                    <SelectValue placeholder="ฟ้อนต์" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="font-sans">font-sans</SelectItem>
-                    <SelectItem value="font-serif">font-serif</SelectItem>
-                    <SelectItem value="font-mono">font-mono</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-              padding width height fontFamily fontSize textColor backgroundColor
             </PopoverContent>
           </Popover>
         </>

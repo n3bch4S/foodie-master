@@ -205,6 +205,16 @@ function editorReducer(
         innerText: generatePreInnerText(action.addDom!.tagName),
         canHaveChildren: action.addDom!.tagName === "div",
         children: [],
+        fontFamily: "font-sans",
+        fontSize: 16,
+        textColor: "#000000",
+        justify: "justify-start",
+        items: "items-start",
+        width: 16,
+        height: 2,
+        padding: 8,
+        gap: 4,
+        backgroundColor: undefined,
       };
       const newDom = addComponent(
         editorContext.dom,
