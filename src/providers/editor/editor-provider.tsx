@@ -4,7 +4,6 @@ import { baseDomSchema, Dom, TagName, tagNameSchema } from "@/lib/page/types";
 import { DndContext, UniqueIdentifier } from "@dnd-kit/core";
 import { createContext, Dispatch, useContext, useReducer } from "react";
 import { v4 } from "uuid";
-import { z } from "zod";
 
 type EditorContextType = {
   isOpenPageDialog: boolean;
@@ -153,7 +152,7 @@ export type EditTextColorArgs = {
 
 export type EditBackgroundColorArgs = {
   id: UniqueIdentifier;
-  backgroundColor: string;
+  backgroundColor: string | undefined;
 };
 
 export type EditorActionType = {

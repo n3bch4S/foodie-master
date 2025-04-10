@@ -23,6 +23,7 @@ import {
   AlignVerticalJustifyCenter,
   AlignVerticalJustifyEnd,
   AlignVerticalJustifyStart,
+  PenOff,
 } from "lucide-react";
 import {
   Select,
@@ -354,6 +355,21 @@ export function DragDropComp(props: DragDropCompProps) {
               </div>
               <div className="flex flex-row gap-2 items-center justify-between">
                 <Label htmlFor="backgroundColor">สีพื้นหลัง</Label>
+                <Button
+                  variant={"outline"}
+                  onClick={(e) => {
+                    editorDispatch({
+                      type: "editBackgroundColor",
+                      editBackgroundColorArgs: {
+                        id: props.id,
+                        backgroundColor: undefined,
+                      },
+                    });
+                  }}
+                  className="size-8 border-2 border-slate-200 rounded-md flex items-center justify-center"
+                >
+                  <PenOff size={22} />
+                </Button>
                 <Input
                   id="backgroundColor"
                   type="color"
