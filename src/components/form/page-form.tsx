@@ -41,8 +41,8 @@ export function PageForm() {
           type: "setIsOpenDialog",
           setIsOpenDialog: { isOpen: false },
         });
-        router.refresh();
         dispatch({ type: "changePage", changePage: { page: pageDetail.name } });
+        router.refresh();
         toast.success(`สร้างหน้าสำเร็จ`, { description: pageDetail.name });
       })
       .catch((err) => {
