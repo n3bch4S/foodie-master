@@ -86,7 +86,21 @@ export function DragDropComp({
                 <Label htmlFor="innerText">ข้อความ</Label>
                 <Input
                   id="innerText"
-                  defaultValue={innerText}
+                  value={innerText}
+                  onChange={(e) => {
+                    editorDispatch({
+                      type: "editInner",
+                      editInnerArgs: { id, innerText: e.currentTarget.value },
+                    });
+                  }}
+                  className="w-32"
+                />
+              </div>
+              <div className="flex flex-row gap-4 items-center justify-between">
+                <Label htmlFor="gap">ช่องว่าง</Label>
+                <Input
+                  id="gap"
+                  value={innerText}
                   onChange={(e) => {
                     editorDispatch({
                       type: "editInner",
@@ -155,18 +169,20 @@ export function DragDropComp({
 
 interface TextInputProps {
   id: string;
+  innerText?: string;
 }
 function TextInput(props: TextInputProps) {
+  const editorDispatch = useEditorDispatch();
   return (
     <div className="flex flex-row gap-4 items-center justify-between">
       <Label htmlFor={props.id}>ข้อความ</Label>
       <Input
         id={props.id}
-        defaultValue={innerText}
+        value={props.innerText}
         onChange={(e) => {
           editorDispatch({
             type: "editInner",
-            editInnerArgs: { id, innerText: e.currentTarget.value },
+            editInnerArgs: { id: props.id, innerText: e.currentTarget.value },
           });
         }}
         className="w-32"

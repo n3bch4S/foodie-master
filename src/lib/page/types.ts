@@ -9,6 +9,21 @@ export const baseDomSchema = z
     tagName: tagNameSchema,
     innerText: z.optional(z.string()),
     canHaveChildren: z.boolean(),
+    gap: z.string().optional(),
+    justify: z
+      .enum(["justify-start", "justify-center", "justify-end"])
+      .optional(),
+    items: z.enum(["items-start", "items-center", "items-end"]).optional(),
+    padding: z.string().optional(),
+    width: z.string().optional(),
+    height: z.string().optional(),
+    fontFamily: z.enum(["font-sans", "font-serif", "font-mono"]).optional(),
+    fontSize: z.enum(["text-sm", "text-base", "text-lg"]).optional(),
+    textAlign: z
+      .enum(["text-left", "text-center", "text-right", "text-justify"])
+      .optional(),
+    textColor: z.string().optional(),
+    backgroundColor: z.string().optional(),
   })
   .strict();
 export type Dom = z.infer<typeof baseDomSchema> & { children: Dom[] };
