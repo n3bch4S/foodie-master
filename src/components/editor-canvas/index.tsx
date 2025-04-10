@@ -23,21 +23,9 @@ function renderComponent(component: Dom): React.ReactNode {
 
   if (component.canHaveChildren)
     return (
-      <DragDropComp
-        key={component.id}
-        id={component.id}
-        tagName={component.tagName}
-        innerText={component.innerText}
-      >
+      <DragDropComp dom={component} id={component.id}>
         {component.children.map((child) => renderComponent(child))}
       </DragDropComp>
     );
-  return (
-    <DragDropComp
-      key={component.id}
-      id={component.id}
-      tagName={component.tagName}
-      innerText={component.innerText}
-    />
-  );
+  return <DragDropComp dom={component} id={component.id} />;
 }

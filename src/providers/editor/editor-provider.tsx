@@ -105,14 +105,26 @@ export type EditInnerArgs = {
   innerText: string;
 };
 
+export type EditGapArgs = {
+  id: UniqueIdentifier;
+  gap: string;
+};
+
 export type EditorActionType = {
-  type: "changePage" | "updateDom" | "addDom" | "selectComponent" | "editInner";
+  type:
+    | "changePage"
+    | "updateDom"
+    | "addDom"
+    | "selectComponent"
+    | "editInner"
+    | "editGap";
   changePage?: ChangePageArgs;
   addDom?: AddDomArgs;
   updateDom?: UpdateDomArgs;
   selectComponent?: SelectComponentArgs;
   setIsOpenComponentPopup?: setIsOpenComponentPopupArgs;
   editInnerArgs?: EditInnerArgs;
+  editGapArgs?: EditGapArgs;
 };
 function editorReducer(
   editorContext: EditorContextType,
@@ -156,6 +168,13 @@ function editorReducer(
       const component = findIn(newDom, action.editInnerArgs!.id);
       if (!component) return editorContext;
       component.innerText = action.editInnerArgs!.innerText;
+      return { ...editorContext, dom: newDom };
+    }
+    case "editGap": {
+      const newDom = editorContext.dom;
+      const component = findIn(newDom, action.editGapArgs!.id);
+      if (!component) return editorContext;
+      component.gap = action.editGapArgs!.gap;
       return { ...editorContext, dom: newDom };
     }
     default: {

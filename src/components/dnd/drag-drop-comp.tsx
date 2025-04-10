@@ -1,5 +1,5 @@
 "use client";
-import { TagName } from "@/lib/page/types";
+import { Dom, TagName } from "@/lib/page/types";
 import {
   useDraggable,
   UseDraggableArguments,
@@ -25,28 +25,23 @@ type ImageArgs = {
 interface DragDropCompProps
   extends UseDroppableArguments,
     UseDraggableArguments {
-  tagName: TagName;
+  dom: Dom;
   innerText?: string;
   imageTag?: ImageArgs;
   children?: React.ReactNode;
 }
-
-export function DragDropComp({
-  id,
-  disabled,
-  data,
-  attributes,
-  tagName,
-  innerText,
-  imageTag,
-  children,
-}: DragDropCompProps) {
+export function DragDropComp(props: DragDropCompProps) {
   const dropState = useDroppable({
-    id,
-    disabled,
-    data,
+    id: props.id,
+    disabled: props.disabled,
+    data: props.data,
   });
-  const dragState = useDraggable({ id, disabled, data, attributes });
+  const dragState = useDraggable({
+    id: props.id,
+    disabled: props.disabled,
+    data: props.data,
+    attributes: props.attributes,
+  });
   const editor = useEditor();
   const editorDispatch = useEditorDispatch();
   const style: CSSProperties = {
@@ -54,12 +49,12 @@ export function DragDropComp({
     borderColor: dropState.isOver ? "green" : undefined,
   };
 
-  switch (tagName) {
+  switch (props.dom.tagName) {
     case "p": {
       return (
         <>
           <Popover
-            open={editor.selectedComponentId === id}
+            open={editor.selectedComponentId === props.id}
             onOpenChange={() => {
               editorDispatch({
                 type: "selectComponent",
@@ -74,37 +69,39 @@ export function DragDropComp({
                   dropState.setNodeRef(element);
                 }}
                 {...dragState.listeners}
-                // {...dragState.attributes}
                 style={style}
-                className="hover:border-2"
+                className="hover:border-2 flex"
               >
-                {innerText}
+                {props.dom.innerText}
               </p>
             </PopoverTrigger>
-            <PopoverContent>
+            <PopoverContent className="flex flex-col gap-2">
               <div className="flex flex-row gap-4 items-center justify-between">
                 <Label htmlFor="innerText">ข้อความ</Label>
                 <Input
                   id="innerText"
-                  value={innerText}
+                  value={props.dom.innerText}
                   onChange={(e) => {
                     editorDispatch({
                       type: "editInner",
-                      editInnerArgs: { id, innerText: e.currentTarget.value },
+                      editInnerArgs: {
+                        id: props.id,
+                        innerText: e.currentTarget.value,
+                      },
                     });
                   }}
                   className="w-32"
                 />
               </div>
               <div className="flex flex-row gap-4 items-center justify-between">
-                <Label htmlFor="gap">ช่องว่าง</Label>
+                <Label htmlFor="gap">ช่องว่างระหว่างกล่อง</Label>
                 <Input
                   id="gap"
-                  value={innerText}
+                  value={props.dom.gap}
                   onChange={(e) => {
                     editorDispatch({
-                      type: "editInner",
-                      editInnerArgs: { id, innerText: e.currentTarget.value },
+                      type: "editGap",
+                      editGapArgs: { id: props.id, gap: e.currentTarget.value },
                     });
                   }}
                   className="w-32"
@@ -127,8 +124,8 @@ export function DragDropComp({
           style={style}
           className="border-2 min-h-8 min-w-16"
         >
-          {innerText}
-          {children}
+          {props.dom.innerText}
+          {props.children}
         </div>
       );
     }
@@ -143,12 +140,9 @@ export function DragDropComp({
           // {...dragState.attributes}
           style={style}
         >
-          {innerText}
+          {props.dom.innerText}
         </button>
       );
-    }
-    case "image": {
-      return <Image src={imageTag!.src} alt={imageTag!.alt} />;
     }
   }
 
@@ -162,7 +156,7 @@ export function DragDropComp({
       // {...dragState.attributes}
       style={style}
     >
-      {children}
+      {props.children}
     </div>
   );
 }
