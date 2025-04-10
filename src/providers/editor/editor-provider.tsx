@@ -11,6 +11,7 @@ type EditorContextType = {
   isPreview: boolean;
   currentPage: string;
   dom: Dom;
+  selectedComponentId: UniqueIdentifier | null;
 };
 const EditorContext = createContext<EditorContextType | null>(null);
 
@@ -29,6 +30,7 @@ export function EditorProvider({ children }: EditorProviderProps) {
     isPreview: false,
     currentPage: "Home",
     dom: CUSTOM_PAGE_DOM,
+    selectedComponentId: null,
   };
 
   const [editorContext, dispatch] = useReducer(editorReducer, initContext);
@@ -52,6 +54,11 @@ export function EditorProvider({ children }: EditorProviderProps) {
                   childId: evt.active.id,
                   newParentId: evt.over.id,
                 },
+              });
+            } else if (evt.active.id === evt.over.id) {
+              dispatch({
+                type: "selectComponent",
+                selectComponent: { id: evt.active.id },
               });
             }
           }}
@@ -85,11 +92,27 @@ export type ChangePageArgs = {
   page: string;
 };
 
+export type SelectComponentArgs = {
+  id: UniqueIdentifier | null;
+};
+
+export type setIsOpenComponentPopupArgs = {
+  isOpen: boolean;
+};
+
+export type EditInnerArgs = {
+  id: UniqueIdentifier;
+  innerText: string;
+};
+
 export type EditorActionType = {
-  type: "changePage" | "updateDom" | "addDom";
+  type: "changePage" | "updateDom" | "addDom" | "selectComponent" | "editInner";
   changePage?: ChangePageArgs;
   addDom?: AddDomArgs;
   updateDom?: UpdateDomArgs;
+  selectComponent?: SelectComponentArgs;
+  setIsOpenComponentPopup?: setIsOpenComponentPopupArgs;
+  editInnerArgs?: EditInnerArgs;
 };
 function editorReducer(
   editorContext: EditorContextType,
@@ -120,6 +143,19 @@ function editorReducer(
         action.updateDom!.childId,
         action.updateDom!.newParentId
       );
+      return { ...editorContext, dom: newDom };
+    }
+    case "selectComponent": {
+      return {
+        ...editorContext,
+        selectedComponentId: action.selectComponent!.id,
+      };
+    }
+    case "editInner": {
+      const newDom = editorContext.dom;
+      const component = findIn(newDom, action.editInnerArgs!.id);
+      if (!component) return editorContext;
+      component.innerText = action.editInnerArgs!.innerText;
       return { ...editorContext, dom: newDom };
     }
     default: {
@@ -196,7 +232,7 @@ function moveComponent(
 function generatePreInnerText(tagName: TagName): string | undefined {
   switch (tagName) {
     case "p":
-      return "Paragraph";
+      return "ข้อความ";
     case "div":
       return undefined;
     case "button":
