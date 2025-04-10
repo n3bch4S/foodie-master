@@ -1,4 +1,4 @@
-import { db } from "@/lib/db";
+import { db } from "@/lib/_db";
 import EditorProvider from "@/providers/_editor/editor-provider";
 import { redirect } from "next/navigation";
 import React from "react";

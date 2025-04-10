@@ -1,7 +1,7 @@
 import SubAccountDetails from "@/components/form/subaccount-details";
 import UserDetails from "@/components/form/user-details";
 import BlurPage from "@/components/global/blur-page";
-import { db } from "@/lib/db";
+import { db } from "@/lib/_db";
 import { currentUser } from "@clerk/nextjs";
 import React from "react";
 

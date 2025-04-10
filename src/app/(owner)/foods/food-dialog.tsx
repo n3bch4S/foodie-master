@@ -1,13 +1,11 @@
 import {
-  Dialog,
   DialogContent,
   DialogDescription,
   DialogTitle,
-  DialogTrigger,
 } from "@/components/ui/dialog";
 import { MultiFoodForm } from "./food-form";
 import { Row } from "@tanstack/react-table";
-import { FoodDetail } from "@/lib/food";
+import { FoodDetail } from "@/lib/food/types";
 
 interface FoodDialogProps<TData> {
   row?: Row<TData>;

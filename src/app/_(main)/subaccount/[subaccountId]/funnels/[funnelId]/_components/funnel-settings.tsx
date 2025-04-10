@@ -1,7 +1,7 @@
 import React from "react";
 
 import { Funnel, SubAccount } from "@prisma/client";
-import { db } from "@/lib/db";
+import { db } from "@/lib/_db";
 import { getConnectAccountProducts } from "@/lib/stripe/stripe-actions";
 
 import FunnelForm from "@/components/form/funnel-form";

@@ -8,7 +8,11 @@ import { DragDropComp } from "../dnd/drag-drop-comp";
 export function EditorCanvas() {
   const editor = useEditor();
 
-  return editor.dom ? renderComponent(editor.dom!) : null;
+  return editor.dom ? (
+    renderComponent(editor.dom!)
+  ) : (
+    <h1 className="text-slate-400 text-2xl p-4">โปรดเลือกเพจที่ต้องการแก้ไข</h1>
+  );
 }
 
 function renderComponent(component: Dom): React.ReactNode {

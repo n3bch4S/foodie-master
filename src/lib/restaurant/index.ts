@@ -1,10 +1,8 @@
 "use server";
-import { PrismaClient } from "@prisma/client";
 import { Restaurant, RestaurantDetail } from "./types";
 import { auth } from "@clerk/nextjs";
 import { SiteDetail } from "../page/types";
-
-const db = new PrismaClient();
+import { db } from "../db";
 
 export async function createSite(): Promise<SiteDetail> {
   return await getRestaurant()

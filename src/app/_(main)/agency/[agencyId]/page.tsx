@@ -9,7 +9,7 @@ import {
 } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { Separator } from "@/components/ui/separator";
-import { db } from "@/lib/db";
+import { db } from "@/lib/_db";
 import { stripe } from "@/lib/stripe";
 import { AreaChart } from "@tremor/react";
 import {

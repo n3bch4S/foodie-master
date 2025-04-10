@@ -1,9 +1,9 @@
 "use server";
-import { PrismaClient } from "@prisma/client";
 import { Food, FoodDetail } from "./types";
 import { getRestaurant } from "../restaurant";
+import { db } from "../db";
 
-const db = new PrismaClient();
+// const db = new PrismaClient();
 
 export async function createFood(food: Food): Promise<FoodDetail> {
   return await getRestaurant()
@@ -12,9 +12,11 @@ export async function createFood(food: Food): Promise<FoodDetail> {
       return maybeRestaurant.id;
     })
     .then(async (rtrId) => {
-      return await db.foodItem.create({
+      const foodDetail = await db.foodItem.create({
         data: { ...food, restaurantId: rtrId },
       });
+
+      return foodDetail;
     })
     .then((newFood) => {
       const foodDetail: FoodDetail = {
@@ -32,7 +34,11 @@ export async function fetchFoods(): Promise<FoodDetail[]> {
       return maybeRtr;
     })
     .then(async (rtr) => {
-      return await db.foodItem.findMany({ where: { restaurantId: rtr.id } });
+      const foodDetail = await db.foodItem.findMany({
+        where: { restaurantId: rtr.id },
+      });
+
+      return foodDetail;
     })
     .then((foods) => {
       return foods.map((food) => ({ ...food, price: food.price.toNumber() }));
@@ -41,7 +47,7 @@ export async function fetchFoods(): Promise<FoodDetail[]> {
 
 export async function editFood(food: Food, id?: string): Promise<FoodDetail> {
   if (id) {
-    return await db.foodItem
+    const foodDetail = await db.foodItem
       .update({ where: { id }, data: food })
       .then((newFood) => {
         const foodDetail: FoodDetail = {
@@ -50,6 +56,8 @@ export async function editFood(food: Food, id?: string): Promise<FoodDetail> {
         };
         return foodDetail;
       });
+
+    return foodDetail;
   }
   return await createFood(food);
 }

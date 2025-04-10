@@ -17,7 +17,7 @@ import {
   getTicketsWithTags,
   getUserPermissions,
 } from "./queries";
-import { db } from "./db";
+import { db } from "./_db";
 import { z } from "zod";
 
 import Stripe from "stripe";

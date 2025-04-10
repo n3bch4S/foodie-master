@@ -9,7 +9,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { db } from "@/lib/db";
+import { db } from "@/lib/_db";
 import { Contact, SubAccount, Ticket } from "@prisma/client";
 import { format } from "date-fns/format";
 import React from "react";

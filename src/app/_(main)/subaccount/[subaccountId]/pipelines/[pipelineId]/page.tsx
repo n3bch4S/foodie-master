@@ -1,5 +1,5 @@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { db } from "@/lib/db";
+import { db } from "@/lib/_db";
 import {
   getLanesWithTicketAndTags,
   getPipelineDetails,

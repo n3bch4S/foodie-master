@@ -1,4 +1,4 @@
-import { db } from "@/lib/db";
+import { db } from "@/lib/_db";
 import React from "react";
 import DataTable from "./data-table";
 import { Plus } from "lucide-react";

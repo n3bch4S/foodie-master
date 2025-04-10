@@ -1,4 +1,4 @@
-import { db } from "@/lib/db";
+import { db } from "@/lib/_db";
 import { getDomainContent } from "@/lib/queries";
 import EditorProvider from "@/providers/_editor/editor-provider";
 import { notFound } from "next/navigation";

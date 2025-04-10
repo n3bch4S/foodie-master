@@ -20,7 +20,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { db } from "@/lib/db";
+import { db } from "@/lib/_db";
 import { stripe } from "@/lib/stripe";
 import { AreaChart, BadgeDelta } from "@tremor/react";
 import {

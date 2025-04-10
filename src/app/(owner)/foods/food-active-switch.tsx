@@ -1,7 +1,9 @@
 "use client";
 
 import { Switch } from "@/components/ui/switch";
-import { editFood, FoodDetail } from "@/lib/food";
+import { editFood } from "@/lib/food/index";
+import { FoodDetail } from "@/lib/food/types";
+
 import { Row } from "@tanstack/react-table";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
@@ -15,12 +17,16 @@ export function FoodActiveSwitch({ row }: FoodActiveSwitchProps<FoodDetail>) {
   return (
     <Switch
       onCheckedChange={() => {
-        editFood(row.original.id, {
-          name: row.original.name,
-          category: row.original.category,
-          price: row.original.price,
-          isActive: !row.original.isActive,
-        })
+        editFood(
+          {
+            name: row.original.name,
+            category: row.original.category,
+            price: row.original.price,
+            isActive: !row.original.isActive,
+            imageKey: row.original.imageKey,
+          },
+          row.original.id
+        )
           .then(() => {
             router.refresh();
             toast.success(`ปรับการมองเห็นสำเร็จ`, {

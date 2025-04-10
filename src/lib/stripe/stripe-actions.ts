@@ -1,6 +1,6 @@
 "use server";
 import Stripe from "stripe";
-import { db } from "../db";
+import { db } from "../_db";
 import { stripe } from ".";
 
 export const subscriptionCreated = async (

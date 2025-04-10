@@ -1,7 +1,7 @@
 "use server";
 
 import { clerkClient, currentUser } from "@clerk/nextjs";
-import { db } from "./db";
+import { db } from "./_db";
 import { redirect } from "next/navigation";
 import {
   Agency,
