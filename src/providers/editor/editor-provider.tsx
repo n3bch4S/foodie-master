@@ -143,6 +143,11 @@ export type EditInnerArgs = {
   innerText: string;
 };
 
+export type EditUrlArgs = {
+  id: UniqueIdentifier;
+  url: string;
+};
+
 export type EditGapArgs = {
   id: UniqueIdentifier;
   gap: number;
@@ -206,6 +211,7 @@ export type EditorActionType = {
     | "saveDom"
     | "selectComponent"
     | "editInner"
+    | "editUrl"
     | "editGap"
     | "editJustify"
     | "editItems"
@@ -228,6 +234,7 @@ export type EditorActionType = {
   selectComponent?: SelectComponentArgs;
   setIsOpenComponentPopup?: setIsOpenComponentPopupArgs;
   editInnerArgs?: EditInnerArgs;
+  editUrl?: EditUrlArgs;
   editGapArgs?: EditGapArgs;
   editJustifyArgs?: EditJustifyArgs;
   editItemsArgs?: EditItemsArgs;
@@ -321,6 +328,14 @@ function editorReducer(
       const component = findIn(newDom, action.editInnerArgs!.id);
       if (!component) return editorContext;
       component.innerText = action.editInnerArgs!.innerText;
+      return { ...editorContext, dom: newDom };
+    }
+    case "editUrl": {
+      const newDom = editorContext.dom!;
+      const component = findIn(newDom, action.editUrl!.id);
+      if (!component)
+        throw new Error(`Can't find component with id ${action.editUrl!.id}`);
+      component.url = action.editUrl!.url;
       return { ...editorContext, dom: newDom };
     }
     case "editGap": {

@@ -8,6 +8,7 @@ export const baseDomSchema = z
     id: z.union([z.string(), z.number()]),
     tagName: tagNameSchema,
     innerText: z.optional(z.string()),
+    url: z.string().optional(),
     canHaveChildren: z.boolean(),
     gap: z.coerce.number().nonnegative().optional(),
     justify: z

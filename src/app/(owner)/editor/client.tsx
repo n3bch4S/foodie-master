@@ -37,7 +37,7 @@ export function ClientPage(props: ClientPageProps) {
           <Button
             onClick={() => {
               dispatch({ type: "saveDom" });
-              setTimeout(() => router.refresh(), 3000);
+              setTimeout(() => router.refresh(), 1);
             }}
           >
             Save
