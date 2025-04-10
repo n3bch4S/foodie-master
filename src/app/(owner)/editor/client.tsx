@@ -9,6 +9,7 @@ import {
   useEditor,
   useEditorDispatch,
 } from "@/providers/editor/editor-provider";
+import { Eye, EyeOff } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 
@@ -29,25 +30,53 @@ export function ClientPage(props: ClientPageProps) {
 
   return (
     <>
-      <header className="flex items-center justify-between p-4 border-b">
-        <PageSelector pages={props.pages} />
-
-        <div className="flex gap-2">
-          <Button>Preview</Button>
+      {editor.isPreview ? (
+        <>
           <Button
+            className="fixed top-4 right-16"
             onClick={() => {
-              dispatch({ type: "saveDom" });
-              setTimeout(() => router.refresh(), 1);
+              dispatch({
+                type: "setIsPreview",
+                setIsPreview: { isPreview: false },
+              });
             }}
           >
-            Save
+            <EyeOff />
           </Button>
-        </div>
-      </header>
-      <div className="w-full h-full flex flex-row">
-        <EditorSidebar />
-        <EditorCanvas />
-      </div>
+          <EditorCanvas />
+        </>
+      ) : (
+        <>
+          <header className="flex items-center justify-between p-4 border-b">
+            <PageSelector pages={props.pages} />
+
+            <div className="flex gap-2">
+              <Button
+                onClick={() => {
+                  dispatch({
+                    type: "setIsPreview",
+                    setIsPreview: { isPreview: true },
+                  });
+                }}
+              >
+                <Eye />
+              </Button>
+              <Button
+                onClick={() => {
+                  dispatch({ type: "saveDom" });
+                  setTimeout(() => router.refresh(), 1);
+                }}
+              >
+                Save
+              </Button>
+            </div>
+          </header>
+          <div className="w-full h-full flex flex-row">
+            <EditorSidebar />
+            <EditorCanvas />
+          </div>
+        </>
+      )}
     </>
   );
 }

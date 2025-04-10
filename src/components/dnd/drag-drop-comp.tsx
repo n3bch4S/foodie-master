@@ -77,6 +77,46 @@ export function DragDropComp(props: DragDropCompProps) {
       : undefined,
   };
 
+  if (editor.isPreview) {
+    switch (props.dom.tagName) {
+      case "p": {
+        return (
+          <p
+            style={style}
+            className={` flex ${props.dom.justify} ${props.dom.items} ${props.dom.fontFamily}`}
+          >
+            {props.dom.innerText}
+          </p>
+        );
+      }
+      case "div": {
+        return (
+          <div
+            style={style}
+            className={`flex flex-row ${props.dom.justify} ${props.dom.items} ${props.dom.fontFamily}`}
+          >
+            {props.children}
+          </div>
+        );
+      }
+      case "button": {
+        return (
+          <a href={props.dom.url} target="_blank">
+            <button
+              style={style}
+              className={`rounded-lg flex ${props.dom.justify} ${props.dom.items} ${props.dom.fontFamily}`}
+            >
+              {props.dom.innerText}
+            </button>
+          </a>
+        );
+      }
+      default: {
+        throw new Error(`Unknown tagName: ${props.dom.tagName}`);
+      }
+    }
+  }
+
   switch (props.dom.tagName) {
     case "p": {
       return (

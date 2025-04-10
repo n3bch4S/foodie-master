@@ -99,6 +99,10 @@ export type SetDomArgs = {
   dom: Dom | null;
 };
 
+export type SetIsPreviewArgs = {
+  isPreview: boolean;
+};
+
 export type SetIsOpenPageSelectorArgs = {
   isOpen: boolean;
 };
@@ -203,6 +207,7 @@ export type EditorActionType = {
     | "changePage"
     | "setPageId"
     | "setDom"
+    | "setIsPreview"
     | "setIsOpenDialog"
     | "setIsOpenPageSelector"
     | "updateDom"
@@ -224,6 +229,7 @@ export type EditorActionType = {
     | "editBackgroundColor";
   setPageId?: SetPageIdArgs;
   setDom?: SetDomArgs;
+  setIsPreview?: SetIsPreviewArgs;
   setIsOpenPageSelector?: SetIsOpenPageSelectorArgs;
   setIsOpenDialog?: SetIsOpenDialogArgs;
   changePage?: ChangePageArgs;
@@ -256,6 +262,9 @@ function editorReducer(
     }
     case "setDom": {
       return { ...editorContext, dom: action.setDom!.dom };
+    }
+    case "setIsPreview": {
+      return { ...editorContext, isPreview: action.setIsPreview!.isPreview };
     }
     case "setIsOpenPageSelector": {
       return {
