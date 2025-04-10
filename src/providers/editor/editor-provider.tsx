@@ -235,14 +235,10 @@ function editorReducer(
       return { ...editorContext, dom: newDom };
     }
     case "editGap": {
-      const maybeGap = baseDomSchema
-        .pick({ gap: true })
-        .safeParse({ gap: action.editGapArgs!.gap });
-      if (!maybeGap.success) return editorContext;
       const newDom = editorContext.dom;
       const component = findIn(newDom, action.editGapArgs!.id);
       if (!component) return editorContext;
-      component.gap = maybeGap.data.gap;
+      component.gap = action.editGapArgs!.gap;
       return { ...editorContext, dom: newDom };
     }
     case "editJustify": {
@@ -268,14 +264,10 @@ function editorReducer(
       return { ...editorContext, dom: newDom };
     }
     case "editPadding": {
-      const maybePadding = baseDomSchema
-        .pick({ padding: true })
-        .safeParse({ padding: action.editPaddingArgs!.padding });
-      if (!maybePadding.success) return editorContext;
       const newDom = editorContext.dom;
       const component = findIn(newDom, action.editPaddingArgs!.id);
       if (!component) return editorContext;
-      component.padding = maybePadding.data.padding;
+      component.padding = action.editPaddingArgs!.padding;
       return { ...editorContext, dom: newDom };
     }
     case "editWidth": {

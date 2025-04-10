@@ -57,6 +57,15 @@ export function DragDropComp(props: DragDropCompProps) {
   const style: CSSProperties = {
     transform: CSS.Translate.toString(dragState.transform),
     borderColor: dropState.isOver ? "green" : undefined,
+    gap: props.dom.gap ? `${props.dom.gap}px` : undefined,
+    padding: props.dom.padding ? `${props.dom.padding}px` : undefined,
+    width: props.dom.width ? `${props.dom.width}px` : undefined,
+    height: props.dom.height ? `${props.dom.height}px` : undefined,
+    fontSize: props.dom.fontSize ? `${props.dom.fontSize}px` : undefined,
+    color: props.dom.textColor ? `#${props.dom.textColor}` : undefined,
+    backgroundColor: props.dom.backgroundColor
+      ? `#${props.dom.backgroundColor}`
+      : undefined,
   };
 
   switch (props.dom.tagName) {
@@ -80,7 +89,7 @@ export function DragDropComp(props: DragDropCompProps) {
                 }}
                 {...dragState.listeners}
                 style={style}
-                className={`hover:border-2 flex ${props.dom.justify} ${props.dom.items} ${props.dom.padding} ${props.dom.width} ${props.dom.height} ${props.dom.fontFamily} ${props.dom.fontSize} text-[#${props.dom.textColor} bg-[#${props.dom.backgroundColor}]]`}
+                className={`hover:border-2 flex ${props.dom.justify} ${props.dom.items} ${props.dom.fontFamily}`}
               >
                 {props.dom.innerText}
               </p>
@@ -216,9 +225,11 @@ export function DragDropComp(props: DragDropCompProps) {
                   id="padding"
                   value={props.dom.padding}
                   onChange={(e) => {
+                    const maybeNumber = Number(e.currentTarget.value);
+                    if (Number.isNaN(maybeNumber)) return;
                     editorDispatch({
-                      type: "editGap",
-                      editGapArgs: { id: props.id, gap: e.currentTarget.value },
+                      type: "editPadding",
+                      editPaddingArgs: { id: props.id, padding: maybeNumber },
                     });
                   }}
                   className="w-32"
