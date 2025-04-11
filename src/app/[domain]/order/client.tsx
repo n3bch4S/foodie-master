@@ -30,7 +30,7 @@ import {
 import { createOrder, getOrdersOfSession, OrderWithName } from "./action";
 import { Separator } from "@/components/ui/separator";
 import { OrderDetail } from "@/app/(owner)/orders/types";
-import { ReceiptText } from "lucide-react";
+import { ReceiptText, UtensilsCrossed } from "lucide-react";
 
 interface ClientPageProps {
   foods: FoodDetail[];
@@ -79,22 +79,24 @@ export function NoSessionPage(props: NoSessionPageProps) {
   const router = useRouter();
 
   return (
-    <div className="w-full h-full flex flex-col gap-4 justify-center items-center">
+    <div className="w-full h-full flex flex-col gap-4 justify-center items-center bg-slate-800">
       <h1 className="text-slate-400 text-lg">ไม่พบเซสชั่น</h1>
       <Button
         variant={"ghost"}
-        className="w-32 h-32 border-2 border-dashed rounded-lg text-slate-600"
+        className="w-32 h-32 border-2 border-blue-400 border-dashed rounded-lg text-slate-600 bg-slate-100"
         onClick={async () => {
           if (foods.length === 0) {
             toast.warning("ไม่สำเร็จ", {
-              description: "โปรดสร้างอาหารก่อน",
+              description: "ร้านนี้ไม่มีอาหาร",
             });
+            return;
           }
           const rtrId = foods[0].restaurantId;
           const ssn = await createPublicSession(rtrId);
           router.push("/order?sessionId=" + ssn.id);
         }}
       >
+        <UtensilsCrossed />
         สร้างเซสชั่น
       </Button>
       {props.children}
