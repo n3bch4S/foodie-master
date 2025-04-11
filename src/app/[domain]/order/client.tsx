@@ -6,11 +6,22 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { FoodDetail } from "@/lib/food/types";
-import { Minus, Plus } from "lucide-react";
 import Image from "next/image";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useMemo, useState } from "react";
 import { toast } from "sonner";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
+import { createOrder } from "./action";
 
 interface ClientPageProps {
   foods: FoodDetail[];
@@ -29,7 +40,9 @@ export function ClientPage(props: ClientPageProps) {
   return (
     <>
       {props.foods.map((food) => {
-        return <FoodCard key={food.id} food={food}></FoodCard>;
+        return (
+          <FoodCard key={food.id} food={food} sessionId={sessionId}></FoodCard>
+        );
       })}
     </>
   );
@@ -71,10 +84,12 @@ export function NoSessionPage(props: NoSessionPageProps) {
 
 interface FoodCardProps {
   food: FoodDetail;
+  sessionId: string;
   children?: React.ReactNode;
 }
 function FoodCard(props: FoodCardProps) {
   const [quantity, setQuantity] = useState<number>(1);
+  const [showConfirm, setShowConfirm] = useState<boolean>(false);
   const food = useMemo(() => {
     return props.food;
   }, [props.food]);
@@ -120,12 +135,40 @@ function FoodCard(props: FoodCardProps) {
             }}
           />
         </div>
-        <Button
-          variant={"ghost"}
-          className="border-2 bg-lime-50 border-lime-600"
-        >
-          สั่งซื้อ
-        </Button>
+
+        <AlertDialog open={showConfirm} onOpenChange={setShowConfirm}>
+          <AlertDialogTrigger asChild>
+            <Button
+              variant={"ghost"}
+              className="border-2 bg-lime-50 border-lime-600"
+            >
+              สั่งซื้อ
+            </Button>
+          </AlertDialogTrigger>
+          <AlertDialogContent>
+            <AlertDialogHeader>
+              <AlertDialogTitle>
+                ต้องการสั่ง {food.name} จำนวน {quantity} หรือไม่?
+              </AlertDialogTitle>
+            </AlertDialogHeader>
+            <AlertDialogFooter>
+              <AlertDialogCancel>ยกเลิก</AlertDialogCancel>
+              <AlertDialogAction
+                onClick={(e) => {
+                  createOrder(props.sessionId, food.id, quantity).then(
+                    (order) => {
+                      toast.success("สำเร็จ", {
+                        description: `สั่ง ${food.name} จำนวน ${quantity} เรียบร้อย`,
+                      });
+                    }
+                  );
+                }}
+              >
+                ยืนยันการสั่ง
+              </AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
       </div>
       {props.children}
     </div>

@@ -11,3 +11,18 @@ export async function getOrdersOfSession(
   });
   return orders;
 }
+
+export async function createOrder(
+  sessionId: string,
+  foodId: string,
+  quantity: number
+): Promise<OrderDetail> {
+  const order = await db.order.create({
+    data: {
+      sessionTransactionId: sessionId,
+      foodItemId: foodId,
+      quantity: quantity,
+    },
+  });
+  return order;
+}
