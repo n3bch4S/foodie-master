@@ -15,13 +15,22 @@ import {
   AlertDialogAction,
   AlertDialogCancel,
   AlertDialogContent,
-  AlertDialogDescription,
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
-import { createOrder } from "./action";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import { createOrder, getOrdersOfSession, OrderWithName } from "./action";
+import { Separator } from "@/components/ui/separator";
+import { OrderDetail } from "@/app/(owner)/orders/types";
+import { ReceiptText } from "lucide-react";
 
 interface ClientPageProps {
   foods: FoodDetail[];
@@ -32,6 +41,9 @@ export function ClientPage(props: ClientPageProps) {
   const sessionId = useMemo(() => {
     return searchParams.get("sessionId");
   }, [searchParams]);
+  const groupedFoods = useMemo(() => {
+    return getFoodsAsGroup(props.foods);
+  }, [props.foods]);
 
   if (!sessionId) {
     return <NoSessionPage foods={props.foods} />;
@@ -39,9 +51,17 @@ export function ClientPage(props: ClientPageProps) {
 
   return (
     <>
-      {props.foods.map((food) => {
+      <Receipt sessionId={sessionId} />
+      {Object.entries(groupedFoods).map(([groupName, foods]) => {
         return (
-          <FoodCard key={food.id} food={food} sessionId={sessionId}></FoodCard>
+          <div className="flex flex-col gap-8" key={groupName}>
+            <FoodGroup
+              foods={foods}
+              groupName={groupName}
+              sessionId={sessionId}
+            />
+            <Separator />
+          </div>
         );
       })}
     </>
@@ -82,6 +102,89 @@ export function NoSessionPage(props: NoSessionPageProps) {
   );
 }
 
+interface ReceiptProps {
+  sessionId: string;
+  children?: React.ReactNode;
+}
+function Receipt(props: ReceiptProps) {
+  const [open, setOpen] = useState<boolean>(false);
+  const [orders, setOrders] = useState<OrderWithName[] | null>(null);
+
+  return (
+    <>
+      <Dialog
+        open={open}
+        onOpenChange={(e) => {
+          getOrdersOfSession(props.sessionId).then((orders) => {
+            setOrders(orders);
+            setOpen(e);
+          });
+        }}
+      >
+        <DialogTrigger asChild>
+          <Button
+            variant={"secondary"}
+            className="size-16 rounded-full fixed bottom-4 right-4"
+          >
+            <ReceiptText />
+          </Button>
+        </DialogTrigger>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>รายการที่สั่ง</DialogTitle>
+          </DialogHeader>
+          <OrderList orders={orders ?? []} />
+        </DialogContent>
+      </Dialog>
+    </>
+  );
+}
+
+interface OrderListProps {
+  orders: OrderWithName[];
+  children?: React.ReactNode;
+}
+function OrderList(props: OrderListProps) {
+  const orders = useMemo(() => {
+    return props.orders;
+  }, [props.orders]);
+  return (
+    <>
+      {orders.map((order) => {
+        return (
+          <div className="border-b-2 flex flex-row justify-evenly">
+            <p className="w-2/5">{order.FoodItem.name}</p>
+            <p>x{order.quantity}</p>
+            <p>เมื่อ {order.createdAt.toLocaleTimeString()}</p>
+            <p>{mapStatus(order.status)}</p>
+          </div>
+        );
+      })}
+    </>
+  );
+}
+
+interface FoodGroupProps {
+  foods: FoodDetail[];
+  groupName: string;
+  sessionId: string;
+  children?: React.ReactNode;
+}
+function FoodGroup(props: FoodGroupProps) {
+  return (
+    <>
+      <div className="flex flex-col gap-4 justify-center items-center">
+        <h2 className="w-4/5 text-6xl m-4">{props.groupName}</h2>
+        {props.foods.map((food) => {
+          return (
+            <FoodCard key={food.id} food={food} sessionId={props.sessionId} />
+          );
+        })}
+      </div>
+    </>
+  );
+}
+
 interface FoodCardProps {
   food: FoodDetail;
   sessionId: string;
@@ -104,7 +207,7 @@ function FoodCard(props: FoodCardProps) {
               alt={food.name}
               fill
               sizes={"10vw"}
-              className="object-cover rounded-lg"
+              className="object-cover rounded-l-lg"
             />
           </AspectRatio>
         ) : (
@@ -181,4 +284,36 @@ function getImageUrl(key: string): string {
     throw new Error("NEXT_PUBLIC_UPLOADTHING_APP_ID is not defined");
   }
   return `https://${appId}.ufs.sh/f/${key}`;
+}
+
+function getFoodsAsGroup(foods: FoodDetail[]): {
+  [key: string]: FoodDetail[];
+} {
+  const groupMap = new Map<string, FoodDetail[]>();
+  foods.forEach((food) => {
+    const { category } = food;
+    if (groupMap.has(category)) {
+      const foodGroup = groupMap.get(category);
+      if (!foodGroup) {
+        throw new Error("Food group is not found");
+      }
+      groupMap.set(category, [...foodGroup, food]);
+    } else {
+      groupMap.set(category, [food]);
+    }
+  });
+  return Object.fromEntries(groupMap.entries());
+}
+
+function mapStatus(status: OrderDetail["status"]): string {
+  switch (status) {
+    case "PENDING":
+      return "กำลังรอ";
+    case "COMPLETED":
+      return "เสร็จสิ้น";
+    case "CANCELLED":
+      return "ยกเลิก";
+    default:
+      return status;
+  }
 }

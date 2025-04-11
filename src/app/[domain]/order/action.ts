@@ -3,11 +3,17 @@
 import { OrderDetail } from "@/app/(owner)/orders/types";
 import { db } from "@/lib/db";
 
+type FoodWithName = {
+  name: string;
+};
+export type OrderWithName = OrderDetail & { FoodItem: FoodWithName };
 export async function getOrdersOfSession(
   sessionId: string
-): Promise<OrderDetail[]> {
+): Promise<OrderWithName[]> {
   const orders = await db.order.findMany({
     where: { sessionTransactionId: sessionId },
+    orderBy: { createdAt: "desc" },
+    include: { FoodItem: { select: { name: true } } },
   });
   return orders;
 }

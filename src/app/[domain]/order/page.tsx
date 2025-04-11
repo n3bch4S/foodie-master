@@ -1,4 +1,3 @@
-import { getOrdersOfSession } from "./action";
 import { ClientPage, NoSessionPage } from "./client";
 import { getPublicFoods } from "@/lib/food/index";
 
@@ -17,6 +16,6 @@ export default async function Page(ctx: {
   if (!sessionId || typeof sessionId !== "string") {
     return <NoSessionPage foods={foods} />;
   }
-  const order = await getOrdersOfSession(sessionId);
+
   return <ClientPage foods={foods}></ClientPage>;
 }
