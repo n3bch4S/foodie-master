@@ -1,6 +1,6 @@
 import { z } from "zod";
 
-export const tagNameSchema = z.enum(["p", "div", "button"]);
+export const tagNameSchema = z.enum(["p", "div", "button", "order"]);
 export type TagName = z.infer<typeof tagNameSchema>;
 
 export const baseDomSchema = z

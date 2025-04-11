@@ -112,6 +112,13 @@ export function DragDropComp(props: DragDropCompProps) {
           </a>
         );
       }
+      case "order": {
+        return (
+          <div className="w-full h-16 flex justify-center items-center">
+            เมนูออเดอร์
+          </div>
+        );
+      }
       default: {
         throw new Error(`Unknown tagName: ${props.dom.tagName}`);
       }
@@ -169,6 +176,14 @@ export function DragDropComp(props: DragDropCompProps) {
                   editorDispatch({
                     type: "removeComp",
                     removeComp: { compId: props.id },
+                  });
+                  editorDispatch({
+                    type: "setIsOpenDialog",
+                    setIsOpenDialog: { isOpen: false },
+                  });
+                  editorDispatch({
+                    type: "selectComponent",
+                    selectComponent: { id: null },
                   });
                 }}
                 className="absolute -right-14"
@@ -502,6 +517,14 @@ export function DragDropComp(props: DragDropCompProps) {
                   type: "removeComp",
                   removeComp: { compId: props.id },
                 });
+                editorDispatch({
+                  type: "setIsOpenDialog",
+                  setIsOpenDialog: { isOpen: false },
+                });
+                editorDispatch({
+                  type: "selectComponent",
+                  selectComponent: { id: null },
+                });
               }}
               className="absolute -right-14"
             >
@@ -758,6 +781,14 @@ export function DragDropComp(props: DragDropCompProps) {
                 editorDispatch({
                   type: "removeComp",
                   removeComp: { compId: props.id },
+                });
+                editorDispatch({
+                  type: "setIsOpenDialog",
+                  setIsOpenDialog: { isOpen: false },
+                });
+                editorDispatch({
+                  type: "selectComponent",
+                  selectComponent: { id: null },
                 });
               }}
               className="absolute -right-14"

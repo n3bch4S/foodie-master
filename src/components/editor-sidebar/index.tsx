@@ -14,6 +14,9 @@ export function EditorSidebar() {
       <DragComp tagName="button" id="button">
         ลิงก์
       </DragComp>
+      <DragComp tagName="order" id="order">
+        เมนูออเดอร์
+      </DragComp>
     </div>
   );
 }
