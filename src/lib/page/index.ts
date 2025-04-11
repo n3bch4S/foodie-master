@@ -87,6 +87,10 @@ export async function createPage(
     });
 }
 
+export async function deletePage(pageName: string): Promise<void> {
+  await db.page.deleteMany({ where: { name: pageName } });
+}
+
 export async function getPages(): Promise<PageDetail[]> {
   return await getRestaurant()
     .then((maybeRtr) => {

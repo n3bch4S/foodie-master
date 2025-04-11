@@ -25,6 +25,7 @@ import {
   AlignVerticalJustifyStart,
   PenOff,
   Trash2,
+  X,
 } from "lucide-react";
 import {
   Select,
@@ -150,6 +151,18 @@ export function DragDropComp(props: DragDropCompProps) {
               </p>
             </PopoverTrigger>
             <PopoverContent className="flex flex-col gap-4 h-64 overflow-y-scroll">
+              <Button
+                variant={"ghost"}
+                className="bg-blue-100 border-2 border-blue-400 size-8 rounded-full absolute -top-0 -right-0"
+                onClick={() => {
+                  editorDispatch({
+                    type: "selectComponent",
+                    selectComponent: { id: null },
+                  });
+                }}
+              >
+                <X />
+              </Button>
               <Button
                 variant={"destructive"}
                 onClick={(e) => {
@@ -471,6 +484,18 @@ export function DragDropComp(props: DragDropCompProps) {
           </PopoverTrigger>
           <PopoverContent className="flex flex-col gap-4 h-64 overflow-y-scroll">
             <Button
+              variant={"ghost"}
+              className="bg-blue-100 border-2 border-blue-400 size-8 rounded-full absolute -top-0 -right-0"
+              onClick={() => {
+                editorDispatch({
+                  type: "selectComponent",
+                  selectComponent: { id: null },
+                });
+              }}
+            >
+              <X />
+            </Button>
+            <Button
               variant={"destructive"}
               onClick={(e) => {
                 editorDispatch({
@@ -715,6 +740,18 @@ export function DragDropComp(props: DragDropCompProps) {
             </button>
           </PopoverTrigger>
           <PopoverContent className="flex flex-col gap-4 h-64 overflow-y-scroll">
+            <Button
+              variant={"ghost"}
+              className="bg-blue-100 border-2 border-blue-400 size-8 rounded-full absolute -top-0 -right-0"
+              onClick={() => {
+                editorDispatch({
+                  type: "selectComponent",
+                  selectComponent: { id: null },
+                });
+              }}
+            >
+              <X />
+            </Button>
             <Button
               variant={"destructive"}
               onClick={(e) => {

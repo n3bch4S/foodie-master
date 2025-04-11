@@ -4,14 +4,16 @@ import { EditorCanvas } from "@/components/editor-canvas";
 import { EditorSidebar } from "@/components/editor-sidebar";
 import { PageSelector } from "@/components/selector/page-selector";
 import { Button } from "@/components/ui/button";
+import { deletePage } from "@/lib/page";
 import { PageDetail } from "@/lib/page/types";
 import {
   useEditor,
   useEditorDispatch,
 } from "@/providers/editor/editor-provider";
-import { Eye, EyeOff } from "lucide-react";
+import { Eye, EyeOff, Trash2 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
+import { toast } from "sonner";
 
 interface ClientPageProps {
   pages: PageDetail[];
@@ -26,7 +28,7 @@ export function ClientPage(props: ClientPageProps) {
     if (!page) return;
     dispatch({ type: "setPageId", setPageId: { pageId: page.id } });
     dispatch({ type: "setDom", setDom: { dom: page.dom } });
-  }, []);
+  }, [dispatch, editor.currentPage, props.pages]);
 
   return (
     <>
@@ -48,7 +50,32 @@ export function ClientPage(props: ClientPageProps) {
       ) : (
         <>
           <header className="flex items-center justify-between p-4 border-b">
-            <PageSelector pages={props.pages} />
+            <div className="flex flex-row gap-2">
+              <PageSelector pages={props.pages} />
+              <Button
+                variant={"destructive"}
+                disabled={
+                  editor.currentPage === "Home" ||
+                  editor.currentPage === "Order" ||
+                  !editor.pageId
+                }
+                onClick={(e) => {
+                  if (!editor.currentPage || !editor.pageId) return;
+                  deletePage(editor.currentPage).then(() => {
+                    dispatch({
+                      type: "changePage",
+                      changePage: { page: "Home" },
+                    });
+                    toast.success("สำเร็จ", {
+                      description: `ลบหน้า ${editor.currentPage} แล้ว`,
+                    });
+                    router.refresh();
+                  });
+                }}
+              >
+                <Trash2 />
+              </Button>
+            </div>
 
             <div className="flex gap-2">
               <Button

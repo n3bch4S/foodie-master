@@ -16,7 +16,10 @@ import { Input } from "../ui/input";
 import { Button } from "../ui/button";
 import { toast } from "sonner";
 import { createPage } from "@/lib/page";
-import { useEditorDispatch } from "@/providers/editor/editor-provider";
+import {
+  useEditor,
+  useEditorDispatch,
+} from "@/providers/editor/editor-provider";
 import { useRouter } from "next/navigation";
 
 const formSchema = z.object({
@@ -25,6 +28,7 @@ const formSchema = z.object({
 type Form = z.infer<typeof formSchema>;
 
 export function PageForm() {
+  const editor = useEditor();
   const dispatch = useEditorDispatch();
   const router = useRouter();
   const form = useForm<Form>({
@@ -42,6 +46,7 @@ export function PageForm() {
           setIsOpenDialog: { isOpen: false },
         });
         dispatch({ type: "changePage", changePage: { page: pageDetail.name } });
+        dispatch({ type: "setPageId", setPageId: { pageId: pageDetail.id } });
         router.refresh();
         toast.success(`สร้างหน้าสำเร็จ`, { description: pageDetail.name });
       })

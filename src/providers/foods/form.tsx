@@ -14,6 +14,7 @@ export function FoodFormContextProvider({ children }: FoodProviderProps) {
     defaultValues: {
       name: "",
       category: "",
+      imageKey: undefined,
       price: 0,
       isActive: true,
     },

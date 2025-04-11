@@ -1,5 +1,5 @@
 "use client";
-import { editPage } from "@/lib/page";
+import { deletePage, editPage } from "@/lib/page";
 import {
   baseDomSchema,
   Dom,
@@ -68,7 +68,10 @@ export function EditorProvider({ children }: EditorProviderProps) {
                   newParentId: evt.over.id,
                 },
               });
-            } else if (evt.active.id === evt.over.id) {
+            } else if (
+              evt.active.id === evt.over.id &&
+              editorContext.selectedComponentId === null
+            ) {
               dispatch({
                 type: "selectComponent",
                 selectComponent: { id: evt.active.id },
@@ -93,6 +96,10 @@ export function useEditorDispatch(): EditorDispatchContextType {
 
 export type SetPageIdArgs = {
   pageId: string | null;
+};
+
+export type DeletePageArgs = {
+  pageId: string;
 };
 
 export type SetDomArgs = {

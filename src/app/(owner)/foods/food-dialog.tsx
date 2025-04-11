@@ -3,9 +3,9 @@ import {
   DialogDescription,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { MultiFoodForm } from "./food-form";
 import { Row } from "@tanstack/react-table";
 import { FoodDetail } from "@/lib/food/types";
+import { FoodForm } from "./food-form";
 
 interface FoodDialogProps<TData> {
   row?: Row<TData>;
@@ -26,7 +26,7 @@ export function FoodDialogContent({
       {dialogDescription && (
         <DialogDescription>{dialogDescription}</DialogDescription>
       )}
-      <MultiFoodForm />
+      <FoodForm />
     </DialogContent>
   );
 }
