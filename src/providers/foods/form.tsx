@@ -25,7 +25,7 @@ export function FoodFormContextProvider({ children }: FoodProviderProps) {
 }
 
 export function useFoodForm() {
-  return useContext(FoodFormContext);
+  return useContext(FoodFormContext)!;
 }
 
 const foodFormSchema = z.object({

@@ -12,7 +12,7 @@ import { FoodDetail } from "@/lib/food/types";
 
 export const foodColumns: ColumnDef<FoodDetail>[] = [
   {
-    id: "select",
+    id: "เลือก",
     header: ({ table }) => (
       <Checkbox
         checked={
@@ -34,15 +34,15 @@ export const foodColumns: ColumnDef<FoodDetail>[] = [
     enableHiding: false,
   },
   {
-    id: "image",
+    id: "รูป",
     accessorFn: ({ imageKey }) => imageKey,
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title="รูป" />
     ),
     cell: ({ row }) => (
       <div className="size-24">
-        <AspectRatio>
-          {row.original.imageKey ? (
+        {row.original.imageKey ? (
+          <AspectRatio>
             <Image
               src={toUtUrl(row.original.imageKey!)}
               alt={"รูป " + row.original.name}
@@ -51,18 +51,18 @@ export const foodColumns: ColumnDef<FoodDetail>[] = [
               className="rounded-md object-cover border-2"
               priority
             />
-          ) : (
-            <span className="rounded-md w-full h-full border-2 flex items-center justify-center text-slate-400">
-              ไม่มีรูปภาพ
-            </span>
-          )}
-        </AspectRatio>
+          </AspectRatio>
+        ) : (
+          <span className="rounded-md w-full h-full border-2 flex items-center justify-center text-slate-400">
+            ไม่มีรูปภาพ
+          </span>
+        )}
       </div>
     ),
     enableSorting: false,
   },
   {
-    id: "name",
+    id: "ชื่อ",
     accessorFn: ({ name }) => name,
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title="ชื่อ" />
@@ -70,7 +70,7 @@ export const foodColumns: ColumnDef<FoodDetail>[] = [
     cell: ({ row }) => row.original.name,
   },
   {
-    id: "category",
+    id: "ประเภท",
     accessorFn: ({ category }) => category,
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title="ประเภท" />
@@ -78,7 +78,7 @@ export const foodColumns: ColumnDef<FoodDetail>[] = [
     cell: ({ row }) => row.original.category,
   },
   {
-    id: "price",
+    id: "ราคา",
     accessorFn: ({ price }) => price,
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title="ราคา" />
@@ -86,14 +86,14 @@ export const foodColumns: ColumnDef<FoodDetail>[] = [
     cell: ({ row }) => row.original.price,
   },
   {
-    id: "isActive",
+    id: "การมองเห็น",
     accessorFn: ({ isActive }) => isActive,
     header: "การมองเห็น",
     cell: ({ row }) => <FoodActiveSwitch row={row} />,
     enableSorting: false,
   },
   {
-    id: "action",
+    id: "ดำเนินการ",
     header: ({ table }) => <FoodActionDropdown table={table} />,
     cell: ({ row }) => <FoodActionDropdown row={row} />,
     enableSorting: false,

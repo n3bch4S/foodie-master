@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { authMiddleware, redirectToSignIn } from "@clerk/nextjs";
+import { getRestaurant } from "./lib/restaurant";
 
 // This example protects all routes including api/trpc routes
 // Please edit this to allow other routes to be public as needed.

@@ -26,7 +26,7 @@ export function FoodDialogContent({
       {dialogDescription && (
         <DialogDescription>{dialogDescription}</DialogDescription>
       )}
-      <MultiFoodForm setIsOpen={setIsOpen} row={row} />
+      <MultiFoodForm />
     </DialogContent>
   );
 }

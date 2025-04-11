@@ -13,7 +13,7 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { createFood } from "@/lib/food/index";
-import { FoodFormContext, FoodForm } from "@/providers/foods/form";
+import { FoodFormContext, FoodForm, useFoodForm } from "@/providers/foods/form";
 import { useContext, useState } from "react";
 import Image from "next/image";
 import { Switch } from "@/components/ui/switch";
@@ -26,7 +26,7 @@ export function MultiFoodForm() {
   const router = useRouter();
   const [imageName, setImageName] = useState<string | null>(null);
   const [imageKey, setImageKey] = useState<string | null>(null);
-  const form = useContext(FoodFormContext)!;
+  const form = useFoodForm();
 
   return (
     <Form {...form}>
@@ -57,8 +57,8 @@ export function MultiFoodForm() {
         />
         <div className="flex gap-4">
           <div className="size-32">
-            <AspectRatio>
-              {imageKey ? (
+            {imageKey ? (
+              <AspectRatio>
                 <Image
                   src={toUtUrl(imageKey)}
                   alt="รูปอาหาร"
@@ -66,12 +66,12 @@ export function MultiFoodForm() {
                   sizes="10vw"
                   className="rounded-md object-cover border-4"
                 />
-              ) : (
-                <div className="w-full h-full rounded-md border-4">
-                  ไม่มีรูปภาพ
-                </div>
-              )}
-            </AspectRatio>
+              </AspectRatio>
+            ) : (
+              <div className="w-full h-full rounded-md border-4 flex justify-center items-center">
+                ไม่มีรูปภาพ
+              </div>
+            )}
           </div>
 
           <div className="flex flex-col gap-4">
