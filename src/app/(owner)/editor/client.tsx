@@ -52,6 +52,7 @@ export function ClientPage(props: ClientPageProps) {
 
             <div className="flex gap-2">
               <Button
+                disabled={!editor.pageId}
                 onClick={() => {
                   dispatch({
                     type: "setIsPreview",
@@ -62,7 +63,9 @@ export function ClientPage(props: ClientPageProps) {
                 <Eye />
               </Button>
               <Button
+                disabled={!editor.pageId}
                 onClick={() => {
+                  if (!editor.pageId) return;
                   dispatch({ type: "saveDom" });
                   setTimeout(() => router.refresh(), 1);
                 }}

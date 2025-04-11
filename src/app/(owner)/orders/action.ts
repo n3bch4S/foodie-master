@@ -1,13 +1,8 @@
 "use server";
 import { getRestaurant } from "@/lib/restaurant";
-import { PrismaClient } from "@prisma/client";
-import {
-  OrderDetail,
-  OrderStatus,
-  orderStatusSchema,
-  SessionDetail,
-} from "./types";
+import { OrderDetail, OrderStatus, SessionDetail } from "./types";
 import { FoodDetail } from "@/lib/food/types";
+import { db } from "@/lib/db";
 
 export async function createSession(): Promise<SessionDetail> {
   return await getRestaurant()
@@ -16,13 +11,21 @@ export async function createSession(): Promise<SessionDetail> {
       return maybeRtr;
     })
     .then(async (rtr) => {
-      const db = new PrismaClient();
       const ssn = await db.sessionTransaction.create({
         data: { restaurantId: rtr.id },
       });
       await db.$disconnect();
       return ssn;
     });
+}
+
+export async function createPublicSession(
+  rtrId: string
+): Promise<SessionDetail> {
+  const ssn = await db.sessionTransaction.create({
+    data: { restaurantId: rtrId },
+  });
+  return ssn;
 }
 
 export async function editSession(
@@ -35,7 +38,6 @@ export async function editSession(
       return maybeRtr;
     })
     .then(async (rtr) => {
-      const db = new PrismaClient();
       const ssn = await db.sessionTransaction.update({
         where: { id: id },
         data: { isOpen },
@@ -52,7 +54,6 @@ export async function getSession(): Promise<SessionDetail[]> {
       return maybeRtr;
     })
     .then(async (rtr) => {
-      const db = new PrismaClient();
       const ssn = await db.sessionTransaction.findMany({
         where: { restaurantId: rtr.id },
       });
@@ -66,7 +67,6 @@ export async function createOrder(
   foodId: string,
   quantity: number
 ): Promise<OrderDetail> {
-  const db = new PrismaClient();
   const order = await db.order.create({
     data: { sessionTransactionId: sessionId, foodItemId: foodId, quantity },
   });
@@ -78,13 +78,17 @@ export async function editOrder(
   orderId: string,
   status: OrderStatus
 ): Promise<OrderDetail> {
-  const db = new PrismaClient();
   const order = await db.order.update({
     where: { id: orderId },
     data: { status },
   });
   await db.$disconnect();
   return order;
+}
+
+export async function deleteOrder(orderId: string): Promise<OrderDetail> {
+  const deletedOrder = await db.order.delete({ where: { id: orderId } });
+  return deletedOrder;
 }
 
 export async function getOrder(): Promise<
@@ -96,7 +100,6 @@ export async function getOrder(): Promise<
       return maybeRtr;
     })
     .then(async (rtr) => {
-      const db = new PrismaClient();
       const order = await db.order.findMany({
         where: { SessionTransaction: { restaurantId: rtr.id } },
         include: { FoodItem: true },

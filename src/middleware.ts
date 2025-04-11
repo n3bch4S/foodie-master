@@ -12,8 +12,13 @@ export default authMiddleware({
     const path = req.nextUrl.pathname;
     const searchParams = req.nextUrl.searchParams;
     if (domains && domains.length === 2) {
-      const url = new URL(`/${domains[0]}${path}?${searchParams}`, req.url);
-      console.log(url.toString());
+      const url = new URL(
+        "/" +
+          domains[0] +
+          path +
+          (searchParams.toString() !== "" ? "?" + searchParams : ""),
+        req.url
+      );
       return NextResponse.rewrite(url);
     }
     if (path === "/") {

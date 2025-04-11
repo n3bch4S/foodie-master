@@ -45,6 +45,15 @@ export async function fetchFoods(): Promise<FoodDetail[]> {
     });
 }
 
+export async function getPublicFoods(rtrName: string): Promise<FoodDetail[]> {
+  const foods = await db.foodItem.findMany({
+    where: { Restaurant: { name: rtrName }, isActive: true },
+  });
+  return foods.map((food) => {
+    return { ...food, price: food.price.toNumber() };
+  });
+}
+
 export async function editFood(food: Food, id?: string): Promise<FoodDetail> {
   if (id) {
     const foodDetail = await db.foodItem
