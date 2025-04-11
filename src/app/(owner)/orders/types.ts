@@ -1,3 +1,4 @@
+import { foodDetailSchema } from "@/lib/food/types";
 import { z } from "zod";
 
 export const sessionDetailSchema = z
@@ -59,3 +60,7 @@ export const orderSchema = orderDetailSchema;
 //     @@index([foodItemId])
 //     @@index([sessionTransactionId])
 //   }
+export const orderWithFoodSchema = orderDetailSchema.extend({
+  FoodItem: foodDetailSchema,
+});
+export type OrderWithFood = z.infer<typeof orderWithFoodSchema>;

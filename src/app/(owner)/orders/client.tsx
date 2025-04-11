@@ -14,7 +14,7 @@ import {
   getFilteredRowModel,
   VisibilityState,
 } from "@tanstack/react-table";
-import { OrderDetail, SessionDetail } from "./types";
+import { OrderDetail, OrderWithFood, SessionDetail } from "./types";
 import {
   Table,
   TableBody,
@@ -53,22 +53,34 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { Input } from "@/components/ui/input";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Separator } from "@/components/ui/separator";
+import { Switch } from "@/components/ui/switch";
+import { editOrder, editSession } from "./action";
+import { toast } from "sonner";
+import { useRouter } from "next/navigation";
 
 interface ClientPageProps {
   sessionDetails: SessionDetail[];
-  orderDetails: OrderDetail[];
+  orderDetails: OrderWithFood[];
 }
 export function ClientPage(props: ClientPageProps) {
   return (
-    <>
-      <DataTable columns={sessionColumns} data={props.sessionDetails} />
+    <div className="w-full flex flex-col gap-4">
+      <DataTable
+        columns={sessionColumns}
+        data={props.sessionDetails}
+        tableName="เซสชั่น"
+      />
       <Separator />
-      <DataTable columns={orderColumn} data={props.orderDetails} />
-    </>
+      <DataTable
+        columns={orderColumn}
+        data={props.orderDetails}
+        tableName="ออเดอร์"
+      />
+    </div>
   );
 }
 
@@ -81,7 +93,8 @@ const sessionColumns: ColumnDef<SessionDetail>[] = [
       return <DataTableColumnHeader column={ctx.column} title="สถานะ" />;
     },
     cell: (ctx) => {
-      return ctx.row.original.isOpen ? "เปิด" : "ปิด";
+      const { isOpen, id } = ctx.row.original;
+      return <StatusSwitch isOpen={isOpen} sessionId={id} />;
     },
   },
   {
@@ -106,34 +119,19 @@ const sessionColumns: ColumnDef<SessionDetail>[] = [
   },
 ];
 
-const orderColumn: ColumnDef<OrderDetail>[] = [
+const orderColumn: ColumnDef<OrderWithFood>[] = [
   {
-    id: "select",
-    header: ({ table }) => (
-      <Checkbox
-        checked={
-          table.getIsAllPageRowsSelected() ||
-          (table.getIsSomePageRowsSelected() && "indeterminate")
-        }
-        onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
-        aria-label="Select all"
-      />
-    ),
-    cell: ({ row }) => (
-      <Checkbox
-        checked={row.getIsSelected()}
-        onCheckedChange={(value) => row.toggleSelected(!!value)}
-        aria-label="Select row"
-      />
-    ),
-    enableSorting: false,
-    enableHiding: false,
+    id: "ID เซสชั่น",
+    accessorKey: "sessionTransactionId",
+    header: (ctx) => {
+      return <DataTableColumnHeader column={ctx.column} title="ID เซสชั่น" />;
+    },
   },
   {
-    id: "ID",
-    accessorKey: "id",
+    id: "เมนู",
+    accessorKey: "FoodItem.name",
     header: (ctx) => {
-      return <DataTableColumnHeader column={ctx.column} title="ID" />;
+      return <DataTableColumnHeader column={ctx.column} title="เมนู" />;
     },
   },
   {
@@ -150,14 +148,8 @@ const orderColumn: ColumnDef<OrderDetail>[] = [
       return <DataTableColumnHeader column={ctx.column} title="สถานะ" />;
     },
     cell: (ctx) => {
-      switch (ctx.row.original.status) {
-        case "PENDING":
-          return "กำลังดำเนินการ";
-        case "COMPLETED":
-          return "เสร็จสิ้น";
-        case "CANCELLED":
-          return "ยกเลิก";
-      }
+      const { id, status } = ctx.row.original;
+      return <StatusSelect orderId={id} status={status} />;
     },
   },
   {
@@ -180,51 +172,83 @@ const orderColumn: ColumnDef<OrderDetail>[] = [
       return ctx.row.original.updatedAt.toLocaleTimeString();
     },
   },
-  {
-    id: "actions",
-    cell: ({ row }) => {
-      const payment = row.original;
-
-      return (
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="ghost" className="h-8 w-8 p-0">
-              <span className="sr-only">Open menu</span>
-              <MoreHorizontal className="h-4 w-4" />
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end">
-            <DropdownMenuLabel>ดำเนินการ</DropdownMenuLabel>
-            <DropdownMenuItem
-              onClick={() => navigator.clipboard.writeText(payment.id)}
-            >
-              คัดลอก ID
-            </DropdownMenuItem>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem>View customer</DropdownMenuItem>
-            <DropdownMenuItem>View payment details</DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
-      );
-    },
-  },
 ];
+
+interface StatusSwitchProps {
+  isOpen: boolean;
+  sessionId: string;
+}
+function StatusSwitch(props: StatusSwitchProps) {
+  const router = useRouter();
+  return (
+    <Switch
+      checked={props.isOpen}
+      onCheckedChange={(e) => {
+        editSession(props.sessionId, e).then((ssn) => {
+          toast.success("สำเร็จ", {
+            description: `${ssn.isOpen ? "เปืด" : "ปิด"} ${ssn.id} แล้ว`,
+          });
+          router.refresh();
+        });
+      }}
+    />
+  );
+}
+
+interface StatusSelectProps {
+  orderId: string;
+  status: OrderDetail["status"];
+}
+function StatusSelect(props: StatusSelectProps) {
+  const router = useRouter();
+  return (
+    <>
+      <Select
+        value={props.status}
+        onValueChange={(value) => {
+          const { orderId } = props;
+          editOrder(orderId, value as OrderDetail["status"]).then((order) => {
+            toast.success("สำเร็จ", {
+              description: `เปลี่ยนสถานะ ${order.id} เป็น ${mapOrderStatus(
+                order.status
+              )}`,
+            });
+            router.refresh();
+          });
+        }}
+      >
+        <SelectTrigger className="w-36">
+          <SelectValue placeholder={mapOrderStatus(props.status)} />
+        </SelectTrigger>
+        <SelectContent>
+          <SelectItem value="PENDING">กำลังดำเนินการ</SelectItem>
+          <SelectItem value="COMPLETED">เสร็จสิ้น</SelectItem>
+          <SelectItem value="CANCELLED">ยกเลิก</SelectItem>
+        </SelectContent>
+      </Select>
+    </>
+  );
+}
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
   data: TData[];
+  tableName: string;
   findKey?: string;
 }
 
 function DataTable<TData, TValue>({
   columns,
   data,
-  findKey,
+  ...props
 }: DataTableProps<TData, TValue>) {
   const [sorting, setSorting] = useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
   const [rowSelection, setRowSelection] = useState({});
+  const findKey = useMemo(() => {
+    return props.findKey;
+  }, [props.findKey]);
   const table = useReactTable({
     data,
     columns,
@@ -257,6 +281,7 @@ function DataTable<TData, TValue>({
             className="max-w-sm"
           />
         )}
+        {props.tableName}
         <DataTableViewOptions table={table} />
       </div>
       <div className="flex rounded-md border">
@@ -484,4 +509,17 @@ export function DataTableViewOptions<TData>({
       </DropdownMenuContent>
     </DropdownMenu>
   );
+}
+
+function mapOrderStatus(status: OrderDetail["status"]): string {
+  switch (status) {
+    case "PENDING":
+      return "กำลังดำเนินการ";
+    case "COMPLETED":
+      return "เสร็จสิ้น";
+    case "CANCELLED":
+      return "ยกเลิก";
+    default:
+      return status;
+  }
 }

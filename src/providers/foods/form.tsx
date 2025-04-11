@@ -1,6 +1,6 @@
 "use client";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { createContext } from "react";
+import { createContext, useContext } from "react";
 import { useForm, UseFormReturn } from "react-hook-form";
 import { z } from "zod";
 
@@ -22,6 +22,10 @@ export function FoodFormContextProvider({ children }: FoodProviderProps) {
   return (
     <FoodFormContext.Provider value={form}>{children}</FoodFormContext.Provider>
   );
+}
+
+export function useFoodForm() {
+  return useContext(FoodFormContext);
 }
 
 const foodFormSchema = z.object({
