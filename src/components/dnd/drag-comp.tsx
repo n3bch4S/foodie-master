@@ -77,5 +77,18 @@ export function DragComp({
           {children}
         </Button>
       );
+    case "order": {
+      return (
+        <div
+          ref={dragState.setNodeRef}
+          style={style}
+          {...dragState.listeners}
+          {...dragState.attributes}
+          className="flex justify-center items-center border-4 border-slate-200 border-dotted h-16"
+        >
+          เมนูออเดอร์
+        </div>
+      );
+    }
   }
 }
