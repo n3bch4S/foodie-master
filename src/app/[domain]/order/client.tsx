@@ -48,8 +48,14 @@ export function ClientPage(props: ClientPageProps) {
   const foundSession = useMemo(() => {
     return props.sessions.find((session) => session.id === sessionId);
   }, [props.sessions, sessionId]);
+  const isSessionClose = useMemo(() => {
+    if (!foundSession) {
+      return false;
+    }
+    return !foundSession.isOpen;
+  }, [foundSession]);
 
-  if (!sessionId || !foundSession) {
+  if (!sessionId || !foundSession || isSessionClose) {
     return <NoSessionPage foods={props.foods} />;
   }
 
