@@ -74,7 +74,7 @@ export function FoodActionDropdown({
 
   return (
     <Dialog open={isUpdateOpen} onOpenChange={setIsUpdateOpen}>
-      <DropdownMenu>
+      <DropdownMenu open={isOpenDropdown} onOpenChange={setIsOpenDropdown}>
         <DropdownMenuTrigger asChild>
           <Button
             variant={row ? "ghost" : "outline"}
@@ -101,7 +101,13 @@ export function FoodActionDropdown({
           <DropdownMenuSeparator />
           {row && (
             <DialogTrigger asChild>
-              <DropdownMenuItem>แก้ไข</DropdownMenuItem>
+              <DropdownMenuItem
+                onClick={() => {
+                  setIsOpenDropdown(false);
+                }}
+              >
+                แก้ไข
+              </DropdownMenuItem>
             </DialogTrigger>
           )}
           <DropdownMenuItem
