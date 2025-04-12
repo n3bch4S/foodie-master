@@ -26,7 +26,7 @@ export function FoodDialogContent({
       {dialogDescription && (
         <DialogDescription>{dialogDescription}</DialogDescription>
       )}
-      <FoodForm />
+      <FoodForm row={row} setIsOpen={setIsOpen} />
     </DialogContent>
   );
 }

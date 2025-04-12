@@ -33,7 +33,7 @@ export function FoodActionDropdown({
   if (table && row)
     throw new Error(`"table" and "row" can not defined at same time`);
   const router = useRouter();
-
+  const [isOpenDropdown, setIsOpenDropdown] = useState<boolean>(false);
   const [isUpdateOpen, setIsUpdateOpen] = useState<boolean>(false);
 
   const handleDeleteFoods = useCallback(async () => {
