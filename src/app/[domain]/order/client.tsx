@@ -29,11 +29,12 @@ import {
 } from "@/components/ui/dialog";
 import { createOrder, getOrdersOfSession, OrderWithName } from "./action";
 import { Separator } from "@/components/ui/separator";
-import { OrderDetail } from "@/app/(owner)/orders/types";
+import { OrderDetail, SessionDetail } from "@/app/(owner)/orders/types";
 import { ReceiptText, UtensilsCrossed } from "lucide-react";
 
 interface ClientPageProps {
   foods: FoodDetail[];
+  sessions: SessionDetail[];
   children?: React.ReactNode;
 }
 export function ClientPage(props: ClientPageProps) {
@@ -44,8 +45,11 @@ export function ClientPage(props: ClientPageProps) {
   const groupedFoods = useMemo(() => {
     return getFoodsAsGroup(props.foods);
   }, [props.foods]);
+  const foundSession = useMemo(() => {
+    return props.sessions.find((session) => session.id === sessionId);
+  }, [props.sessions, sessionId]);
 
-  if (!sessionId) {
+  if (!sessionId || !foundSession) {
     return <NoSessionPage foods={props.foods} />;
   }
 
@@ -80,7 +84,9 @@ export function NoSessionPage(props: NoSessionPageProps) {
 
   return (
     <div className="w-full h-full flex flex-col gap-4 justify-center items-center bg-slate-800">
-      <h1 className="text-slate-400 text-lg">ไม่พบเซสชั่น</h1>
+      <h1 className="text-slate-400 text-lg">
+        ไม่พบเซสชั่น หรือเซสชั่นปิดแล้ว
+      </h1>
       <Button
         variant={"ghost"}
         className="w-32 h-32 border-2 border-blue-400 border-dashed rounded-lg text-slate-600 bg-slate-100"
@@ -154,7 +160,10 @@ function OrderList(props: OrderListProps) {
     <>
       {orders.map((order) => {
         return (
-          <div className="border-b-2 flex flex-row justify-evenly">
+          <div
+            key={order.id}
+            className="border-b-2 flex flex-row justify-evenly"
+          >
             <p className="w-2/5">{order.FoodItem.name}</p>
             <p>x{order.quantity}</p>
             <p>เมื่อ {order.createdAt.toLocaleTimeString()}</p>

@@ -1,6 +1,6 @@
 "use server";
 
-import { OrderDetail } from "@/app/(owner)/orders/types";
+import { OrderDetail, SessionDetail } from "@/app/(owner)/orders/types";
 import { db } from "@/lib/db";
 
 type FoodWithName = {
@@ -31,4 +31,13 @@ export async function createOrder(
     },
   });
   return order;
+}
+
+export async function getSessionOfDomain(
+  domain: string
+): Promise<SessionDetail[]> {
+  const sessions = await db.sessionTransaction.findMany({
+    where: { Restaurant: { name: domain } },
+  });
+  return sessions;
 }
