@@ -24,6 +24,12 @@ export async function createOrder(
   foodId: string,
   quantity: number
 ): Promise<OrderDetail> {
+  const session = await db.sessionTransaction.findUnique({
+    where: { id: sessionId },
+  });
+  if (!session || !session.isOpen) {
+    throw new Error("ไม่สามารถสั่งอาหารได้ เนื่องจากเซสชั่นนี้ถูกปิดไปแล้ว");
+  }
   const order = await db.order.create({
     data: {
       sessionTransactionId: sessionId,

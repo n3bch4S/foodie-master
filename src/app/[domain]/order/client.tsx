@@ -298,13 +298,17 @@ function FoodCard(props: FoodCardProps) {
               <AlertDialogCancel>ยกเลิก</AlertDialogCancel>
               <AlertDialogAction
                 onClick={(e) => {
-                  createOrder(props.sessionId, food.id, quantity).then(
-                    (order) => {
+                  createOrder(props.sessionId, food.id, quantity)
+                    .then((order) => {
                       toast.success("สำเร็จ", {
                         description: `สั่ง ${food.name} จำนวน ${quantity} เรียบร้อย`,
                       });
-                    }
-                  );
+                    })
+                    .catch((e) => {
+                      toast.error("ไม่สำเร็จ", {
+                        description: e.message,
+                      });
+                    });
                 }}
               >
                 ยืนยันการสั่ง
