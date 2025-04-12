@@ -57,9 +57,4 @@ const items = [
     url: "/orders",
     icon: ShoppingBag,
   },
-  {
-    title: "รายงาน",
-    url: "/report",
-    icon: ChartNoAxesCombined,
-  },
 ];

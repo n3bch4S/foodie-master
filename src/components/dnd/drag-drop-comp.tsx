@@ -1096,6 +1096,76 @@ export function DragDropComp(props: DragDropCompProps) {
         </Popover>
       );
     }
+    case "order": {
+      return (
+        <>
+          <Popover
+            open={editor.selectedComponentId === props.id}
+            onOpenChange={() => {
+              editorDispatch({
+                type: "selectComponent",
+                selectComponent: { id: null },
+              });
+            }}
+          >
+            <PopoverTrigger asChild>
+              <div
+                ref={(element) => {
+                  dragState.setNodeRef(element);
+                  dropState.setNodeRef(element);
+                }}
+                {...dragState.listeners}
+                style={style}
+                className={`${
+                  editor.selectedComponentId === props.id
+                    ? "border-2 border-pink-300"
+                    : ""
+                } border-2 border-dotted border-slate-400 flex justify-center items-center`}
+              >
+                เมนูออเดอร์
+              </div>
+            </PopoverTrigger>
+            <PopoverContent className="flex flex-col gap-4 h-64 overflow-y-scroll">
+              <Button
+                variant={"ghost"}
+                className="bg-blue-100 border-2 border-blue-400 size-8 rounded-full absolute -top-0 -right-0"
+                onClick={() => {
+                  editorDispatch({
+                    type: "selectComponent",
+                    selectComponent: { id: null },
+                  });
+                }}
+              >
+                <X />
+              </Button>
+              <Button
+                variant={"destructive"}
+                onClick={(e) => {
+                  editorDispatch({
+                    type: "removeComp",
+                    removeComp: { compId: props.id },
+                  });
+                  editorDispatch({
+                    type: "setIsOpenDialog",
+                    setIsOpenDialog: { isOpen: false },
+                  });
+                  editorDispatch({
+                    type: "selectComponent",
+                    selectComponent: { id: null },
+                  });
+                }}
+                className="absolute -right-14"
+              >
+                <Trash2 />
+              </Button>
+              <div className="flex flex-col justify-center items-center gap-2 py-2 rounded-xl border-slate-200 h-full text-slate-800 text-lg">
+                การปรับแต่งเมนูออเดอร์จะมาเร็ว ๆ นี้
+              </div>
+            </PopoverContent>
+          </Popover>
+        </>
+      );
+    }
   }
 
   return (
