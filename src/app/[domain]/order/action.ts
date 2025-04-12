@@ -2,6 +2,7 @@
 
 import { OrderDetail, SessionDetail } from "@/app/(owner)/orders/types";
 import { db } from "@/lib/db";
+import { domSchema, PageDetail } from "@/lib/page/types";
 
 type FoodWithName = {
   name: string;
@@ -40,4 +41,14 @@ export async function getSessionOfDomain(
     where: { Restaurant: { name: domain } },
   });
   return sessions;
+}
+
+export async function getOrderPage(domain: string): Promise<PageDetail> {
+  const page = await db.page.findFirst({
+    where: { name: "Order", site: { name: domain } },
+  });
+  if (!page) {
+    throw new Error("Page not found");
+  }
+  return { ...page, dom: domSchema.parse(page.dom) };
 }

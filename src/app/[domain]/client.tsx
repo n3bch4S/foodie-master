@@ -10,23 +10,30 @@ export function ClientPage(props: { page: PageDetail }) {
   return <>{renderDom(dom)}</>;
 }
 
-function renderDom(dom: Dom) {
+export function renderDom(
+  dom: Dom,
+  orderElem?: React.ReactNode
+): React.ReactNode {
   if (dom.id === "root" && dom.children.length === 0)
-    return <div className="container" />;
+    return <div className="container" key={dom.id} />;
   if (dom.id === "root" && dom.children.length > 0)
     return (
-      <div className="container">
-        {dom.children.map((child) => renderDom(child))}
+      <div className="container" key={dom.id}>
+        {dom.children.map((child) => renderDom(child, orderElem))}
       </div>
     );
+  if (dom.tagName === "order") {
+    if (!orderElem) throw new Error("order dom should have children");
+    return orderElem;
+  }
 
   if (dom.canHaveChildren)
     return (
-      <ThisComp dom={dom}>
-        {dom.children.map((child) => renderDom(child))}
+      <ThisComp dom={dom} key={dom.id}>
+        {dom.children.map((child) => renderDom(child, orderElem))}
       </ThisComp>
     );
-  return <ThisComp dom={dom} />;
+  return <ThisComp dom={dom} key={dom.id} />;
 }
 
 function ThisComp(props: { dom: Dom; children?: React.ReactNode }) {
@@ -64,7 +71,7 @@ function ThisComp(props: { dom: Dom; children?: React.ReactNode }) {
     }
     case "button": {
       return (
-        <a href={dom.url} target="_blank">
+        <a href={dom.url}>
           <button
             style={style}
             className={`rounded-lg flex ${dom.justify} ${dom.items} ${dom.fontFamily}`}
@@ -80,7 +87,7 @@ function ThisComp(props: { dom: Dom; children?: React.ReactNode }) {
           style={style}
           className="w-full h-16 flex justify-center items-center"
         >
-          เมนูออเดอร์
+          เมนูออเดอร์sds
         </div>
       );
     }

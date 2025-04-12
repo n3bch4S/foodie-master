@@ -31,10 +31,13 @@ import { createOrder, getOrdersOfSession, OrderWithName } from "./action";
 import { Separator } from "@/components/ui/separator";
 import { OrderDetail, SessionDetail } from "@/app/(owner)/orders/types";
 import { ReceiptText, UtensilsCrossed } from "lucide-react";
+import { renderDom } from "../client";
+import { PageDetail } from "@/lib/page/types";
 
 interface ClientPageProps {
   foods: FoodDetail[];
   sessions: SessionDetail[];
+  page: PageDetail;
   children?: React.ReactNode;
 }
 export function ClientPage(props: ClientPageProps) {
@@ -61,19 +64,39 @@ export function ClientPage(props: ClientPageProps) {
 
   return (
     <>
-      <Receipt sessionId={sessionId} />
-      {Object.entries(groupedFoods).map(([groupName, foods]) => {
-        return (
-          <div className="flex flex-col gap-8" key={groupName}>
-            <FoodGroup
-              foods={foods}
-              groupName={groupName}
-              sessionId={sessionId}
-            />
-            <Separator />
-          </div>
-        );
-      })}
+      {renderDom(
+        props.page.dom,
+        <div className="flex flex-col">
+          <Receipt sessionId={sessionId} />
+          {Object.entries(groupedFoods).map(([groupName, foods]) => {
+            return (
+              <div className="flex flex-col gap-8" key={groupName}>
+                <FoodGroup
+                  foods={foods}
+                  groupName={groupName}
+                  sessionId={sessionId}
+                />
+                <Separator />
+              </div>
+            );
+          })}
+        </div>
+      )}
+      <>
+        {/* <Receipt sessionId={sessionId} />
+        {Object.entries(groupedFoods).map(([groupName, foods]) => {
+          return (
+            <div className="flex flex-col gap-8" key={groupName}>
+              <FoodGroup
+                foods={foods}
+                groupName={groupName}
+                sessionId={sessionId}
+              />
+              <Separator />
+            </div>
+          );
+        })} */}
+      </>
     </>
   );
 }

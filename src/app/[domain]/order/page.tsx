@@ -1,4 +1,4 @@
-import { getSessionOfDomain } from "./action";
+import { getOrderPage, getSessionOfDomain } from "./action";
 import { ClientPage, NoSessionPage } from "./client";
 import { getPublicFoods } from "@/lib/food/index";
 
@@ -14,10 +14,13 @@ export default async function Page(ctx: {
   const { sessionId } = ctx.searchParams;
   const foods = await getPublicFoods(domain);
   const sessions = await getSessionOfDomain(domain);
+  const page = await getOrderPage(domain);
 
   if (!sessionId || typeof sessionId !== "string") {
     return <NoSessionPage foods={foods} />;
   }
 
-  return <ClientPage foods={foods} sessions={sessions}></ClientPage>;
+  return (
+    <ClientPage foods={foods} sessions={sessions} page={page}></ClientPage>
+  );
 }
