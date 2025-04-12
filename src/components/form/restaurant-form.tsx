@@ -31,7 +31,7 @@ type RestaurantForm = z.infer<typeof restaurantFormSchema>;
 
 async function onSubmit(values: RestaurantForm): Promise<void> {
   await editRestaurant({
-    name: values.name,
+    name: values.name.toLowerCase(),
     description: values.description ?? null,
     logoKey: values.logoKey ?? null,
   })

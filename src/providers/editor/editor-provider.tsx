@@ -544,6 +544,9 @@ function generatePreInnerText(tagName: TagName): string | undefined {
       return undefined;
     case "button":
       return "Button";
+    case "order": {
+      return undefined;
+    }
     default:
       throw new Error(`Unknown tag name: ${tagName}`);
   }

@@ -114,7 +114,10 @@ export function DragDropComp(props: DragDropCompProps) {
       }
       case "order": {
         return (
-          <div className="w-full h-16 flex justify-center items-center">
+          <div
+            style={style}
+            className="w-full h-16 flex justify-center items-center"
+          >
             เมนูออเดอร์
           </div>
         );
@@ -1102,34 +1105,9 @@ export function DragDropComp(props: DragDropCompProps) {
         dropState.setNodeRef(element);
       }}
       {...dragState.listeners}
-      // {...dragState.attributes}
       style={style}
     >
       {props.children}
-    </div>
-  );
-}
-
-interface TextInputProps {
-  id: string;
-  innerText?: string;
-}
-function TextInput(props: TextInputProps) {
-  const editorDispatch = useEditorDispatch();
-  return (
-    <div className="flex flex-row gap-4 items-center justify-between">
-      <Label htmlFor={props.id}>ข้อความ</Label>
-      <Input
-        id={props.id}
-        value={props.innerText}
-        onChange={(e) => {
-          editorDispatch({
-            type: "editInner",
-            editInnerArgs: { id: props.id, innerText: e.currentTarget.value },
-          });
-        }}
-        className="w-32"
-      />
     </div>
   );
 }

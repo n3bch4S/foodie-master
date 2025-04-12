@@ -47,6 +47,11 @@ export async function createRestaurant({
     .findFirst({ where: { ownerId: userId } })
     .then((maybeRestaurant) => {
       if (maybeRestaurant) throw new Error(`User already has a restaurant`);
+      return db.restaurant.findFirst({ where: { name: name } });
+    })
+    .then((maybeRestaurant) => {
+      if (maybeRestaurant) throw new Error(`Restaurant name already exists`);
+      return maybeRestaurant;
     })
     .then(async () => {
       return await db.restaurant.create({
