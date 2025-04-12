@@ -64,3 +64,36 @@ export const orderWithFoodSchema = orderDetailSchema.extend({
   FoodItem: foodDetailSchema,
 });
 export type OrderWithFood = z.infer<typeof orderWithFoodSchema>;
+
+// order
+//     id                   String      @id @default(uuid())
+//     createdAt            DateTime    @default(now())
+//     updatedAt            DateTime    @updatedAt
+//     status               OrderStatus @default(PENDING)
+//     quantity             Int
+
+//session
+//   createdAt    DateTime @default(now())
+//   updatedAt    DateTime @updatedAt
+//   isOpen       Boolean  @default(true)
+
+// food
+//   name         String
+//   category     String
+//   price        Decimal
+//   isActive     Boolean @default(true)
+export const analyticOrderSchema = z.object({
+  orderId: z.string(),
+  orderCreatedAt: z.date(),
+  orderUpdatedAt: z.date(),
+  orderStatus: z.string(),
+  quantity: z.number(),
+  sessionCreatedAt: z.date(),
+  sessionUpdatedAt: z.date(),
+  sessionIsOpen: z.boolean(),
+  foodName: z.string(),
+  foodCategory: z.string(),
+  foodPrice: z.number(),
+  foodIsActive: z.boolean(),
+});
+export type AnalyticOrder = z.infer<typeof analyticOrderSchema>;

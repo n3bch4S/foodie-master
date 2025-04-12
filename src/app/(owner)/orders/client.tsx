@@ -14,7 +14,12 @@ import {
   getFilteredRowModel,
   VisibilityState,
 } from "@tanstack/react-table";
-import { OrderDetail, OrderWithFood, SessionDetail } from "./types";
+import {
+  AnalyticOrder,
+  OrderDetail,
+  OrderWithFood,
+  SessionDetail,
+} from "./types";
 import {
   Table,
   TableBody,
@@ -43,7 +48,6 @@ import {
   ChevronsRight,
   ChevronsUpDown,
   EyeOff,
-  MoreHorizontal,
   Settings2,
 } from "lucide-react";
 import {
@@ -55,10 +59,9 @@ import {
 } from "@/components/ui/select";
 import { useMemo, useState } from "react";
 import { Input } from "@/components/ui/input";
-import { Checkbox } from "@/components/ui/checkbox";
 import { Separator } from "@/components/ui/separator";
 import { Switch } from "@/components/ui/switch";
-import { editOrder, editSession } from "./action";
+import { editOrder, editSession, getAnalyticOrders } from "./action";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 
@@ -69,6 +72,15 @@ interface ClientPageProps {
 export function ClientPage(props: ClientPageProps) {
   return (
     <div className="w-full flex flex-col gap-4">
+      <Button
+        onClick={() => {
+          getAnalyticOrders().then((orderData) => {
+            downloadCSV(orderData);
+          });
+        }}
+      >
+        ดาวน์โหลด CSV
+      </Button>
       <DataTable
         columns={sessionColumns}
         data={props.sessionDetails}
@@ -509,6 +521,45 @@ export function DataTableViewOptions<TData>({
       </DropdownMenuContent>
     </DropdownMenu>
   );
+}
+
+function downloadCSV(data: AnalyticOrder[]) {
+  if (data.length === 0) {
+    alert("ไม่มีข้อมูลให้ดาวน์โหลด");
+    return;
+  }
+  const [sampleRow] = data;
+  const now = new Date();
+  const dateTimeText = now
+    .toISOString()
+    .replace(/T/, " ")
+    .replace(/\..+/, "")
+    .replace(/:/g, "-");
+  const csvContent =
+    "data:text/csv;charset=utf-8," +
+    Object.entries(sampleRow).map(([key]) => {
+      return key;
+    }) +
+    "\n" +
+    data
+      .map((row) => {
+        return Object.values(row)
+          .map((value) => {
+            if (typeof value === "object") {
+              return JSON.stringify(value);
+            }
+            return value;
+          })
+          .join(",");
+      })
+      .join("\n");
+  const encodedUri = encodeURI(csvContent);
+  const link = document.createElement("a");
+  link.setAttribute("href", encodedUri);
+  link.setAttribute("download", `report_${dateTimeText}.csv`);
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
 }
 
 function mapOrderStatus(status: OrderDetail["status"]): string {

@@ -1,6 +1,11 @@
 "use server";
 import { getRestaurant } from "@/lib/restaurant";
-import { OrderDetail, OrderStatus, SessionDetail } from "./types";
+import {
+  AnalyticOrder,
+  OrderDetail,
+  OrderStatus,
+  SessionDetail,
+} from "./types";
 import { FoodDetail } from "@/lib/food/types";
 import { db } from "@/lib/db";
 
@@ -112,4 +117,33 @@ export async function getOrder(): Promise<
         };
       });
     });
+}
+
+export async function getAnalyticOrders(): Promise<AnalyticOrder[]> {
+  const rtr = await getRestaurant();
+  if (!rtr) throw new Error("Restaurant not found");
+  const { id } = rtr;
+  const orderDetails = await db.order.findMany({
+    where: { SessionTransaction: { restaurantId: id } },
+    include: { FoodItem: true, SessionTransaction: true },
+  });
+  const orderData = orderDetails.map((order) => {
+    const { FoodItem, SessionTransaction } = order;
+    const orderRow: AnalyticOrder = {
+      quantity: order.quantity,
+      orderId: order.id,
+      orderCreatedAt: order.createdAt,
+      orderUpdatedAt: order.updatedAt,
+      orderStatus: order.status,
+      sessionCreatedAt: SessionTransaction.createdAt,
+      sessionUpdatedAt: SessionTransaction.updatedAt,
+      sessionIsOpen: SessionTransaction.isOpen,
+      foodName: FoodItem.name,
+      foodCategory: FoodItem.category,
+      foodPrice: FoodItem.price.toNumber(),
+      foodIsActive: FoodItem.isActive,
+    };
+    return orderRow;
+  });
+  return orderData;
 }
