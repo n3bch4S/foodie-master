@@ -66,7 +66,7 @@ export function ClientPage(props: ClientPageProps) {
     <>
       {renderDom(
         props.page.dom,
-        <div className="flex flex-col">
+        <div className="flex flex-col w-4/5">
           <Receipt sessionId={sessionId} />
           {Object.entries(groupedFoods).map(([groupName, foods]) => {
             return (
@@ -251,7 +251,7 @@ function FoodCard(props: FoodCardProps) {
             />
           </AspectRatio>
         ) : (
-          <div className="h-full w-full bg-slate-100 flex justify-center items-center text-slate-400 text-sm">
+          <div className="h-full w-full rounded-l-lg bg-slate-100 flex justify-center items-center text-slate-400 text-sm">
             ไม่มีรูป
           </div>
         )}

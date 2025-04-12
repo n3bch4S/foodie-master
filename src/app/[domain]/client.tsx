@@ -23,7 +23,7 @@ export function renderDom(
       </div>
     );
   if (dom.tagName === "order") {
-    if (!orderElem) throw new Error("order dom should have children");
+    if (!orderElem) null;
     return orderElem;
   }
 
