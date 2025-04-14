@@ -9,13 +9,16 @@ export default authMiddleware({
   publicRoutes: ["/", "/api/uploadthing"],
   afterAuth(auth, req, evt) {
     const host = req.headers.get("host");
-    const domains = host ? host.split(".") : null;
+    const domain = process.env.NEXT_PUBLIC_DOMAIN;
+    const subdomain =
+      host && domain ? host.replace(domain, "").replace(".", "") : null;
+    // const domains = host ? host.split(".") : null;
     const path = req.nextUrl.pathname;
     const searchParams = req.nextUrl.searchParams;
-    if (domains && domains.length === 2) {
+    if (subdomain && subdomain !== "") {
       const url = new URL(
         "/" +
-          domains[0] +
+          subdomain +
           path +
           (searchParams.toString() !== "" ? "?" + searchParams : ""),
         req.url
