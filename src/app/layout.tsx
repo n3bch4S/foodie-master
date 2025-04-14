@@ -7,9 +7,9 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en">
+    <html lang="th">
       <body>
-        <main>{children}</main>
+        {children}
         <Toaster />
       </body>
     </html>

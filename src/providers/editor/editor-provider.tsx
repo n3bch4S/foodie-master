@@ -1,402 +1,553 @@
 "use client";
-import { EditorBtns } from "@/lib/constants";
-import { EditorAction } from "./editor-actions";
-import { Dispatch, createContext, useContext, useReducer } from "react";
-import { FunnelPage } from "@prisma/client";
+import { deletePage, editPage } from "@/lib/page";
+import {
+  baseDomSchema,
+  Dom,
+  PageDetail,
+  TagName,
+  tagNameSchema,
+} from "@/lib/page/types";
+import { DndContext, UniqueIdentifier } from "@dnd-kit/core";
+import { createContext, Dispatch, useContext, useReducer } from "react";
+import { toast } from "sonner";
+import { v4 } from "uuid";
 
-export type DeviceTypes = "Desktop" | "Mobile" | "Tablet";
-
-export type EditorElement = {
-  id: string;
-  styles: React.CSSProperties;
-  name: string;
-  type: EditorBtns;
-  content:
-    | EditorElement[]
-    | { href?: string; innerText?: string; src?: string };
+type EditorContextType = {
+  isOpenPageSelector: boolean;
+  isOpenPageDialog: boolean;
+  screenSize: "DESKTOP" | "MOBILE";
+  isPreview: boolean;
+  currentPage: string | null;
+  dom: Dom | null;
+  selectedComponentId: UniqueIdentifier | null;
+  pageId: string | null;
+  pageDetail: PageDetail | null;
 };
+const EditorContext = createContext<EditorContextType | null>(null);
 
-export type Editor = {
-  liveMode: boolean;
-  elements: EditorElement[];
-  selectedElement: EditorElement;
-  device: DeviceTypes;
-  previewMode: boolean;
-  funnelPageId: string;
-};
+type EditorDispatchContextType = Dispatch<EditorActionType>;
+const EditorDispatchContext = createContext<EditorDispatchContextType | null>(
+  null
+);
 
-export type HistoryState = {
-  history: Editor[];
-  currentIndex: number;
-};
-
-export type EditorState = {
-  editor: Editor;
-  history: HistoryState;
-};
-
-const initialEditorState: EditorState["editor"] = {
-  elements: [
-    {
-      content: [],
-      id: "__body",
-      name: "Body",
-      styles: {},
-      type: "__body",
-    },
-  ],
-  selectedElement: {
-    id: "",
-    content: [],
-    name: "",
-    styles: {},
-    type: null,
-  },
-  device: "Desktop",
-  previewMode: false,
-  liveMode: false,
-  funnelPageId: "",
-};
-
-const initialHistoryState: HistoryState = {
-  history: [initialEditorState],
-  currentIndex: 0,
-};
-
-const initialState: EditorState = {
-  editor: initialEditorState,
-  history: initialHistoryState,
-};
-
-const addAnElement = (
-  editorArray: EditorElement[],
-  action: EditorAction
-): EditorElement[] => {
-  if (action.type !== "ADD_ELEMENT")
-    throw Error(
-      "You sent the wrong action type to the Add Element editor State"
-    );
-  return editorArray.map((item) => {
-    if (item.id === action.payload.containerId && Array.isArray(item.content)) {
-      return {
-        ...item,
-        content: [...item.content, action.payload.elementDetails],
-      };
-    } else if (item.content && Array.isArray(item.content)) {
-      return {
-        ...item,
-        content: addAnElement(item.content, action),
-      };
-    }
-    return item;
-  });
-};
-
-const updateAnElement = (
-  editorArray: EditorElement[],
-  action: EditorAction
-): EditorElement[] => {
-  if (action.type !== "UPDATE_ELEMENT") {
-    throw Error("You sent the wrong action type to the update Element State");
-  }
-  return editorArray.map((item) => {
-    if (item.id === action.payload.elementDetails.id) {
-      return { ...item, ...action.payload.elementDetails };
-    } else if (item.content && Array.isArray(item.content)) {
-      return {
-        ...item,
-        content: updateAnElement(item.content, action),
-      };
-    }
-    return item;
-  });
-};
-
-const deleteAnElement = (
-  editorArray: EditorElement[],
-  action: EditorAction
-): EditorElement[] => {
-  if (action.type !== "DELETE_ELEMENT")
-    throw Error(
-      "You sent the wrong action type to the Delete Element editor State"
-    );
-  return editorArray.filter((item) => {
-    if (item.id === action.payload.elementDetails.id) {
-      return false;
-    } else if (item.content && Array.isArray(item.content)) {
-      item.content = deleteAnElement(item.content, action);
-    }
-    return true;
-  });
-};
-
-const editorReducer = (
-  state: EditorState = initialState,
-  action: EditorAction
-): EditorState => {
-  switch (action.type) {
-    case "ADD_ELEMENT":
-      const updatedEditorState = {
-        ...state.editor,
-        elements: addAnElement(state.editor.elements, action),
-      };
-      // Update the history to include the entire updated EditorState
-      const updatedHistory = [
-        ...state.history.history.slice(0, state.history.currentIndex + 1),
-        { ...updatedEditorState }, // Save a copy of the updated state
-      ];
-
-      const newEditorState = {
-        ...state,
-        editor: updatedEditorState,
-        history: {
-          ...state.history,
-          history: updatedHistory,
-          currentIndex: updatedHistory.length - 1,
-        },
-      };
-
-      return newEditorState;
-
-    case "UPDATE_ELEMENT":
-      // Perform your logic to update the element in the state
-      const updatedElements = updateAnElement(state.editor.elements, action);
-
-      const UpdatedElementIsSelected =
-        state.editor.selectedElement.id === action.payload.elementDetails.id;
-
-      const updatedEditorStateWithUpdate = {
-        ...state.editor,
-        elements: updatedElements,
-        selectedElement: UpdatedElementIsSelected
-          ? action.payload.elementDetails
-          : {
-              id: "",
-              content: [],
-              name: "",
-              styles: {},
-              type: null,
-            },
-      };
-
-      const updatedHistoryWithUpdate = [
-        ...state.history.history.slice(0, state.history.currentIndex + 1),
-        { ...updatedEditorStateWithUpdate }, // Save a copy of the updated state
-      ];
-      const updatedEditor = {
-        ...state,
-        editor: updatedEditorStateWithUpdate,
-        history: {
-          ...state.history,
-          history: updatedHistoryWithUpdate,
-          currentIndex: updatedHistoryWithUpdate.length - 1,
-        },
-      };
-      return updatedEditor;
-
-    case "DELETE_ELEMENT":
-      // Perform your logic to delete the element from the state
-      const updatedElementsAfterDelete = deleteAnElement(
-        state.editor.elements,
-        action
-      );
-      const updatedEditorStateAfterDelete = {
-        ...state.editor,
-        elements: updatedElementsAfterDelete,
-      };
-      const updatedHistoryAfterDelete = [
-        ...state.history.history.slice(0, state.history.currentIndex + 1),
-        { ...updatedEditorStateAfterDelete }, // Save a copy of the updated state
-      ];
-
-      const deletedState = {
-        ...state,
-        editor: updatedEditorStateAfterDelete,
-        history: {
-          ...state.history,
-          history: updatedHistoryAfterDelete,
-          currentIndex: updatedHistoryAfterDelete.length - 1,
-        },
-      };
-      return deletedState;
-
-    case "CHANGE_CLICKED_ELEMENT":
-      const clickedState = {
-        ...state,
-        editor: {
-          ...state.editor,
-          selectedElement: action.payload.elementDetails || {
-            id: "",
-            content: [],
-            name: "",
-            styles: {},
-            type: null,
-          },
-        },
-        history: {
-          ...state.history,
-          history: [
-            ...state.history.history.slice(0, state.history.currentIndex + 1),
-            { ...state.editor }, // Save a copy of the current editor state
-          ],
-          currentIndex: state.history.currentIndex + 1,
-        },
-      };
-      return clickedState;
-    case "CHANGE_DEVICE":
-      const changedDeviceState = {
-        ...state,
-        editor: {
-          ...state.editor,
-          device: action.payload.device,
-        },
-      };
-      return changedDeviceState;
-
-    case "TOGGLE_PREVIEW_MODE":
-      const toggleState = {
-        ...state,
-        editor: {
-          ...state.editor,
-          previewMode: !state.editor.previewMode,
-        },
-      };
-      return toggleState;
-
-    case "TOGGLE_LIVE_MODE":
-      const toggleLiveMode: EditorState = {
-        ...state,
-        editor: {
-          ...state.editor,
-          liveMode: action.payload
-            ? action.payload.value
-            : !state.editor.liveMode,
-        },
-      };
-      return toggleLiveMode;
-
-    case "REDO":
-      if (state.history.currentIndex < state.history.history.length - 1) {
-        const nextIndex = state.history.currentIndex + 1;
-        const nextEditorState = { ...state.history.history[nextIndex] };
-        const redoState = {
-          ...state,
-          editor: nextEditorState,
-          history: {
-            ...state.history,
-            currentIndex: nextIndex,
-          },
-        };
-        return redoState;
-      }
-      return state;
-
-    case "UNDO":
-      if (state.history.currentIndex > 0) {
-        const prevIndex = state.history.currentIndex - 1;
-        const prevEditorState = { ...state.history.history[prevIndex] };
-        const undoState = {
-          ...state,
-          editor: prevEditorState,
-          history: {
-            ...state.history,
-            currentIndex: prevIndex,
-          },
-        };
-        return undoState;
-      }
-      return state;
-
-    case "LOAD_DATA":
-      return {
-        ...initialState,
-        editor: {
-          ...initialState.editor,
-          elements: action.payload.elements || initialEditorState.elements,
-          liveMode: !!action.payload.withLive,
-        },
-      };
-
-    case "SET_FUNNELPAGE_ID":
-      const { funnelPageId } = action.payload;
-      const updatedEditorStateWithFunnelPageId = {
-        ...state.editor,
-        funnelPageId,
-      };
-
-      const updatedHistoryWithFunnelPageId = [
-        ...state.history.history.slice(0, state.history.currentIndex + 1),
-        { ...updatedEditorStateWithFunnelPageId }, // Save a copy of the updated state
-      ];
-
-      const funnelPageIdState = {
-        ...state,
-        editor: updatedEditorStateWithFunnelPageId,
-        history: {
-          ...state.history,
-          history: updatedHistoryWithFunnelPageId,
-          currentIndex: updatedHistoryWithFunnelPageId.length - 1,
-        },
-      };
-      return funnelPageIdState;
-
-    default:
-      return state;
-  }
-};
-
-export type EditorContextData = {
-  device: DeviceTypes;
-  previewMode: boolean;
-  setPreviewMode: (previewMode: boolean) => void;
-  setDevice: (device: DeviceTypes) => void;
-};
-
-export const EditorContext = createContext<{
-  state: EditorState;
-  dispatch: Dispatch<EditorAction>;
-  subaccountId: string;
-  funnelId: string;
-  pageDetails: FunnelPage | null;
-}>({
-  state: initialState,
-  dispatch: () => undefined,
-  subaccountId: "",
-  funnelId: "",
-  pageDetails: null,
-});
-
-type EditorProps = {
+interface EditorProviderProps {
   children: React.ReactNode;
-  subaccountId: string;
-  funnelId: string;
-  pageDetails: FunnelPage;
-};
+}
+export function EditorProvider({ children }: EditorProviderProps) {
+  const initContext: EditorContextType = {
+    isOpenPageSelector: false,
+    isOpenPageDialog: false,
+    screenSize: "DESKTOP",
+    isPreview: false,
+    currentPage: null,
+    dom: null,
+    selectedComponentId: null,
+    pageId: null,
+    pageDetail: null,
+  };
 
-const EditorProvider = (props: EditorProps) => {
-  const [state, dispatch] = useReducer(editorReducer, initialState);
+  const [editorContext, dispatch] = useReducer(editorReducer, initContext);
 
   return (
-    <EditorContext.Provider
-      value={{
-        state,
-        dispatch,
-        subaccountId: props.subaccountId,
-        funnelId: props.funnelId,
-        pageDetails: props.pageDetails,
-      }}
-    >
-      {props.children}
+    <EditorContext.Provider value={editorContext}>
+      <EditorDispatchContext.Provider value={dispatch}>
+        <DndContext
+          onDragEnd={(evt) => {
+            if (!evt.over) return;
+            const parseId = tagNameSchema.safeParse(evt.active.id);
+            if (parseId.success) {
+              dispatch({
+                type: "addDom",
+                addDom: { tagName: parseId.data, newParentId: evt.over.id },
+              });
+            } else if (evt.over && evt.active.id !== evt.over.id) {
+              dispatch({
+                type: "updateDom",
+                updateDom: {
+                  childId: evt.active.id,
+                  newParentId: evt.over.id,
+                },
+              });
+            } else if (
+              evt.active.id === evt.over.id &&
+              editorContext.selectedComponentId === null
+            ) {
+              dispatch({
+                type: "selectComponent",
+                selectComponent: { id: evt.active.id },
+              });
+            }
+          }}
+        >
+          {children}
+        </DndContext>
+      </EditorDispatchContext.Provider>
     </EditorContext.Provider>
   );
+}
+
+export function useEditor(): EditorContextType {
+  return useContext(EditorContext)!;
+}
+
+export function useEditorDispatch(): EditorDispatchContextType {
+  return useContext(EditorDispatchContext)!;
+}
+
+export type SetPageIdArgs = {
+  pageId: string | null;
 };
 
-export const useEditor = () => {
-  const context = useContext(EditorContext);
-  if (!context) {
-    throw new Error("useEditor Hook must be used within the editor Provider");
+export type DeletePageArgs = {
+  pageId: string;
+};
+
+export type SetDomArgs = {
+  dom: Dom | null;
+};
+
+export type SetIsPreviewArgs = {
+  isPreview: boolean;
+};
+
+export type SetIsOpenPageSelectorArgs = {
+  isOpen: boolean;
+};
+
+export type SetIsOpenDialogArgs = {
+  isOpen: boolean;
+};
+
+export type AddDomArgs = {
+  tagName: TagName;
+  newParentId: UniqueIdentifier;
+};
+
+export type RemoveCompArgs = {
+  compId: UniqueIdentifier;
+};
+
+export type UpdateDomArgs = {
+  childId: UniqueIdentifier;
+  newParentId: UniqueIdentifier;
+};
+
+export type UpdateDomInPageArgs = {
+  pageId: string;
+  dom: Dom;
+};
+
+export type ChangePageArgs = {
+  page: string;
+};
+
+export type SelectComponentArgs = {
+  id: UniqueIdentifier | null;
+};
+
+export type setIsOpenComponentPopupArgs = {
+  isOpen: boolean;
+};
+
+export type EditInnerArgs = {
+  id: UniqueIdentifier;
+  innerText: string;
+};
+
+export type EditUrlArgs = {
+  id: UniqueIdentifier;
+  url: string;
+};
+
+export type EditGapArgs = {
+  id: UniqueIdentifier;
+  gap: number;
+};
+
+export type EditJustifyArgs = {
+  id: UniqueIdentifier;
+  justify: Dom["justify"];
+};
+
+export type EditItemsArgs = {
+  id: UniqueIdentifier;
+  items: Dom["items"];
+};
+
+export type EditPaddingArgs = {
+  id: UniqueIdentifier;
+  padding: number;
+};
+
+export type EditWidthArgs = {
+  id: UniqueIdentifier;
+  width: number;
+};
+
+export type EditHeightArgs = {
+  id: UniqueIdentifier;
+  height: number;
+};
+
+export type EditFontFamilyArgs = {
+  id: UniqueIdentifier;
+  fontFamily: Dom["fontFamily"];
+};
+
+export type EditFontSizeArgs = {
+  id: UniqueIdentifier;
+  fontSize: number;
+};
+
+export type EditTextColorArgs = {
+  id: UniqueIdentifier;
+  textColor: string;
+};
+
+export type EditBackgroundColorArgs = {
+  id: UniqueIdentifier;
+  backgroundColor: string | undefined;
+};
+
+export type EditorActionType = {
+  type:
+    | "changePage"
+    | "setPageId"
+    | "setDom"
+    | "setIsPreview"
+    | "setIsOpenDialog"
+    | "setIsOpenPageSelector"
+    | "updateDom"
+    | "addDom"
+    | "removeComp"
+    | "saveDom"
+    | "selectComponent"
+    | "editInner"
+    | "editUrl"
+    | "editGap"
+    | "editJustify"
+    | "editItems"
+    | "editPadding"
+    | "editWidth"
+    | "editHeight"
+    | "editFontFamily"
+    | "editFontSize"
+    | "editTextColor"
+    | "editBackgroundColor";
+  setPageId?: SetPageIdArgs;
+  setDom?: SetDomArgs;
+  setIsPreview?: SetIsPreviewArgs;
+  setIsOpenPageSelector?: SetIsOpenPageSelectorArgs;
+  setIsOpenDialog?: SetIsOpenDialogArgs;
+  changePage?: ChangePageArgs;
+  addDom?: AddDomArgs;
+  removeComp?: RemoveCompArgs;
+  updateDom?: UpdateDomArgs;
+  updateDomInPage?: UpdateDomInPageArgs;
+  selectComponent?: SelectComponentArgs;
+  setIsOpenComponentPopup?: setIsOpenComponentPopupArgs;
+  editInnerArgs?: EditInnerArgs;
+  editUrl?: EditUrlArgs;
+  editGapArgs?: EditGapArgs;
+  editJustifyArgs?: EditJustifyArgs;
+  editItemsArgs?: EditItemsArgs;
+  editPaddingArgs?: EditPaddingArgs;
+  editWidthArgs?: EditWidthArgs;
+  editHeightArgs?: EditHeightArgs;
+  editFontFamilyArgs?: EditFontFamilyArgs;
+  editFontSizeArgs?: EditFontSizeArgs;
+  editTextColorArgs?: EditTextColorArgs;
+  editBackgroundColorArgs?: EditBackgroundColorArgs;
+};
+function editorReducer(
+  editorContext: EditorContextType,
+  action: EditorActionType
+): EditorContextType {
+  switch (action.type) {
+    case "setPageId": {
+      return { ...editorContext, pageId: action.setPageId!.pageId };
+    }
+    case "setDom": {
+      return { ...editorContext, dom: action.setDom!.dom };
+    }
+    case "setIsPreview": {
+      return { ...editorContext, isPreview: action.setIsPreview!.isPreview };
+    }
+    case "setIsOpenPageSelector": {
+      return {
+        ...editorContext,
+        isOpenPageSelector: action.setIsOpenPageSelector!.isOpen,
+      };
+    }
+    case "setIsOpenDialog": {
+      return {
+        ...editorContext,
+        isOpenPageDialog: action.setIsOpenDialog!.isOpen,
+      };
+    }
+    case "changePage": {
+      return { ...editorContext, currentPage: action.changePage!.page };
+    }
+    case "addDom": {
+      const newChild: Dom = {
+        id: v4(),
+        tagName: action.addDom!.tagName,
+        innerText: generatePreInnerText(action.addDom!.tagName),
+        canHaveChildren: action.addDom!.tagName === "div",
+        children: [],
+        fontFamily: "font-sans",
+        fontSize: 16,
+        textColor: "#000000",
+        justify: "justify-start",
+        items: "items-start",
+        width: 16,
+        height: 2,
+        padding: 8,
+        gap: 4,
+        backgroundColor: undefined,
+      };
+      const newDom = addComponent(
+        editorContext.dom!,
+        newChild,
+        action.addDom!.newParentId
+      );
+      return { ...editorContext, dom: newDom };
+    }
+    case "removeComp": {
+      return {
+        ...editorContext,
+        dom: removeComponent(editorContext.dom!, action.removeComp!.compId),
+      };
+    }
+    case "updateDom": {
+      const newDom = moveComponent(
+        editorContext.dom!,
+        action.updateDom!.childId,
+        action.updateDom!.newParentId
+      );
+      return { ...editorContext, dom: newDom };
+    }
+    case "saveDom": {
+      editPage(editorContext.pageId!, editorContext.dom!).then((page) => {
+        toast.success("สำเร็จ", { description: `บันทึก ${page.name} สำเร็จ` });
+      });
+      return editorContext;
+    }
+    case "selectComponent": {
+      return {
+        ...editorContext,
+        selectedComponentId: action.selectComponent!.id,
+      };
+    }
+    case "editInner": {
+      const newDom = editorContext.dom!;
+      const component = findIn(newDom, action.editInnerArgs!.id);
+      if (!component) return editorContext;
+      component.innerText = action.editInnerArgs!.innerText;
+      return { ...editorContext, dom: newDom };
+    }
+    case "editUrl": {
+      const newDom = editorContext.dom!;
+      const component = findIn(newDom, action.editUrl!.id);
+      if (!component)
+        throw new Error(`Can't find component with id ${action.editUrl!.id}`);
+      component.url = action.editUrl!.url;
+      return { ...editorContext, dom: newDom };
+    }
+    case "editGap": {
+      const newDom = editorContext.dom!;
+      const component = findIn(newDom, action.editGapArgs!.id);
+      if (!component) return editorContext;
+      component.gap = action.editGapArgs!.gap;
+      return { ...editorContext, dom: newDom };
+    }
+    case "editJustify": {
+      const maybeJustify = baseDomSchema
+        .pick({ justify: true })
+        .safeParse({ justify: action.editJustifyArgs!.justify });
+      if (!maybeJustify.success) return editorContext;
+      const newDom = editorContext.dom!;
+      const component = findIn(newDom, action.editJustifyArgs!.id);
+      if (!component) return editorContext;
+      component.justify = maybeJustify.data.justify;
+      return { ...editorContext, dom: newDom };
+    }
+    case "editItems": {
+      const maybeItems = baseDomSchema
+        .pick({ items: true })
+        .safeParse({ items: action.editItemsArgs!.items });
+      if (!maybeItems.success) return editorContext;
+      const newDom = editorContext.dom!;
+      const component = findIn(newDom, action.editItemsArgs!.id);
+      if (!component) return editorContext;
+      component.items = maybeItems.data.items;
+      return { ...editorContext, dom: newDom };
+    }
+    case "editPadding": {
+      const newDom = editorContext.dom!;
+      const component = findIn(newDom, action.editPaddingArgs!.id);
+      if (!component) return editorContext;
+      component.padding = action.editPaddingArgs!.padding;
+      return { ...editorContext, dom: newDom };
+    }
+    case "editWidth": {
+      const maybeWidth = baseDomSchema
+        .pick({ width: true })
+        .safeParse({ width: action.editWidthArgs!.width });
+      if (!maybeWidth.success) return editorContext;
+      const newDom = editorContext.dom!;
+      const component = findIn(newDom, action.editWidthArgs!.id);
+      if (!component) return editorContext;
+      component.width = maybeWidth.data.width;
+      return { ...editorContext, dom: newDom };
+    }
+    case "editHeight": {
+      const maybeHeight = baseDomSchema
+        .pick({ height: true })
+        .safeParse({ height: action.editHeightArgs!.height });
+      if (!maybeHeight.success) return editorContext;
+      const newDom = editorContext.dom!;
+      const component = findIn(newDom, action.editHeightArgs!.id);
+      if (!component) return editorContext;
+      component.height = maybeHeight.data.height;
+      return { ...editorContext, dom: newDom };
+    }
+    case "editFontFamily": {
+      const maybeFontFamily = baseDomSchema
+        .pick({ fontFamily: true })
+        .safeParse({ fontFamily: action.editFontFamilyArgs!.fontFamily });
+      if (!maybeFontFamily.success) return editorContext;
+      const newDom = editorContext.dom!;
+      const component = findIn(newDom, action.editFontFamilyArgs!.id);
+      if (!component) return editorContext;
+      component.fontFamily = maybeFontFamily.data.fontFamily;
+      return { ...editorContext, dom: newDom };
+    }
+    case "editFontSize": {
+      const maybeFontSize = baseDomSchema
+        .pick({ fontSize: true })
+        .safeParse({ fontSize: action.editFontSizeArgs!.fontSize });
+      if (!maybeFontSize.success) return editorContext;
+      const newDom = editorContext.dom!;
+      const component = findIn(newDom, action.editFontSizeArgs!.id);
+      if (!component) return editorContext;
+      component.fontSize = maybeFontSize.data.fontSize;
+      return { ...editorContext, dom: newDom };
+    }
+    case "editTextColor": {
+      const maybeTextColor = baseDomSchema
+        .pick({ textColor: true })
+        .safeParse({ textColor: action.editTextColorArgs!.textColor });
+      if (!maybeTextColor.success) return editorContext;
+      const newDom = editorContext.dom!;
+      const component = findIn(newDom, action.editTextColorArgs!.id);
+      if (!component) return editorContext;
+      component.textColor = maybeTextColor.data.textColor;
+      return { ...editorContext, dom: newDom };
+    }
+    case "editBackgroundColor": {
+      const maybeBackgroundColor = baseDomSchema
+        .pick({ backgroundColor: true })
+        .safeParse({
+          backgroundColor: action.editBackgroundColorArgs!.backgroundColor,
+        });
+      if (!maybeBackgroundColor.success) return editorContext;
+      const newDom = editorContext.dom!;
+      const component = findIn(newDom, action.editBackgroundColorArgs!.id);
+      if (!component) return editorContext;
+      component.backgroundColor = maybeBackgroundColor.data.backgroundColor;
+      return { ...editorContext, dom: newDom };
+    }
+    default: {
+      throw new Error("Unknown action: " + action.type);
+    }
   }
-  return context;
-};
+}
 
-export default EditorProvider;
+function findIn(component: Dom, id: UniqueIdentifier): Dom | null {
+  if (component.id === id) return component;
+  if (component.children.length === 0) return null;
+  const foundChild = component.children.find(
+    (child) => findIn(child, id) !== null
+  );
+  if (foundChild) return findIn(foundChild, id);
+  return null;
+}
+
+function findParentIn(component: Dom, id: UniqueIdentifier): Dom | null {
+  if (component.children.length === 0) return null;
+  const foundChild = component.children.find((child) => child.id === id);
+  if (foundChild) return component;
+  const foundGrandChild = component.children.find(
+    (child) => findIn(child, id) !== null
+  );
+  if (foundGrandChild) return findParentIn(foundGrandChild, id);
+  return null;
+}
+
+function deepClone(component: Dom): Dom {
+  return {
+    ...component,
+    children: component.children.map(deepClone),
+  } as Dom;
+}
+
+function addComponent(
+  dom: Dom,
+  child: Dom,
+  newParentId: UniqueIdentifier
+): Dom {
+  const newDom = deepClone(dom);
+  const newParent = findIn(newDom, newParentId);
+  if (!newParent)
+    throw new Error(`Can't find parent for component id ${child.id}`);
+  if (!newParent.canHaveChildren) return newDom;
+  newParent.children.push(child);
+  return newDom;
+}
+
+function moveComponent(
+  component: Dom,
+  childId: UniqueIdentifier,
+  newParentId: UniqueIdentifier
+): Dom {
+  const newComponent = deepClone(component);
+  const oldParent = findParentIn(newComponent, childId);
+  if (!oldParent)
+    throw new Error(`Can't find parent of component id ${childId}`);
+  const newParent = findIn(newComponent, newParentId);
+  if (!newParent) throw new Error(`Can't find new parent id ${newParentId}`);
+  if (!newParent.canHaveChildren) return newComponent;
+  const child = findIn(oldParent, childId);
+  if (!child) throw new Error(`Can't find child with id ${childId}`);
+
+  oldParent.children = oldParent.children.filter(
+    (child) => child.id !== childId
+  );
+  newParent.children.push(child);
+  return newComponent;
+}
+
+function removeComponent(dom: Dom, compId: UniqueIdentifier): Dom {
+  const newDom = deepClone(dom);
+  const parent = findParentIn(newDom, compId);
+  if (!parent) throw new Error(`Can't find parent of component id ${compId}`);
+  parent.children = parent.children.filter((child) => child.id !== compId);
+  return newDom;
+}
+
+function generatePreInnerText(tagName: TagName): string | undefined {
+  switch (tagName) {
+    case "p":
+      return "ข้อความ";
+    case "div":
+      return undefined;
+    case "button":
+      return "Button";
+    case "order": {
+      return undefined;
+    }
+    default:
+      throw new Error(`Unknown tag name: ${tagName}`);
+  }
+}
