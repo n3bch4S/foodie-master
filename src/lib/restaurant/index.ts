@@ -71,11 +71,15 @@ export async function editRestaurant({
 }: Restaurant): Promise<RestaurantDetail> {
   const { userId } = auth();
   if (!userId) throw new Error(`User not authenticated`);
+  const otherRtr = await db.restaurant.findFirst({
+    where: { name: name, ownerId: { not: userId } },
+  });
+  if (otherRtr) throw new Error(`Restaurant name already exists`);
   return await db.restaurant
     .findFirst({ where: { ownerId: userId } })
     .then(async (maybeRestaurant) => {
       if (!maybeRestaurant) {
-        return await createRestaurant({ name, description, logoKey });
+        await createRestaurant({ name, description, logoKey });
       }
       return maybeRestaurant;
     })
@@ -87,12 +91,13 @@ export async function editRestaurant({
     })
     .then(async ({ rtr, maybeSite }) => {
       if (!maybeSite) {
-        await createSite();
+        const newSite = await createSite();
+        return { rtr, maybeSite: newSite };
       }
-      return rtr;
+      return { rtr, maybeSite };
     })
-    .then(async (rtr) => {
-      return await db.restaurant.update({
+    .then(async ({ rtr, maybeSite }) => {
+      const updatedRtr = await db.restaurant.update({
         where: { id: rtr.id },
         data: {
           name,
@@ -100,6 +105,11 @@ export async function editRestaurant({
           logoKey: logoKey ?? rtr.logoKey,
         },
       });
+      const updatedSite = await db.site.update({
+        where: { id: maybeSite.id },
+        data: { name: name },
+      });
+      return updatedRtr;
     });
 }
 

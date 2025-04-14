@@ -69,7 +69,12 @@ export async function createPage(
       return maybeSite;
     })
     .then(async (site) => {
-      return { site, maybePage: await db.page.findFirst({ where: { name } }) };
+      return {
+        site,
+        maybePage: await db.page.findFirst({
+          where: { name, site: { name: site.name } },
+        }),
+      };
     })
     .then(async ({ site, maybePage }) => {
       if (!maybePage)

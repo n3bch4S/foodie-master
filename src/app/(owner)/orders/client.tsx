@@ -536,7 +536,6 @@ function downloadCSV(data: AnalyticOrder[]) {
     .replace(/\..+/, "")
     .replace(/:/g, "-");
   const csvContent =
-    "data:text/csv;charset=utf-8," +
     Object.entries(sampleRow).map(([key]) => {
       return key;
     }) +
@@ -553,9 +552,10 @@ function downloadCSV(data: AnalyticOrder[]) {
           .join(",");
       })
       .join("\n");
-  const encodedUri = encodeURI(csvContent);
+  const encodedUri = encodeURIComponent(csvContent);
+  const dataUri = "data:text/csv;charset=utf-8," + encodedUri;
   const link = document.createElement("a");
-  link.setAttribute("href", encodedUri);
+  link.setAttribute("href", dataUri);
   link.setAttribute("download", `report_${dateTimeText}.csv`);
   document.body.appendChild(link);
   link.click();
