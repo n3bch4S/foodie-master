@@ -79,7 +79,7 @@ export async function editRestaurant({
     .findFirst({ where: { ownerId: userId } })
     .then(async (maybeRestaurant) => {
       if (!maybeRestaurant) {
-        await createRestaurant({ name, description, logoKey });
+        return await createRestaurant({ name, description, logoKey });
       }
       return maybeRestaurant;
     })
