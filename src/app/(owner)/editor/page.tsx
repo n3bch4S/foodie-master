@@ -1,5 +1,5 @@
 import { getPages } from "@/lib/page";
-import { ClientPage } from "./client";
+import { ClientPage } from "./_client";
 import { EditorProvider } from "@/providers/editor/editor-provider";
 
 export default async function Editor() {
