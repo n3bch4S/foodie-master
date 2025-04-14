@@ -23,8 +23,7 @@ export function TagGenerator({
       return <div {...other}>{children}</div>;
     case "button":
       return <button {...other}>{children}</button>;
-    case "image":
-      return <Image src={src ?? ""} alt={alt ?? ""} {...other} />;
+
     default:
       throw new Error(`Unknown tag name: ${tagName}`);
   }
