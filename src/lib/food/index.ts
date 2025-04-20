@@ -2,6 +2,7 @@
 import { Food, FoodDetail } from "./types";
 import { getRestaurant } from "../restaurant";
 import { db } from "../db";
+import { redirect } from "next/navigation";
 
 // const db = new PrismaClient();
 
@@ -30,7 +31,7 @@ export async function createFood(food: Food): Promise<FoodDetail> {
 export async function fetchFoods(): Promise<FoodDetail[]> {
   return await getRestaurant()
     .then((maybeRtr) => {
-      if (!maybeRtr) throw new Error(`Restaurant not found`);
+      if (!maybeRtr) redirect("/restaurant");
       return maybeRtr;
     })
     .then(async (rtr) => {

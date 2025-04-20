@@ -8,6 +8,7 @@ import {
 } from "./types";
 import { FoodDetail } from "@/lib/food/types";
 import { db } from "@/lib/db";
+import { redirect } from "next/navigation";
 
 export async function createSession(): Promise<SessionDetail> {
   return await getRestaurant()
@@ -55,7 +56,7 @@ export async function editSession(
 export async function getSession(): Promise<SessionDetail[]> {
   return await getRestaurant()
     .then((maybeRtr) => {
-      if (!maybeRtr) throw new Error("Restaurant not found");
+      if (!maybeRtr) redirect("/restaurant");
       return maybeRtr;
     })
     .then(async (rtr) => {

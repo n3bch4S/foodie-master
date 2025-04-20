@@ -5,6 +5,7 @@ import { Dom, domSchema, PageDetail, PageType, SiteDetail } from "./types";
 import { CUSTOM_PAGE_DOM, HOME_PAGE_DOM, ORDER_PAGE_DOM } from "./constants";
 import { getRestaurant, getSite } from "../restaurant";
 import { db } from "../db";
+import { redirect } from "next/navigation";
 
 // const db = new PrismaClient();
 
@@ -99,7 +100,7 @@ export async function deletePage(pageName: string): Promise<void> {
 export async function getPages(): Promise<PageDetail[]> {
   return await getRestaurant()
     .then((maybeRtr) => {
-      if (!maybeRtr) throw new Error("Restaurant not found");
+      if (!maybeRtr) redirect("/restaurant");
       return maybeRtr;
     })
     .then(async (rtr) => {
